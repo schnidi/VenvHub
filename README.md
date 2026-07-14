@@ -13,13 +13,13 @@ VenvHub Pro is a comprehensive, IDE-agnostic management tool for Python develope
 ## Screenshot
 
 ![VenvHub widget](assets/pictures/widget.jpg)
-VenvHub Widget
+###VenvHub Widget
 
 ![VenvHub quick setup](assets/pictures/quick_setup.jpg)
-VenvHub quick menu
+###VenvHub quick menu
 
 ![VenvHub Manager](assets/pictures/manager.jpg)
-VenvHub Manager
+###VenvHub Manager
 
 ---
 
