@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code Profily - VenvHub Pro Manuál</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ĽAVÉ MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+            <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+            <a href="manager.html">📁 3. Správca Prostredí</a>
+            <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+            <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="vscode_user.html" class="active">💻 12. VS Code Profily</a>
+
+            <!-- PODKAPITOLY PRE VS CODE PROFILY -->
+            <div class="sub-menu">
+                <a href="#princip">12.1 Princíp izolácie</a>
+                <a href="#nastavenie">12.2 Nastavenie a cesty</a>
+                <a href="#sprava">12.3 Tvorba a Import profilov</a>
+                <a href="#aktivny">12.4 Aktívny profil a automatizácia</a>
+            </div>
+
+            <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+            <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+        </div>
+    </div>
+
+    <!-- OBSAH -->
+    <div class="content">
+
+        <!-- PODKAPITOLA 12.1 -->
+        <div id="princip" class="section-box">
+            <h1>12.1 Princíp izolácie a prenosnosti</h1>
+            <p>Štandardný VS Code ukladá všetky nastavenia a rozšírenia do dvoch obrovských systémových priečinkov vo Windowse (<code>%APPDATA%\Code\User</code> a <code>%USERPROFILE%\.vscode\extensions</code>). Ak pracujete na viacerých projektoch s rôznymi požiadavkami, alebo ak prenášate prácu na USB kľúči, toto štandardné správanie je nežiaduce.</p>
+            
+            <p><strong>VenvHub Pro prináša "Portable" vrstvu pre VS Code:</strong></p>
+            <ul>
+                <li><strong>Izolácia:</strong> Každý vami vytvorený profil má vlastnú zložku. Znamená to vlastné súbory <code>settings.json</code>, vlastné klávesové skratky a hlavne fyzicky vlastný zoznam nainštalovaných rozšírení (Extensions).</li>
+                <li><strong>Čistota systému:</strong> Vaša inštalácia VS Code v systéme Windows zostáva absolútne nedotknutá. Aplikácia VenvHub Pro spúšťa VS Code so špeciálnymi skrytými parametrami (<code>--user-data-dir</code> a <code>--extensions-dir</code>), ktoré ho presmerujú do vami vytvorených zložiek.</li>
+                <li><strong>Prenosnosť:</strong> Ak máte profily na externom disku, vaše pracovné prostredie (vrátane všetkých pluginov) bude identické na každom počítači, kde disk pripojíte.</li>
+            </ul>
+        </div>
+
+        <!-- PODKAPITOLA 12.2 -->
+        <div id="nastavenie" class="section-box">
+            <h1>12.2 Nastavenie koreňa profilov</h1>
+            <p>Aby funkcia fungovala, musíte aplikácii povedať, kde má všetky tieto profily fyzicky ukladať.</p>
+            <ol>
+                <li>Otvorte <strong>Manager (Správca)</strong> a prejdite na záložku <strong>Nastavenia</strong>.</li>
+                <li>V sekcii "VS Code Profil" kliknite na tlačidlo <strong>Správa kont</strong>.</li>
+                <li>V novootvorenom okne uvidíte pole <strong>Koreňový priečinok profilov</strong>. Kliknite na ikonu 📁 a vyberte prázdny priečinok (napr. <code>vscode_users</code> vo vašom portable adresári).</li>
+            </ol>
+            
+            <div class="tip">
+                <strong>Inteligentné cesty (UUID):</strong> Rovnako ako pri iných nastaveniach vo VenvHub Pro, aj táto cesta je chránená prenosným režimom. Ak zmeníte písmeno disku (napr. z E: na F:), aplikácia automaticky prepočíta cestu podľa unikátneho ID disku a profily zostanú funkčné.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 12.3 -->
+        <div id="sprava" class="section-box">
+            <h1>12.3 Tvorba a Import profilov</h1>
+            <p>V pravej časti okna "Správa VS Code Používateľov" môžete vytvárať nové účty.</p>
+            
+            <h3>Vytvorenie nového profilu</h3>
+            <ul>
+                <li><strong>ID Používateľa:</strong> Technický názov zložky na disku (nepoužívajte medzery ani diakritiku, napr. <code>jozo_dev</code>).</li>
+                <li><strong>Zobrazované meno:</strong> Čitateľný názov, ktorý uvidíte v zozname (napr. "Jozef - Python Expert").</li>
+            </ul>
+
+            <h3>Import zo systému</h3>
+            <p>Vytvoriť prázdny profil znamená začať s VS Code úplne od nuly (čistý editor bez témy a pluginov). Ak však chcete mať v novom profile všetko presne tak, ako to už máte v aktuálnom Windowse, použite funkciu <strong>Import</strong>. Aplikácia fyzicky skopíruje dáta z <code>%APPDATA%</code> a <code>%USERPROFILE%</code> priamo do zložky profilu.</p>
+            
+            <ul>
+                <li><strong>Pri vytvorení:</strong> Zaškrtnite "Pri vytvorení kopírovať zo systému" a aplikácia po vytvorení zložiek okamžite spustí kopírovanie dát.</li>
+                <li><strong>Dodatočne:</strong> Kedykoľvek môžete vybrať existujúci profil v zozname a kliknúť na <strong>📥 Importovať zo systému teraz</strong> (pozor, pôvodné nastavenia profilu sa tým vymažú a nahradia sa systémovými).</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Inteligentné zrušenie (Rollback) na pozadí:</strong> Kopírovanie rozšírení môže zabrať stovky megabajtov a trvať niekoľko minút. VenvHub Pro túto operáciu vykonáva bezpečne. Ak počas sťahovania stlačíte tlačidlo "Zrušiť", aplikácia nenechá na disku polofunkčný odpad:
+                <br><br>
+                - Ak ste import zrušili <strong>pri vytváraní úplne nového profilu</strong>, VenvHub tento neúplný profil <strong>automaticky celý zmaže z disku</strong>. <br>
+                - Ak ste zrušili <strong>dodatočný import do existujúceho profilu</strong>, VenvHub vymaže len to, čo stihol nakopírovať, a vráti profil do pôvodného stavu.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 12.4 -->
+        <div id="aktivny" class="section-box">
+            <h1>12.4 Aktívny profil a "Trojuholníková" synchronizácia</h1>
+            <p>VenvHub Pro zavádza pokročilý systém synchronizácie stavu aplikácie. Cieľom je, aby užívateľ videl rovnaké dáta a rovnaký "Master" stav bez ohľadu na to, cez ktoré okno zmenu vykonal.</p>
+
+            <h3>1. Princíp trojitej synchronizácie (Real-time Sync)</h3>
+            <p>Aplikácia nepretržite prepája tri hlavné uzly. Ak zmeníte VS Code profil na ktoromkoľvek z týchto miest, zmena sa v zlomku sekundy (cez signály a sloty) prenesie do ostatných dvoch:</p>
+            <ul>
+                <li><strong>Rýchle nastavenia (Quick Settings):</strong> ComboBox v rolovacom paneli Mini-Baru.</li>
+                <li><strong>Správca (Manager) - Nastavenia:</strong> Hlavný ComboBox v záložke nastavení.</li>
+                <li><strong>Správa účtov (VSCode User Window):</strong> Zoznam profilov, kde sa pri aktívnom konte zobrazí hviezdička <code>★ [AKTÍVNY]</code> a text stučnie.</li>
+            </ul>
+
+            <h3>2. Inteligentné prepínanie Venvu (Master Mode)</h3>
+            <p><strong>Každá zmena prostredia (Venv) v Rýchlych nastaveniach (cez Mini-Bar)</strong> sa správa ako voľba "Master" (Predvolený):</p>
+            <ul>
+                <li><strong>Hard-Zápis do Configu:</strong> Zvolený Venv sa okamžite zapíše ako hlavný pre daný projekt.</li>
+                <li><strong>Synchronizácia VS Code:</strong> Systém automaticky otvorí <code>.vscode/settings.json</code> v projekte a prepíše cestu k interpretu (<code>python.defaultInterpreterPath</code>).</li>
+                <li><strong>Package Linker:</strong> Ak má zvolený Venv pripojené lokálne balíčky, systém ich okamžite nahlási do analýzy VS Code (ExtraPaths).</li>
+                <li><strong>Vizuálna odozva:</strong> Ak máte otvorené okno Správcu, uvidíte, ako hviezdička ★ v tabuľke preskočila na nový riadok presne v momente, keď ste klikli v MiniBare.</li>
+            </ul>
+
+            <h3>3. Spúšťacie tlačidlo VS Code v Mini-Bare</h3>
+            <p>Nová ikona VS Code na hlavnom paneli je napojená na prísnu overovaciu logiku. Čo má užívateľ očakávať?</p>
+            <ul>
+                <li><strong>Pred-štartová kontrola:</strong> Systém pred spustením preverí, či je vybraný projekt, či Venv fyzicky existuje na disku a či je cesta k nemu validná. Ak niečo nesedí, namiesto zlyhania VS Code dostanete jasné chybové hlásenie.</li>
+                <li><strong>Automatická injekcia profilu:</strong> Ak je nastavený aktívny profil, tlačidlo ho automaticky "pribalí" k príkazu. VS Code sa otvorí s vašimi rozšíreniami a nastaveniami, aj keby ste ho predtým mali otvorený v systéme úplne inak.</li>
+                <li><strong>Blokovanie v Multi-režime:</strong> Tlačidlo je dostupné len v režime Single. V režime Hromadného spúšťania (Multi) sa automaticky skryje, aby nedošlo k zámene viacerých projektov.</li>
+            </ul>
+
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Dôležité pravidlo pre Prenositeľnosť:</strong> Pre správne fungovanie prenosnosti <strong>nikdy neupravujte cestu k Pythonu priamo vo VS Code</strong>. Vždy ju zmeňte v prostredí VenvHub Pro (v Správcovi alebo Rýchlych nastaveniach). VenvHub pri každom štarte VS Code tieto cesty kontroluje a prepisuje podľa aktuálneho písmena disku. Ak to zmeníte manuálne priamo v editore, pri prenesení na USB kľúči na iné PC sa vám prostredie pravdepodobne rozbije.
+            </div>
+
+            <div class="tip">
+                <strong>Vždy na vrchu (Pin):</strong> Tlačidlo špendlíka <code>📌</code> na Mini-Bare teraz ovláda obe okná naraz. Ak pripnete Mini-Bar, automaticky sa zafixuje nad ostatnými oknami aj panel Rýchlych nastavení.
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyInstaller Builder - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= LEFT MENU ================= -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="builder.html" class="active">🛠 6. EXE Creation (Builder)</a>
+
+            <!-- SUB-MENU FOR BUILDER -->
+            <div class="sub-menu">
+                <a href="#priprava">6.1 Target and Environment Selection</a>
+                <a href="#zakladne">6.2 Basic Settings (OneFile)</a>
+                <a href="#assets">6.3 Adding Data (Assets)</a>
+                <a href="#unikatne">6.4 Bundling UV, Metadata, and Auto-Injector</a>
+                <a href="#importy">6.5 Imports and Advanced</a>
+                <a href="#build">6.6 Building Process</a>
+            </div>
+
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- ================= CONTENT ================= -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 6.1 -->
+        <div id="priprava" class="section-box">
+            <h1>6.1 Target and Environment Selection</h1>
+            <p>VenvHub Pro includes an integrated visual tool for converting Python scripts (<code>.py</code>) into standalone executable applications (<code>.exe</code>) for Windows. The tool acts as a wrapper for the popular <strong>PyInstaller</strong> library.</p>
+            
+            <h3>Top Section: Where to start?</h3>
+            <ol>
+                <li><strong>Project Selection:</strong> Choose the project you want to package.</li>
+                <li><strong>Source Venv:</strong> This is critical. PyInstaller will "extract" and package exactly the libraries and versions currently installed in this selected environment.</li>
+                <li><strong>Entry Script:</strong> The main file (e.g., <code>main.py</code>). The application automatically scans <strong>only the root folder</strong> of your project and offers all <code>.py</code> files found there.</li>
+                <li><strong>Output Folder:</strong> Where the finished <code>.exe</code> file and temporary <code>build</code> files will be saved. By default, this is the <code>dist</code> folder inside your project.</li>
+            </ol>
+
+            <div class="alert">
+                <strong>Installation Check:</strong> If the <code>pyinstaller</code> package itself is missing in the selected Venv, you don't need to install it manually. VenvHub Pro will detect this when you click "BUILD" and offer a quick background installation.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 6.2 -->
+        <div id="zakladne" class="section-box">
+            <h1>6.2 Tab 1: Basic Settings</h1>
+            
+            <h3>Window and Console Mode</h3>
+            <ul>
+                <li><strong>Show Console:</strong> Suitable for CLI (Command Line) tools or during development. If your application crashes, you will see the error output in the black console window.</li>
+                <li><strong>Hide Console (Windowed / --noconsole):</strong> Intended for final graphical applications (GUI). When the <code>.exe</code> is launched, only your interface will appear, without the distracting black console window in the background.</li>
+            </ul>
+
+            <h3>Packaging Method (Performance vs. Portability)</h3>
+            <ul>
+                <li><strong>One File (--onefile):</strong> Everything (your code, libraries, Python interpreter) is compressed into a single <code>.exe</code> file.
+                    <ul>
+                        <li><em>Advantage:</em> Extremely easy distribution to users.</li>
+                        <li><em>Disadvantage:</em> <strong>Slower startup.</strong> Each time it runs, the program must first unpack its contents into a temporary Windows folder (Temp), which can take several seconds.</li>
+                    </ul>
+                </li>
+                <li><strong>One Directory (--onedir):</strong> The application is generated as a folder where the <code>.exe</code> file is surrounded by hundreds of <code>.dll</code> and <code>.pyd</code> files.
+                    <ul>
+                        <li><em>Advantage:</em> <strong>Instant startup.</strong> Files are already unpacked; the system just loads them into RAM.</li>
+                        <li><em>Disadvantage:</em> You must send the entire folder (preferably zipped) to the user, not just one file.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- SUB-CHAPTER 6.3 -->
+        <div id="assets" class="section-box">
+            <h1>6.3 Tab 2: Adding Data (Assets)</h1>
+            <p>PyInstaller is designed to search for and package <strong>only Python code</strong> (files imported via <code>import</code>). If your application needs images, sounds, fonts, or configuration files (e.g., <code>config.json</code>) to run, <strong>you must add them here manually</strong>. Otherwise, the packaged application will crash with a <em>FileNotFoundError</em>.</p>
+
+            <h3>How to fill the table?</h3>
+            <p>In the table, you define the mapping: <em>"Take this file from my disk and store it in the .exe file under this name/folder."</em></p>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background-color: #f1f1f1; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">"Source" Column</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">"Target Folder" Column</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Meaning</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>C:\Project\logo.png</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>.</code> (dot)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">The image is copied directly next to the <code>.exe</code> file (to the root).</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>C:\Project\ui_files\</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>gui/templates</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">The entire folder content is packaged, and a new <code>gui/templates/</code> structure is created inside the <code>.exe</code>.</td>
+                </tr>
+            </table>
+
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Critical warning for developers:</strong> After packaging (especially in OneFile mode), standard relative paths in your code like <code>open("logo.png")</code> <strong>will not work</strong>! Your code physically runs from a random temporary Temp folder created by Windows.<br><br>
+                In your Python code, you must use the following trick to find the files:
+<pre><code>import sys
+import os
+
+def get_resource_path(relative_path):
+    """Gets absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        # We are in development mode (running from normal folder)
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+# Usage:
+logo = get_resource_path("logo.png")</code></pre>
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 6.4 -->
+        <div id="unikatne" class="section-box">
+            <h1>6.4 Unique VenvHub Pro Features</h1>
+            <p>In the Builder interface, you will find three very powerful features that pure PyInstaller cannot do alone without our wrapper.</p>
+
+            <h3>1. Bundling the Birth Certificate (Application Metadata)</h3>
+            <p>This feature takes the complete package list and Python version from your environment and generates a <code>[ProjectName]_birth_certificate.json</code> before the build starts.</p>
+            <p><strong>How to use it:</strong> Enter a <strong>relative path</strong> inside your project (e.g., <code>data/metadata</code>) into the text field. VenvHub Pro will create this file on your disk, add it to the Assets table in the background, and ensure it's packaged directly into the <code>.exe</code>. Your finished application can then "remember" and display when and in what environment it was compiled.</p>
+            
+            <div class="tip">
+                <strong>Safety Lock:</strong> The application strictly ensures you don't accidentally select a folder outside your project (e.g., on another drive). If you try, the system mathematically recalculates paths, blocks the action, and warns you. This guarantees that your project always remains safely packagable and portable.
+            </div>
+
+            <h3>2. Bundling the UV Installer (uv.exe)</h3>
+            <p>Do you have an application that needs to dynamically download and install additional Python libraries (e.g., plugins) after installation at the client's site? Classic <code>pip</code> is too slow for this.</p>
+            <ul>
+                <li>By checking this option, VenvHub Pro scans your active Venv environment.</li>
+                <li>It finds the <code>uv.exe</code> file.</li>
+                <li>It automatically adds the <code>--add-binary</code> argument and bundles <code>uv.exe</code> into the core of your resulting application.</li>
+                <li>If the application finds that <code>uv.exe</code> is missing in the Venv, it will offer to download and install it for you (requires internet).</li>
+            </ul>
+
+            <h3>3. Automatic Local Package Bundling (VenvHub Auto-Injector)</h3>
+            <p>If you use the <strong>Local Packages (Linker)</strong> feature in your projects, you don't have to manually add dozens of hidden imports or search for paths to their static data (images, .json, .ui files) during compilation.</p>
+            <p>VenvHub Pro contains an intelligent pre-processor that does all the work for you before PyInstaller runs:</p>
+            <ul>
+                <li><strong>Automatic Code Discovery:</strong> VenvHub Pro reads the <code>venvhub.json</code> config of the active Venv in the background, identifies paths to linked local packages, and automatically generates the <code>--paths</code> parameter for their parent folders. PyInstaller will find and compile your code without issues.</li>
+                <li><strong>Automatic Assets Injection:</strong> For each checked package, the system automatically generates the <code>--add-data "C:\Path\Package;Package"</code> parameter. This ensures all images, translations, or configurations inside your module are copied exactly where the program expects them.</li>
+            </ul>
+
+            <div class="alert" style="border-left-color: #f39c12; background-color: #fef9eb;">
+                <strong>⚠️ A small but important notice (outside VenvHub):</strong>
+                <p style="margin-top: 10px; margin-bottom: 10px;">We've noticed that some developers use folder names with spaces (e.g., <code>ai sync</code>).</p>
+                <p style="margin-bottom: 10px;">VenvHub Pro can handle this flawlessly – when generating the command for PyInstaller, it automatically and safely wraps these paths in quotes, so compilation proceeds correctly (as seen in the Live Preview).</p>
+                <p style="margin-bottom: 0;"><strong>However, watch out for Python itself:</strong> According to the PEP 8 standard, Python does not allow spaces in module names. Therefore, you wouldn't be able to write <code>import ai sync</code> in your code. We recommend always renaming local package folders on disk to a version with an underscore, for example, <code>ai_sync</code>. If it's just a typo and you actually have it right, feel free to ignore this warning.</p>
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 6.5 -->
+        <div id="importy" class="section-box">
+            <h1>6.5 Tabs 3 and 4: Imports and Advanced</h1>
+            
+            <h3>3. Hidden Imports</h3>
+            <p>PyInstaller scans your code for <code>import</code> statements to determine which libraries to package. However, sometimes libraries are called hiddenly or dynamically (e.g., via <code>importlib</code> or by other complex libraries internally).<br>
+            If the resulting <code>.exe</code> crashes immediately upon launch with a <em>"ModuleNotFoundError: No module named 'something'"</em> error, enter the name of the missing module into the <strong>Hidden Imports</strong> table. PyInstaller will bundle it "by force".</p>
+
+            <h3>3. Excluded Modules</h3>
+            <p>Sometimes PyInstaller bundles huge libraries that your application doesn't use at all, unnecessarily bloating the <code>.exe</code> file size (this often happens with libraries like <code>tkinter</code>, <code>pandas</code>, or <code>numpy</code> if they are called as optional dependencies by another library). By adding their names here, you tell PyInstaller: <em>"Ignore this library, even if someone requires it."</em></p>
+
+            <h3>4. Advanced: Cache Cleaning and UAC</h3>
+            <ul>
+                <li><strong>Clean Cache (--clean):</strong> We recommend keeping this enabled. It deletes temporary files in the <code>build</code> folder from previous attempts, preventing the packaging of outdated code.</li>
+                <li><strong>Request Admin Privileges (--uac-admin):</strong> The resulting <code>.exe</code> file will have a small shield on its icon. When a user runs it, Windows will first prompt them to grant Administrator privileges (suitable for applications that modify system files or registries).</li>
+            </ul>
+        </div>
+
+        <!-- SUB-CHAPTER 6.6 -->
+        <div id="build" class="section-box">
+            <h1>6.6 Building Process and Live Preview</h1>
+            
+            <h3>Live Command Preview</h3>
+           

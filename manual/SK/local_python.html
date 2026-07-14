@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Python - VenvHub Pro Manuál</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ĽAVÉ MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+            <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+            <a href="manager.html">📁 3. Správca Prostredí</a>
+            <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+            <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="local_python.html" class="active">🐍 8. Local Python (Runtime)</a>
+
+            <!-- PODKAPITOLY PRE LOCAL PYTHON -->
+            <div class="sub-menu">
+                <a href="#co-je-local">8.1 Čo je to Local Python?</a>
+                <a href="#instalacia">8.2 Inštalácia a zdroje (URL/ZIP)</a>
+                <a href="#pip-oprava">8.3 Kritický krok: Oprava PIPu</a>
+                <a href="#jsonl-uprava">8.4 Úprava zoznamu verzií</a>
+                <a href="#sprava-cache">8.5 Správa, Mazanie a Cache</a>
+            </div>
+
+            <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profily</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+            <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+        </div>
+    </div>
+
+    <!-- OBSAH -->
+    <div class="content">
+
+        <!-- PODKAPITOLA 8.1 -->
+        <div id="co-je-local" class="section-box">
+            <h1>8.1 Čo je to Local Python (Embeddable Runtime)?</h1>
+            <p>Záložka <strong>Local Python</strong> slúži na sťahovanie a správu tzv. "Windows Embeddable" verzií Pythonu. Ide o oficiálne, no minimalizované verzie Pythonu priamo od <em>python.org</em>.</p>
+            
+            <h3>Prečo ich používať namiesto klasickej inštalácie?</h3>
+            <ul>
+                <li><strong>Absolútna izolácia:</strong> Tieto verzie sa neinštalujú do Windowsu. Nezapisujú nič do systémových registrov a nemenia systémové premenné (PATH).</li>
+                <li><strong>Prenositeľnosť (Portable):</strong> Ak vytvárate virtuálne prostredie (venv) z Local Pythonu, celá štruktúra je prenosná. Môžete ju skopírovať na USB kľúč a bude fungovať na akomkoľvek inom počítači.</li>
+                <li><strong>Testovanie viacerých verzií:</strong> Môžete mať vedľa seba stiahnutý Python 3.9, 3.10 aj 3.12 bez toho, aby sa navzájom "bili" vo vašom systéme.</li>
+            </ul>
+        </div>
+
+        <!-- PODKAPITOLA 8.2 (Úprava upozornenia na UAC a priečinok) -->
+        <div id="instalacia" class="section-box">
+            <h1>8.2 Inštalácia a zdroje (URL/ZIP)</h1>
+            <p>V hornej časti záložky môžete pridať novú verziu Pythonu do aplikácie. Máte tri možnosti:</p>
+            
+            <ol>
+                <li><strong>Výber z predvoleného zoznamu:</strong> V roletovom menu nájdete predpripravené bezpečné odkazy na stiahnutie najpoužívanejších verzií priamo zo serverov Pythonu.</li>
+                <li><strong>Vlastná URL adresa:</strong> Ak v zozname vaša verzia chýba, vložte priamy odkaz na <code>.zip</code> súbor (musí začínať na <em>http/https</em> a končiť na <em>.zip</em>).</li>
+                <li><strong>Lokálny ZIP súbor:</strong> Ak už máte <code>.zip</code> s Pythonom stiahnutý vo vašom PC, kliknite na ikonu priečinka 📁 a vyberte ho. Aplikácia ho nemusí sťahovať, len ho rozbalí.</li>
+            </ol>
+
+            <h3>Priebeh inštalácie a prístupové práva</h3>
+            <p>Predvolená cesta pre ukladanie stiahnutých runtimov je spoločný priečinok <code>C:\ProgramData\VenvHubPro\PyRuntimes</code>. Tento priečinok je spoločný pre všetkých používateľov počítača, čím sa predchádza duplicite dát.</p>
+            
+            <div class="tip">
+                <strong>Bezproblémový beh bez UAC:</strong> Systémový inštalátor pri prvotnom nastavení automaticky odomkol prístupové práva pre tento priečinok (skupina bežných používateľov Windows získala plnú kontrolu). To znamená, že sťahovanie, inštalácia a správa lokálnych verzií Pythonu prebieha úplne na pozadí <strong>bez potreby vyžadovania administrátorských (UAC) práv</strong> počas bežného dňa.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 8.3 -->
+        <div id="pip-oprava" class="section-box">
+            <h1>8.3 Kritický krok: Oprava PIPu (Must-do!)</h1>
+            <p>Akonáhle sa nová verzia nainštaluje a objaví sa v tabuľke <em>"Nainštalované runtimy"</em>, všimnete si, že v stĺpci "Stav PIP" svieti červené <strong style="color:#e74c3c;">❌ Chýba</strong>.</p>
+            
+            <p><strong>Dôvod:</strong> Minimalizované "Embeddable" verzie Pythonu od vývojárov z <em>python.org</em> sú zámerne "slepé". Štandardne neobsahujú inštalátor balíčkov (Pip) a majú zablokovaný prístup k tzv. <code>site-packages</code> (cudzím knižniciam).</p>
+
+            <h3>Čo musíte urobiť?</h3>
+            <p>Kliknite na daný riadok v tabuľke a stlačte tlačidlo <strong>✅ Opraviť PIP</strong>. VenvHub Pro v tomto momente vykoná sériu mimoriadne dôležitých "hackov" a úprav:</p>
+            <ol>
+                <li><strong>Stiahne Bootstrap:</strong> Aplikácia si potichu stiahne oficiálny skript <code>get-pip.py</code>.</li>
+                <li><strong>Odomkne "Slepotu" (._pth súbor):</strong> VenvHub Pro nájde vnútri Pythonu skrytý konfiguračný súbor (napr. <code>python312._pth</code>) a programaticky v ňom odkomentuje riadok <code>import site</code>. Bez tohto kroku by Python ignoroval akékoľvek balíčky, ktoré doň nainštalujete.</li>
+                <li><strong>Nainštaluje PIP a Virtualenv:</strong> Skript sa spustí, nainštaluje Pip a následne stiahne balíček <code>virtualenv</code>. (Embed verzie totiž neobsahujú ani štandardný modul <code>venv</code> na tvorbu prostredí, preto ho VenvHub nahrádza silnejším nástrojom <code>virtualenv</code>).</li>
+            </ol>
+
+            <div class="tip">
+                <strong>Výsledok:</strong> Po dokončení tohto procesu sa stav v tabuľke zmení na <strong style="color:#2ecc71;">✅ OK</strong>. Od tejto chvíle sa tento "obmedzený" Python správa ako plnohodnotná, výkonná a prenosná inštalácia a môžete z nej tvoriť prostredia v hlavnom Manažérovi.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 8.4 -->
+        <div id="jsonl-uprava" class="section-box">
+            <h1>8.4 Úprava zoznamu verzií (JSONL)</h1>
+            <p>Zoznam verzií v roletovom menu nie je pevne zakódovaný v aplikácii. Číta sa z textového súboru <code>jso_python_ver.jsonl</code> v priečinku <code>assets</code>. Ak vyjde nová verzia Pythonu (napríklad 3.14), môžete si ju do zoznamu pridať sami.</p>
+
+            <ol>
+                <li>Kliknite na tlačidlo <strong>✏️ Upraviť zoznam</strong>.</li>
+                <li>Aplikácia otvorí súbor v programe Poznámkový blok (Notepad). <em>(Poznámka: Ak je program v Program Files, Notepad si vyžiada Administrátorské práva cez UAC).</em></li>
+                <li>Pridajte na nový riadok záznam v presne takomto formáte:
+                    <code>{"name": "Názov (napr. Python 3.14.0)", "url": "https://odkaz-na-zip-subor.zip"}</code>
+                </li>
+                <li>Súbor uložte (Ctrl+S) a zatvorte Notepad.</li>
+            </ol>
+            <p>VenvHub Pro automaticky sleduje zmeny v tomto súbore. Akonáhle ho uložíte, roletové menu v aplikácii sa okamžite, bez reštartu, aktualizuje.</p>
+        </div>
+
+        <!-- PODKAPITOLA 8.5 -->
+        <div id="sprava-cache" class="section-box">
+            <h1>8.5 Správa, Mazanie a Cache pamäť</h1>
+            
+            <h3>Rýchlosť vďaka Cache pamäti</h3>
+            <p>Aby VenvHub Pro netrpel sekaním a pomalým načítavaním, zoznam nainštalovaných Python verzií a ich stavov nečíta z disku zakaždým, keď prekliknete záložku. Uchováva ich v rýchlej operačnej pamäti (RAM).</p>
+
+            <h3>Ako správne mazať Python verzie?</h3>
+            <p>Pretože aplikácia používa Cache pamäť, <strong>nikdy nemažte priečinky s Pythonom manuálne cez Windows Prieskumníka (Explorer)!</strong> Aplikácia by o tom nevedela, v tabuľke by verzia naďalej svietila a pri pokuse o jej použitie by program spadol.</p>
+            
+            <ul>
+                <li>Vždy používajte tlačidlo <strong>❌ Odstrániť</strong> priamo v aplikácii. VenvHub Pro bezpečne vymaže všetky súbory z disku a okamžite vyčistí záznam aj zo svojej internej pamäte.</li>
+            </ul>
+
+            <h3>Čo ak sa tabuľka "zasekne"? (Tlačidlo Obnoviť)</h3>
+            <p>Ak ste napriek varovaniu zložku zmazali ručne, alebo ste nejakú pridali nakopírovaním z iného PC, kliknite na tlačidlo <strong>🔄 (Obnoviť)</strong> pod tabuľkou.</p>
+            <p>Týmto vynútite tzv. "Tvrdý reset" (Hard Refresh). Aplikácia zahodí svoju cache pamäť, fyzicky preskenuje celý disk a znovu otestuje všetky nájdené verzie Pythonu, čím sa tabuľka zosynchronizuje s realitou.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

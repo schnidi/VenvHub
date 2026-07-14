@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <path fill="#89d185" d="M8.5 1h-1L3 3.5v9L7.5 15h1l4.5-2.5v-9L8.5 1zM8 2.3l3.3 1.8L8 5.9 4.7 4.1 8 2.3zM4 5.2l3.5 1.9v6.5L4 11.7V5.2zm4.5 8.4V7.1L12 5.2v6.5l-3.5 1.9z"/>
+  <path fill="#ffffff" d="M7 10h2v3h2l-3 3-3-3h2v-3z"/> <!-- Šípka upgrade -->
+</svg>

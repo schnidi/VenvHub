@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture and Compilation - VenvHub Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- LEFT FIXED MENU (GLOBAL) -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="samoreplikacia_venvhub.html" class="active">14. Architecture and Compilation</a>
+
+            <!-- SUB-CHAPTERS FOR ARCHITECTURE AND COMPILATION -->
+            <div class="sub-menu">
+                <a href="#kap12-1">14.1 Dual-Framework (PyQt6/PySide6)</a>
+                <a href="#kap12-2">14.2 Magic of .UI Files</a>
+                <a href="#kap12-3">14.3 VenvHub Self-Replication</a>
+                <a href="#kap12-4">14.4 EXE Creation (PyInstaller)</a>
+                <a href="#kap12-5">14.5 Installer Creation (NSIS)</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE (MAIN CONTENT CHAPTER 14) -->
+    <div class="content">
+
+        <!-- MAIN HEADING AND INTRODUCTION -->
+        <div id="kap12-intro" class="section-box">
+            <h1>14. Architecture, Compilation, and Self-Replication</h1>
+            <p>VenvHub Pro is not just a standard Python application. Thanks to unique core modifications, it possesses an advanced architecture that allows it to run on different graphical libraries and even compile "itself" (self-replication).</p>
+        </div>
+
+        <!-- 14.1 DUAL-FRAMEWORK -->
+        <div id="kap12-1" class="section-box">
+            <h2>14.1 Dual-Framework (Compatibility Bridge)</h2>
+            <p>Python applications usually must be written for either <strong>PyQt6</strong> or <strong>PySide6</strong>. VenvHub Pro solves this using a <strong>Compatibility Bridge</strong> (<code>core/logic/pyqt_to_pyside.py</code>). This bridge utilizes the <em>MetaPathFinder</em> technique.</p>
+            <ul>
+                <li>Upon launching <code>main.py</code>, Venv environment detection is activated.</li>
+                <li>If the application finds <code>PyQt6</code>, it runs natively.</li>
+                <li>If it finds <code>PySide6</code>, the bridge is inserted into the system memory. As soon as Python encounters a <code>from PyQt6...</code> import, our interceptor steps in, translates the request, and returns <code>PySide6</code>.</li>
+            </ul>
+            <div class="tip">
+                <strong>Result:</strong> The source code remains 100% written for PyQt6, but the software automatically rewrites all imports, signals, and slots to PySide6 at runtime if necessary.
+            </div>
+        </div>
+
+        <!-- 14.2 MAGIC OF .UI FILES -->
+        <div id="kap12-2" class="section-box">
+            <h2>14.2 Magic of .UI Files</h2>
+            <p>The difference between frameworks also lies in how XML designs (<code>.ui</code>) are loaded.</p>
+            <ul>
+                <li><strong>PyQt6 (uic.loadUi):</strong> Injects buttons directly into the existing window (<code>self</code>).</li>
+                <li><strong>PySide6 (QUiLoader):</strong> Always creates a brand new window.</li>
+            </ul>
+            <p>VenvHub Pro contains a so-called <strong>Mimic function</strong>. If running under PySide6, this function lets <code>QUiLoader</code> create a new window, <strong>rips all widgets and the Layout out of it</strong>, and "pastes" them onto your original <code>self</code> instance. It also correctly sets the working directory so relative paths to icons are not lost.</p>
+        </div>
+
+        <!-- 14.3 SELF-REPLICATION -->
+        <div id="kap12-3" class="section-box">
+            <h2>14.3 VenvHub Self-Replication</h2>
+            <p>Because VenvHub Pro features an integrated <strong>PyInstaller Builder</strong> tool, you don't need any external scripts to compile VenvHub itself.</p>
+            <ol>
+                <li>Open the running VenvHub Pro.</li>
+                <li>In the <strong>Settings</strong> tab, select the projects root where the VenvHub code is located.</li>
+                <li>Go to the <strong>PyInstaller Builder</strong> tab and select <code>main.py</code> as the entry script.</li>
+                <li>Set Assets and parameters (see the section below).</li>
+                <li>Click <strong>BUILD .EXE</strong>.</li>
+            </ol>
+            <div class="alert">
+                This approach (dogfooding) guarantees that the builder in VenvHub is fully functional, as it can safely compile even a massive application like itself.
+            </div>
+        </div>
+
+        <!-- 14.4 EXE CREATION -->
+        <div id="kap12-4" class="section-box">
+            <h2>14.4 EXE Creation (PyInstaller)</h2>
+            <p>Since PyInstaller works on the principle of static code analysis, compilation differs slightly depending on which graphical library you have in your <code>.venv</code>.</p>
+            
+            <p><strong>General rule for Assets (Tab 2):</strong><br>
+            You MUST always include the following folders (source = target):
+            <code>ui</code>, <code>core/themes</code>, <code>translations</code>, <code>assets</code>, <code>navod</code>.</p>
+
+            <h3>Branch A: Compilation with PyQt6</h3>
+            <p>When analyzing the <code>main.py</code> file, PyInstaller directly sees the imports and automatically bundles all necessary DLL libraries for PyQt6 into the <code>.exe</code>. You don't need to set anything in the <strong>Imports (3)</strong> tab.</p>
+
+            <h3>Branch B: Compilation with PySide6</h3>
+            <p>From the code's perspective, <code>PyQt6</code> is written everywhere. PyInstaller won't notice PySide6. We must explicitly command it in the <strong>3. Imports</strong> tab:</p>
+            <ul>
+                <li><strong>Hidden Imports:</strong> Add sequentially: <code>PySide6</code>, <code>PySide6.QtCore</code>, <code>PySide6.QtGui</code>, <code>PySide6.QtWidgets</code>, <code>PySide6.QtNetwork</code>, <code>PySide6.QtUiTools</code>.</li>
+                <li><strong>Exclude Modules:</strong> Add <code>PyQt6</code> (to avoid bundling unnecessary baggage if traces of it remain).</li>
+            </ul>
+            <p>After launching the resulting <code>.exe</code>, our "Bridge" activates and seamlessly connects the source code with the bundled PySide6.</p>
+        </div>
+
+        <!-- 14.5 NSIS -->
+        <div id="kap12-5" class="section-box">
+            <h2>14.5 Installer Creation (NSIS)</h2>
+            <p>Regardless of the branch used, the compilation result will be the <code>dist/VenvHubPro</code> folder (when choosing --onedir). This folder contains everything necessary to run the application.</p>
+            
+            <p>To create an installer using the <strong>NSIS</strong> system, just pack this entire folder into a script:</p>
+            <code>
+            # Insert into your .nsi script:<br>
+            File /r "path\to\project\dist\VenvHubPro\*"
+            </code>
+            <p>NSIS doesn't care which framework is running inside. It simply compresses (LZMA compression) the entire folder into a single <code>Setup.exe</code> file and creates desktop shortcuts for the end user.</p>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT FOR SMOOTH MENU HIGHLIGHTING -->
+    <script>
+        const sections = document.querySelectorAll('.section-box, .section-box h2');
+        const navLinks = document.querySelectorAll('.sub-menu a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

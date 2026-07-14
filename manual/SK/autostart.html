@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontajner a Autostart - VenvHub Pro Manuál</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= ĽAVÉ MENU ================= -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+            <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+            <a href="manager.html">📁 3. Správca Prostredí</a>
+            <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+            <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="autostart.html" class="active">🔄 9. Kontajner a Autostart</a>
+
+            <!-- PODKAPITOLY PRE AUTOSTART -->
+            <div class="sub-menu">
+                <a href="#hybrid">9.1 Hybridný prístup (Venv vs. Docker)</a>
+                <a href="#pridanie">9.2 Pridanie skupiny a In-time ukladanie</a>
+                <a href="#ovladanie">9.3 Ovládací panel (LED, RAM, Režimy)</a>
+                <a href="#sekvencia">9.4 Časovanie a sekvenčný štart</a>
+                <a href="#respawn">9.5 Watchdog a Inteligentný Respawn</a>
+                <a href="#boot">9.6 Boot aplikácie a Ochrana konfliktov</a>
+            </div>
+
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profily</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+            <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+        </div>
+    </div>
+
+    <!-- ================= OBSAH ================= -->
+    <div class="content">
+
+        <!-- PODKAPITOLA 9.1 -->
+        <div id="hybrid" class="section-box">
+            <h1>9.1 Hybridný prístup (Venv Orchestrácia)</h1>
+            <p>Záložka <strong>Kontajner / Autostart</strong> nie je klasický kontajnerový systém ako Docker. Nevirtualizuje celý operačný systém ani sieťové vrstvy. Namiesto toho ide o <strong>natívny Windows Orchestrátor</strong>.</p>
+            <p>Využíva ľahké Python virtuálne prostredia (Venvs) a spája ich do manažovaných celkov. Výsledkom je extrémne rýchly štart aplikácií s minimálnou spotrebou pamäte (žiadny bežiaci Docker Daemon), no so zachovaním dôležitých funkcií ako sú auto-štart, automatické reštartovanie po páde a monitorovanie RAM.</p>
+        </div>
+
+        <!-- PODKAPITOLA 9.2 -->
+        <div id="pridanie" class="section-box">
+            <h1>9.2 Pridanie skupiny a In-time ukladanie</h1>
+            <p>Táto záložka je úzko prepojená so záložkou <em>"Hromadné spúšťanie (Multi-run)"</em>. Nemôžete tu vytvárať nové skupiny od nuly, musíte ich sem <strong>importovať</strong>.</p>
+
+            <ol>
+                <li>Najprv si vytvorte a zložte skupinu projektov v záložke <em>Multi-run</em>.</li>
+                <li>Prejdite do záložky <em>Kontajner</em> a kliknite na <strong>➕ Pridať novú skupinu</strong>.</li>
+                <li>Vyberte skupinu zo zoznamu. Na obrazovke sa vygeneruje jej riadiaci panel (Widget).</li>
+            </ol>
+
+            <div class="tip">
+                <strong>In-Time ukladanie (Žiadne tlačidlo Uložiť):</strong> Na rozdiel od iných častí programu, v Kontajneri sa <strong>všetko ukladá okamžite</strong>. Akékoľvek zaškrtnutie políčka alebo prepísanie sekúnd sa v zlomku sekundy zapíše do vyhradeného <code>.json</code> súboru. Aplikácia je inteligentná a cestu uloženia prispôsobí vášmu režimu: v <em>Portable</em> verzii sa ukladá vedľa programu do <code>assets/autostart_multi/</code>, zatiaľ čo pri bežnej inštalácii bezpečne do <code>%APPDATA%/VenvHubPro/autostart_multi/</code>. 
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 9.3 -->
+        <div id="ovladanie" class="section-box">
+            <h1>9.3 Ovládací panel skupiny (LED, RAM, Režimy)</h1>
+            <p>Každý importovaný panel slúži ako samostatný riadiaci pult (Dashboard) pre danú skupinu.</p>
+
+            <h3>1. Vizuálna diagnostika</h3>
+            <ul>
+                <li><strong>LED Dióda:</strong> V reálnom čase indikuje stav celej skupiny.
+                    <ul>
+                        <li><strong style="color:gray;">Sivá:</strong> Žiadne projekty v skupine (skupina je prázdna).</li>
+                        <li><strong style="color:#e74c3c;">Červená:</strong> Skupina obsahuje projekty, ale všetky sú momentálne zastavené.</li>
+                        <li><strong style="color:#2ecc71;">Zelená:</strong> Aspoň jeden proces beží a žiadny nie je v chybovom stave.</li>
+                        <li><strong style="color:#f39c12;">Blikajúca oranžová:</strong> Detegovaný pád (crash) jedného alebo viacerých procesov. Bliká oranžovou farbou.</li>
+                    </ul>
+                </li>
+                <li><strong>RAM Monitor:</strong> Aplikácia každé 2 sekundy skenuje operačnú pamäť. Nespočítava len materský terminál, ale rekurzívne sčíta pamäť <strong>všetkých podprocesov</strong> (<code>python.exe</code> a jeho vlákien), čím získate presný údaj o hardvérovej náročnosti vašej skupiny.</li>
+            </ul>
+
+            <h3>2. Globálne nastavenia skupiny (Hlavička)</h3>
+            <ul>
+                <li><strong>Autostart:</strong> Ak je zaškrtnuté, táto skupina sa automaticky spustí hneď po zapnutí aplikácie VenvHub Pro.</li>
+                <li><strong>T (Terminál) vs S (Silent):</strong> Režim spustenia pre všetky projekty v skupine.
+                    <ul>
+                        <li><strong>T:</strong> Otvorí sa čierne okno (CMD) pre každý proces. Ideálne pre vývoj a sledovanie chýb.</li>
+                        <li><strong>S:</strong> Procesy sa spustia "neviditeľne" na pozadí. Ideálne pre produkciu a botov.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Varovanie pri režime Silent (S):</strong> Hoci sa procesy spúšťajú neviditeľne, VenvHub Pro využíva mechanizmus <em>Windows Job Object</em>, ktorý pri zatvorení aplikácie (aj nútenom) automaticky ukončí všetky priradené podprocesy. Napriek tomu odporúčame používať tlačidlo <strong>STOP</strong> pre bezpečné a čisté vypnutie skupiny.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 9.4 -->
+        <div id="sekvencia" class="section-box">
+            <h1>9.4 Časovanie, Kotva a Reťazová Stabilita</h1>
+            <p>VenvHub Pro v2.5.3 nepoužíva jednoduchý hromadný štart. Spúšťanie skupiny riadi špecializované vlákno (Launch Worker), ktoré spracováva projekty v prísnom poradí zhora nadol a uplatňuje <strong>Reťazovú Stabilitu</strong> (každý spúšťaný program stráži stabilitu všetkých svojich predchodcov).</p>
+
+            <h2>1. Inteligentný "Wait Timer" (Čakanie pred štartom)</h2>
+            <p>Na rozdiel od bežných skriptov, hodnota v stĺpci <strong>Čakať (s)</strong> znamená odklad štartu samotného procesu. Ak napríklad pre Program B nastavíte 15 sekúnd:</p>
+            <ul>
+                <li>Vlákno sa zastaví, v logu sa objaví správa <code>⏱️ Odpočítavam Wait 15s...</code>.</li>
+                <li>Proces (okno terminálu pre Program B) sa otvorí až <strong>po uplynutí</strong> tohto času.</li>
+                <li><strong>Reťazová ochrana:</strong> Počas tohto odpočtu VenvHub každú pol sekundu skenuje všetky predchádzajúce bežiace programy (napr. Program A). Ak Program A počas odpočtu spadne, <strong>odpočet Programu B sa okamžite pozastaví, vynuluje</strong> a čaká sa, kým sa Program A úspešne nezreštartuje!</li>
+            </ul>
+
+            <h2>2. Kotva (Anchor/Hook) - Hard-link na aplikačnú logiku</h2>
+            <p>Kotva je najvyššia forma riadenia závislostí. Ak ju aktivujete, VenvHub Pro prestáva byť "slepým" spúšťačom a začína so skriptom aktívne komunikovať:</p>
+            <ul>
+                <li><strong>Unikátny ID marker:</strong> Pri každom štarte generuje VenvHub unikátny kľúč a cestu k nemu vloží do systémovej premennej <code>VENVHUB_KOTVA</code>.</li>
+                <li><strong>Blokovanie fronty:</strong> Sekvencia štartovania sa na danom projekte úplne zastaví. Žiaden ďalší program v zozname sa nespustí, kým VenvHub neuvidí, že váš skript fyzicky vytvoril tento súbor na disku.</li>
+                <li><strong>Obnova po páde (Recyklácia Kotvy):</strong> Ak je program zreštartovaný (Respawn), použije sa rovnaká cesta kotvy (recykluje sa) a sekvencia na ňu opäť poctivo čaká.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Plný čas pre stabilitu:</strong> Ak mal Program B čakať 15 sekúnd, bol už na 14. sekunde, ale zrazu padol Program A, tak sa čas Programu B <strong>vynuluje</strong>. Po oprave Programu A (a prijatí jeho novej Kotvy) začne Program B odpočítavať svojich 15 sekúnd <strong>úplne od nuly</strong>, aby mal zreštartovaný Program A dostatok času na otvorenie portov a načítanie dát.
+            </div>
+
+            <h2>🛠 Ako implementovať signál Kotvy vo vašom kóde</h2>
+            <p>Aby VenvHub Pro vedel, že váš program je pripravený, musíte do svojho Python skriptu vložiť krátky blok kódu. VenvHub pri štarte odovzdá vášmu programu systémovú premennú <code>VENVHUB_KOTVA</code>, v ktorej je uložená cesta k unikátnemu signálnemu súboru.</p>
+            
+            <p>Vložte nasledujúci kód na miesto, kde váš program končí svoju inicializáciu (napr. za <code>app.listen()</code> alebo po načítaní dát do RAM):</p>
+
+<pre><code>import os
+
+def signal_ready():
+    # 1. Zistíme, či nás VenvHub žiada o signál
+    hook_path = os.environ.get("VENVHUB_KOTVA")
+    
+    if hook_path:
+        try:
+            # 2. Vytvorením prázdneho súboru na danej ceste potvrdíme pripravenosť
+            with open(hook_path, 'w') as f:
+                pass
+            print(f"⚓ Kotva: Signál úspešne odoslaný.")
+        except Exception as e:
+            print(f"⚠️ Kotva: Chyba pri odosielaní signálu: {e}")
+
+# Zavolajte túto funkciu, keď je váš program 100% nabehnutý
+signal_ready()</code></pre>
+
+            <div class="tip">
+                <strong>Čo sa stane po odoslaní?</strong> VenvHub Pro okamžite deteguje vznik tohto súboru, zmaže ho (aby vyčistil systém) a bleskovo spustí odpočet (Wait) pre ďalší projekt v poradí.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 9.5 -->
+        <div id="respawn" class="section-box">
+            <h1>9.5 Detekcia kolapsu a Dominový efekt</h1>
+            <p>Systém obsahuje dve úrovne ochrany pred pádom aplikácie, ktoré sa správajú odlišne podľa toho, v akej fáze sa projekt nachádza.</p>
+
+            <h2>1. Dominový efekt pri zlyhaní predchodcu</h2>
+            <p>Architektúra "Všetci za jedného" znamená, že najmladší (práve štartujúci) program neustále stráži všetky staršie programy nad ním. Ak akýkoľvek predchodca spadne počas štartu alebo čakania:</p>
+            <ul>
+                <li><strong>Watchdog monitoring:</strong> Aj počas blokujúceho čakania (Wait) alebo Kotvy Watchdog neustále kontroluje PID všetkých už spustených procesov v sekvencii.</li>
+                <li><strong>Grace Period (6s):</strong> Pri Kotve systém ignoruje stav prvých 6 sekúnd, aby dal šancu pomalému štartu terminálu a zrodu <code>python.exe</code>.</li>
+                <li><strong>Fatal Break (Kritické zlyhanie):</strong> Ak predchodca spadne 3x po sebe a vyčerpá svoj limit reštartov, <strong>sekvencia sa trvalo zablokuje!</strong> VenvHub vypíše <code>🛑 FATAL ERROR</code> a nespustí už žiadne ďalšie projekty v poradí. Predchádza sa tým chybám, kedy by program B padal kvôli tomu, že program A nedokáže naštartovať.</li>
+            </ul>
+
+            <h2>2. Fáza Behu (Respawn Logika a 3-Strike Rule)</h2>
+            <p>Ak projekt úspešne prešiel cez Kotvu a pád nastane neskôr počas bežnej prevádzky, aktivuje sa <strong>Respawn Manager</strong>:</p>
+            <ul>
+                <li><strong>Záznam incidentu:</strong> Každý pád sa zapíše do <code>crash_log.jsonl</code> priamo v zložke venvu (obsahuje timestamp a status).</li>
+                <li><strong>Hard Cleanup:</strong> Systém počká 2 sekundy, násilne zabije mŕtve okno terminálu (ak ostalo visieť) a uvoľní porty.</li>
+                <li><strong>Reinkarnácia:</strong> Projekt sa spustí nanovo s rovnakým <code>cwd</code> (pracovným priečinkom), aby nevznikali chyby ciest s výkričníkmi a medzerami.</li>
+                <li><strong>3-Strike Rule:</strong> Ak projekt spadne 3x po sebe, systém ho vyhlási za nestabilný, zablokuje ďalšie pokusy o Respawn a nechá okno (ak bolo) k dispozícii pre analýzu chyby programátorom.</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Dôležité upozornenie:</strong> Ak dôjde k manuálnemu kliknutiu na tlačidlo <strong>STOP</strong> na paneli skupiny, všetky počítadlá pádov sa vynulujú a "3-Strike Rule" sa resetuje pre všetky programy.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 9.6 -->
+        <div id="boot" class="section-box">
+            <h1>9.6 Boot aplikácie a Matrika Vlastníctva</h1>
+            
+            <h3>Proces pri zapnutí VenvHub Pro</h3>
+            <p>Keď zapnete hlavnú aplikáciu, špeciálna služba <code>AutostartBooter</code> prehľadá všetky vaše Kontajnery. Ak nájde skupinu so zaškrtnutým <strong>Autostartom</strong>, pokúsi sa ju spustiť. Predtým však vykoná <strong>kontrolu konfliktov</strong>:</p>
+            <ul>
+                <li>Ak zistí, že niektoré procesy z tejto skupiny už vo Windowse bežia (napr. preto, že ste VenvHub zavreli bez zastavenia procesov a teraz ho otvárate znova), <strong>Autostart sa pre istotu zablokuje</strong>, aby nedošlo k pokusu o dvojité spustenie a kolízii portov.</li>
+            </ul>
+
+            <h3>Matrika vlastníctva procesov (Process Ownership)</h3>
+            <p>Môžete mať rovnaký projekt zaradený v dvoch rôznych skupinách (napr. v skupine <em>"Testovanie"</em> a v skupine <em>"Produkcia"</em>). Ak spustíte skupinu Testovanie, aplikácia v internej pamäti ("Matrike") zapíše, že tento bežiaci proces <strong>vlastní skupina Testovanie</strong>.</p>
+            <p>Ak sa následne pokúsite kliknúť na "Stop" v skupine Produkcia, systém zistí, že táto skupina nie je majiteľom daného procesu a odmietne ho vypnúť. Týmto mechanizmom aplikácia garantuje, že operácie jednej skupiny nikdy nezasiahnu do behu druhej skupiny.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

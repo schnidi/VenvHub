@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inštalácia - VenvHub Pro Manuál</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= ĽAVÉ MENU ================= -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>VenvHub Pro</h2>
+        <span>Užívateľský Manuál v2.5.14</span>
+    </div>
+    <div class="nav-links">
+        <!-- PREHĽAD VLASTNOSTÍ (nie je aktívny) -->
+        <a href="features.html">✨ Prehľad Vlastností</a>
+
+        <!-- 1. INŠTALÁCIA (AKTÍVNA) -->
+        <a href="index.html" class="active">📥 1. Inštalácia a prvé spustenie</a>
+        <!-- Podkapitoly pre túto stránku -->
+        <div class="sub-menu">
+            <a href="#proces">1.1 Proces inštalácie</a>
+            <a href="#rezimy">1.2 Klasická vs. Portable verzia</a>
+            <a href="#cesty">1.3 Kde sú uložené dáta?</a>
+            <a href="#prenos">1.4 Prenos projektov a opravy</a>
+            <a href="#prve-spustenie">1.5 Prvé spustenie (Dôležité)</a>
+        </div>
+
+        <!-- OSTATNÉ KAPITOLY (rovnaké pre všetky stránky) -->
+        <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+        <a href="manager.html">📁 3. Správca Prostredí</a>
+        <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+        <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+        <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+        <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+        <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+        <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+        <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+        <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+        <a href="vscode_user.html">💻 12. VS Code Profily</a>
+        <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+        <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+    </div>
+</div>
+
+    
+
+
+
+    <!-- ================= OBSAH ================= -->
+    <div class="content">
+
+        <!-- PODKAPITOLA 1.1 -->
+        <div id="proces" class="section-box">
+            <h1>1. Inštalácia a prvé spustenie</h1>
+            
+            <h2>1.1 Proces inštalácie</h2>
+            <p>Inštalácia VenvHub Pro je navrhnutá tak, aby bola čo najviac prispôsobiteľná vašim potrebám. Po stiahnutí a spustení inštalátora vás sprievodca prevedie nasledujúcimi krokmi:</p>
+            <ol>
+                <li><strong>Výber jazyka:</strong> Hneď na začiatku si zvolíte jazyk inštalátora (tento jazyk sa môže líšiť od jazyka samotnej aplikácie, ktorý si viete neskôr zmeniť).</li>
+                <li><strong>Výber režimu:</strong> Toto je najdôležitejší krok celej inštalácie. Inštalátor sa vás opýta, či chcete vykonať <strong>Klasickú Windows Inštaláciu</strong>, alebo či chcete aplikáciu rozbaliť ako <strong>Portable (Prenosnú)</strong> verziu. Rozdielom sa podrobne venujeme nižšie.</li>
+                <li><strong>Výber zložky a dokončenie:</strong> Zvolíte si umiestnenie a inštalátor pripraví všetky potrebné súbory.</li>
+            </ol>
+        </div>
+
+        <!-- PODKAPITOLA 1.2 -->
+        <div id="rezimy" class="section-box">
+            <h2>1.2 Aký je rozdiel medzi Klasickou a Portable verziou?</h2>
+            <p>VenvHub Pro obsahuje inteligentnú detekciu prostredia. Spôsob, akým aplikácia ukladá vaše nastavenia, stiahnuté témy vzhľadu (skiny) a ďalšie dáta, závisí výlučne od toho, aký typ inštalácie ste zvolili.</p>
+
+            <h3>🏢 Klasická Windows Inštalácia</h3>
+            <p>Tento režim je ideálny pre bežných používateľov, ktorí pracujú len na jednom počítači. Aplikácia sa nainštaluje štandardne (napríklad do <code>C:\Program Files\VenvHubPro</code>) a vytvorí si zástupcu v ponuke Štart.</p>
+            <ul>
+                <li><strong>Bezpečnosť:</strong> Keďže Windows chráni priečinok Program Files pred prepisovaním, aplikácia do neho neukladá vaše osobné dáta.</li>
+                <li><strong>Oddelenie užívateľov:</strong> Ak jeden počítač používajú viacerí užívatelia (majú rôzne Windows účty), každý bude mať svoje vlastné nastavenia a svoje vlastné témy.</li>
+            </ul>
+
+            <h3>🧳 Portable (Prenosná) inštalácia</h3>
+            <p>Tento režim je určený pre vývojárov, ktorí chcú mať aplikáciu "všetko v jednom". Pri tejto inštalácii sa v priečinku s aplikáciou vytvorí špeciálny súbor <code>_is_portable.ini</code>, ktorý slúži ako značka prenosného režimu.</p>
+            <ul>
+                <li><strong>Nezávislosť:</strong> Aplikácia nezanecháva v systéme Windows takmer žiadne stopy (žiadne zápisy do registrov).</li>
+                <li><strong>Mobilita:</strong> Celú zložku VenvHub Pro môžete skopírovať na USB kľúč a používať ju mimo primárneho disku.</li>
+            </ul>
+        </div>
+
+        <!-- PODKAPITOLA 1.3 -->
+        <div id="cesty" class="section-box">
+            <h2>1.3 Kde sú uložené moje dáta? (Kompletný prehľad)</h2>
+            <p>V závislosti od výberu vyššie aplikácia ukladá svoje súbory na rôzne miesta na disku:</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background-color: #f1f1f1; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Typ dát</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Klasická inštalácia</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Portable verzia</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Konfigurácia a Témy</strong><br><small>(<code>venv_hub_pro_config.json</code>, <code>themes/</code>)</small></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>%APPDATA%\VenvHubPro\</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Priamo v priečinku s aplikáciou</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Lokálne Python verzie</strong><br><small>(<code>PyRuntimes/</code>)</small></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">
+                        <code>C:\ProgramData\VenvHubPro\PyRuntimes</code><br>
+                        <small>(ak nie je dostupný, <code>%LOCALAPPDATA%\VenvHubPro\PyRuntimes</code>)</small>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Priamo v priečinku s aplikáciou</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Autostart Skupiny</strong><br><small>(<code>autostart_multi/</code>)</small></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>%APPDATA%\VenvHubPro\autostart_multi\</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">V priečinku <code>assets/autostart_multi/</code></td>
+                </tr>
+                 <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Dočasné súbory</strong><br><small>(Stiahnuté Python ZIPy, atď.)</small></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>%APPDATA%\VenvHubPro\Downloads\</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">V priečinku <code>Downloads/</code></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- PODKAPITOLA 1.4 -->
+        <div id="prenos" class="section-box">
+            <h2>1.4 Prenos projektov, ochrana a mechanizmy opráv</h2>
+            <p>VenvHub Pro obsahuje inteligentné mechanizmy ochrany a opráv, ktoré zabraňujú poškodeniu prostredí pri prenose medzi rôznymi počítačmi alebo pri zmene písmena disku na USB.</p>
+
+            <h3>Scenár A: Oprava písmena disku (Len pre Embed venvy)</h3>
+            <p>Tento mechanizmus sa aktivuje automaticky pri štarte aplikácie, ak beží v Portable režime (napr. z USB kľúča). Predstavte si, že doma máte USB pripojené ako disk <code>E:</code> a v práci ako <code>F:</code>.</p>
+            <ol>
+                <li>Aplikácia pri štarte zistí, že beží z disku <code>F:</code>.</li>
+                <li>Načíta si cesty k vašim prenosným (Embed) venvom, ktoré stále ukazujú na disk <code>E:</code>.</li>
+                <li>Automaticky a potichu na pozadí prepíše všetky staré písmená ciest na nové písmeno <code>F:</code>. Opraví nielen svoje nastavenia, ale aj cesty vo vnútri aktivačných skriptov (napr. <code>activate.bat</code>) každého prenosného prostredia.</li>
+            </ol>
+            <div class="tip">
+                <strong>Systémové Venv sú chránené:</strong> Pri systémových prostrediach sa cesty k Pythonu (ktoré smerujú na systémový disk <code>C:</code>) nikdy neprepisujú ani neupravujú. Zostávajú v pôvodnom stave, aby sa po návrate na domáci počítač okamžite odomkli.
+            </div>
+
+            <h3>Scenár B: Zámok hardvéru a blokovanie (Systémové Venv)</h3>
+            <p>Tento scenár nastane, ak prenesiete USB kľúč so systémovými prostrediami (ktoré využívajú klasický Python nainštalovaný vo vašom systéme na <code>C:</code>) na iný počítač (PC2), kde sa tento Python nenachádza, alebo má inú verziu.</p>
+            <ol>
+                <li>Pri vytvorení systémového venvu v Portable režime program bleskovo prečíta hardvérový odtlačok vášho počítača (tvorený z názvu PC a jedinečného identifikátora <code>ComputerHardwareId</code> z registrov) a zapíše ho do súboru <code>portable_system_py.json</code>.</li>
+                <li>Ak pripojíte USB kľúč k inému počítaču (PC2), VenvHub Pro okamžite detekuje nesúlad hardvéru voči súboru <code>portable_system_py.json</code>.</li>
+                <li>Z bezpečnostných dôvodov (ochrana pred nekompatibilitou C-knižníc a poškodením ciest) aplikácia <strong>kompletne zablokuje</strong> spustenie (Play), klonovanie, úpravu vo VS Code aj prístup k Pip manažéru pre tento venv.</li>
+            </ol>
+            <div class="alert">
+                <strong>Upozornenie:</strong> Zablokovaný systémový venv nie je zničený ani upravený. Po opätovnom prikonovaní USB kľúča k vášmu pôvodnému počíta (PC1) program overí zhodu hardvéru a venv okamžite bezpečne odomkne. Na cudzom počítači (PC2) ho môžete jedine zmazať, prípadne si vytvoriť nový čistý prenosný (Embed) venv.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 1.5 -->
+        <div id="prve-spustenie" class="section-box">
+            <h2>1.5 Prvé spustenie (Nastavenie ciest)</h2>
+            <p>Po úspešnej inštalácii (nezávisle od toho, aký režim ste zvolili) spustite aplikáciu. Pri úplne prvom spustení bude tabuľka aj zoznam projektov prázdny. <strong>Aby aplikácia vôbec mohla fungovať, musíte jej ukázať, kde máte na disku svoje dáta.</strong></p>
+            
+            <p>Otvorte hlavné okno Správcu (kliknutím na ikonu 🖥️ alebo ⚙️ -> Nastavenia) a nastavte tieto dve kritické cesty:</p>
+            
+            <ol>
+                <li><strong>Koreň projektov (Projects Root):</strong><br> Kliknite na ikonu priečinka 📁 a vyberte hlavnú zložku, v ktorej máte uložené všetky svoje Python projekty (napríklad <code>D:\Python_Projects</code>). Aplikácia načíta všetky podzložky a bude ich brať ako samostatné projekty.</li>
+                <br>
+                <li><strong>Venv Hub:</strong><br> Toto je miesto, kde bude VenvHub Pro fyzicky vytvárať všetky virtuálne prostredia. <strong>Odporúčame vytvoriť si úplne prázdnu a samostatnú zložku</strong> len pre tento účel (napríklad <code>C:\Venvs</code> alebo <code>D:\Moje_Venvy</code>).</li>
+            </ol>
+
+            <div class="tip">
+                <strong>Len jedna inštancia:</strong> Aplikácia je navrhnutá tak, aby bežala vždy iba jedna jej kópia. Ak sa ju pokúsite spustiť druhýkrát, namiesto toho sa do popredia zobrazí už bežiace okno.
+            </div>
+
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Upozornenie z praxe:</strong> Nikdy nenastavujte "Venv Hub" priamo do priečinka s vašimi projektmi! Aplikácia spravuje prostredia centrálne (na jednom mieste) a prepája ich s projektmi len logicky. Zmiešaním kódu a virtuálnych prostredí by ste spôsobili chaos.
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

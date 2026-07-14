@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Bar - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= LEFT MENU ================= -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="minibar.html" class="active">🚀 2. Mini-Bar and Quick Settings</a>
+
+            <!-- SUB-MENU FOR MINI-BAR -->
+            <div class="sub-menu">
+                <a href="#opis">2.1 Description of Bar Elements</a>
+                <a href="#quick">2.2 Quick Settings (Slide-out panel)</a>
+                <a href="#override">2.3 Temporary vs. Permanent Change</a>
+                <a href="#rezimy-spustenia">2.4 Launch Modes</a>
+                <a href="#rezim-multi">2.5 Multi-run Mode on Mini-Bar</a>
+            </div>
+
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- ================= CONTENT ================= -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 2.1 -->
+        <div id="opis" class="section-box">
+            <h1>2.1 Description of Bar Elements (Mini-Bar)</h1>
+            <p>The Mini-Bar is a floating bar designed to occupy minimum screen space while providing maximum control. Description of elements from left to right:</p>
+            
+            <ul style="list-style: none; padding-left: 0;">
+                <li><strong>● (Status Dot):</strong> Indicates the validity of the selected environment.
+                    <ul>
+                        <li><span style="color:#2ecc71; font-weight:bold;">Green:</span> The environment is OK and exists on the disk.</li>
+                        <li><span style="color:#e74c3c; font-weight:bold;">Red:</span> The environment does not exist or its path is invalid.</li>
+                    </ul>
+                </li>
+                <li><strong>INFO Text / Group List:</strong> Displays the name of the current project and Venv (in Single mode), or the group list (in Multi mode).</li>
+                <br>
+                <li><span style="color:#2ecc71; font-weight:bold;">▶ Play:</span> Launches the assigned script or the entire group.</li>
+                <li><span style="color:#e74c3c; font-weight:bold;">■ Stop:</span> Immediately terminates the running script or the entire group.</li>
+                <li><strong>⚙ (Gear):</strong> Opens/Closes the <strong>Quick Settings</strong> panel.</li>
+                <li><strong>🖥 (Monitor):</strong> Opens the <strong>Master Manager</strong> main window for advanced management.</li>
+                <li><strong>📌 (Pin):</strong> Toggles "Always on Top" mode. When active, the bar will overlay other windows (e.g., IDE).</li>
+                <li><strong>M (Mode):</strong> Switch between <strong>Single</strong> mode (one project) and <strong>Multi</strong> mode (batch launching).</li>
+                <li><strong>✕ (Cross):</strong> Completely terminates the entire VenvHub Pro application.</li>
+            </ul>
+        </div>
+
+        <!-- SUB-CHAPTER 2.2 -->
+        <div id="quick" class="section-box">
+            <h1>2.2 Quick Settings (Slide-out panel)</h1>
+            <p>Clicking the ⚙ icon slides out a panel that allows you to quickly change parameters without opening the Master Manager.</p>
+            
+            <h3>What can you set here?</h3>
+            <ol>
+                <li><strong>Project and Venv:</strong> Quick switching between projects and their environments.</li>
+                <li><strong>Entry Script:</strong> Displays which file will be launched. This path is configured in the Master Manager.</li>
+                <li><strong>Language and Appearance:</strong> Allows instant changes to the application's language and theme (skin).</li>
+                <li><strong>Quick Install (Pip/UV):</strong> Enter a package name (e.g., <code>requests</code>) and press Install. The package will be installed into the currently selected environment using your default package manager.</li>
+            </ol>
+        </div>
+
+        <!-- SUB-CHAPTER 2.3 -->
+        <div id="override" class="section-box">
+            <h1>2.3 Temporary vs. Permanent Venv Change</h1>
+            <p>This is a key feature of VenvHub Pro. The application distinguishes between what you set in <strong>Quick Settings</strong> and what you set in the <strong>Master Manager</strong>.</p>
+
+            <h3>Temporary Change (Override) - Quick Settings</h3>
+            <p>If you change the Venv in the Quick Settings panel, this change is <strong>temporary only (in RAM)</strong>.</p>
+            <ul>
+                <li>Used if you want to run a project in a different environment "just as a test".</li>
+                <li>This change <strong>will not be written</strong> to the configuration file.</li>
+                <li>After restarting the application, the project will revert to its default environment.</li>
+            </ul>
+
+            <h3>Permanent Change (Default) - Master Manager</h3>
+            <p>If you want to permanently change the environment that should launch with the project, you must go to the <strong>Master Manager (🖥)</strong> window and check the <em>"Default"</em> box in the table.</p>
+
+            <div class="tip">
+                <strong>Tip:</strong> In the Venv list within Quick Settings, the default (permanent) venv is marked with a star (★).
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 2.4 -->
+        <div id="rezimy-spustenia" class="section-box">
+            <h1>2.4 Launch Modes</h1>
+            <p>In the "3. Actions" section, you can choose how the <strong>Play ▶</strong> button behaves:</p>
+            
+            <ul>
+                <li><strong>Open Terminal:</strong> Does not run the script; it only opens a command prompt (CMD) activated in that environment. Useful for manual command entry.</li>
+                <li><strong>Run in Terminal (Default):</strong> Opens a new window, activates the venv, and automatically runs your script. You can see all outputs (prints) and errors.</li>
+                <li><strong>Run in Background (Silent):</strong> The script runs without any window (invisibly). Suitable for final applications, GUI programs, or background processes.</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Note for Silent Mode:</strong> Since you cannot see a window, you must terminate the script either via the <strong>Stop ■</strong> button on the bar or via the Task Manager.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 2.5 -->
+        <div id="rezim-multi" class="section-box">
+            <h1>2.5 Multi-run Mode on Mini-Bar</h1>
+            <p>When you click the <strong>M</strong> button, the Mini-Bar switches to batch launching mode. The interface changes:</p>
+            
+            <ul>
+                <li>Instead of the project text, a <strong>dropdown list</strong> appears with all your groups created in the Manager.</li>
+                <li>The <strong>⚙ (Quick Settings)</strong> button is hidden because individual project settings have no significance in this mode.</li>
+                <li>The <strong>Play ▶</strong> and <strong>Stop ■</strong> buttons now control the <strong>entire selected group at once</strong>.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Advantage:</strong> In this mode, you don't need to open the main window. Simply select a group on the bar and, with one click, start or stop all servers and processes belonging to it.
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

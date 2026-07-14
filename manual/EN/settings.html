@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- LEFT MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="settings.html" class="active">⚙️ 7. Settings and Appearance</a>
+
+            <!-- SUB-CHAPTERS FOR SETTINGS -->
+            <div class="sub-menu">
+                <a href="#cesty">7.1 Basic Paths (Risks)</a>
+                <a href="#pkg-manager">7.2 Installer Selection (Pip vs UV)</a>
+                <a href="#vzhlad">7.3 Skins and AI-assisted Customization</a>
+                <a href="#jazyk">7.4 Language Change</a>
+            </div>
+
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 7.1 -->
+        <div id="cesty" class="section-box">
+            <h1>7.1 Basic Paths (Paths) and risks</h1>
+            <p>The "Settings" tab in the main Manager window is used to configure key folders and application behavior. These are the same paths you set during the first launch, expanded with advanced features:</p>
+            <ul>
+                <li><strong>Projects Root:</strong> The main folder where VenvHub Pro searches for your source codes (project folders).</li>
+                <li><strong>Venv Hub:</strong> The central folder where all virtual environments are physically stored and isolated.</li>
+                <li><strong>Local Packages:</strong> The folder for your own shared modules, which the application dynamically links to venvs without using UAC (Linker module).</li>
+                <li><strong>Local Packages (pip -e):</strong> The folder for your source codes installed in editable mode (require <code>setup.py</code> or <code>pyproject.toml</code>).</li>
+                <li><strong>VS Code Profile:</strong> Selection of an active, fully isolated user profile for Visual Studio Code (custom extensions and settings).</li>
+            </ul>
+            
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Warning before changing paths!</strong><br>
+                The application logically links your projects with environments. If you already have environments created and change the "Venv Hub" path, the application will look into the new empty folder, find nothing, and your environments will "disappear" from the table (though they still physically exist on the old drive).
+                <br><br>
+                <strong>How to do it correctly?</strong> If you need to move data to another drive (e.g., from C: to D:):
+                <ol>
+                    <li>Close VenvHub Pro.</li>
+                    <li>Move the entire folder with Venvs to the new drive using Windows Explorer.</li>
+                    <li>Open VenvHub Pro and change the path to the new location in Settings.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 7.2 -->
+        <div id="pkg-manager" class="section-box">
+            <h1>7.2 Package Manager (Pip vs UV)</h1>
+            <p>This is one of the most important settings, defining the application's engine under the hood. It determines which tool will be used whenever you click Install, Uninstall, Update, or when environments are created and cloned.</p>
+
+            <h3>Standard (Pip)</h3>
+            <p>The traditional, time-tested standard in Python. It is slower and cannot automatically resolve complex dependency conflicts during bulk updates. Its advantage is 100% compatibility with all systems (no additional installation required).</p>
+
+            <h3>Ultra-fast (UV - Astral)</h3>
+            <p>An extremely fast tool written in Rust that replaces Pip. Installations are often 10x to 100x faster thanks to global caching. Additionally, it unlocks the <strong>"Autopilot"</strong> feature, which can automatically repair broken environments after updates.</p>
+            
+            <div class="tip">
+                <strong>Important Notice:</strong> UV is not a standard part of Python. If you switch to UV but this tool is missing from your Windows system, VenvHub Pro will immediately detect it (via the internal UV Detector), display an error message (prompting you to install it with <code>pip install uv</code>), and safely switch the interface back to Pip to prevent application failure.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 7.3 -->
+        <div id="vzhlad" class="section-box">
+            <h1>7.3 Appearance (Skins) and AI-assisted customization</h1>
+            <p>VenvHub Pro supports full appearance customization using <code>.qss</code> (Qt Style Sheets) files, which are the equivalent of CSS for web pages.</p>
+
+            <h3>Dual-Theme system</h3>
+            <p>The application automatically searches and combines themes from two locations:</p>
+            <ol>
+                <li><strong>Built-in:</strong> Themes hidden directly in the source code or application installation folder (e.g., VS Dark, Dracula, Solarized).</li>
+                <li><strong>Custom:</strong> Themes you have downloaded or created. They are located in the <code>themes</code> folder either next to the <code>VenvHubPro.exe</code> file (for Portable installation) or in <code>%APPDATA%\VenvHubPro\themes</code>.</li>
+            </ol>
+            
+            <p><strong>Overriding:</strong> If you have a theme with the same name as a built-in theme in your user folder (e.g., you modify a color in <code>Dracula.qss</code>), the application will prioritize your file. You can thus modify any official theme without worrying about losing your changes during a program update.</p>
+
+            <h3>Working with icons in themes</h3>
+            <p>Since the application runs as a standalone compiled program, standard relative paths to images in QSS files may not work reliably. The system therefore uses a combination of dynamic system path replacement and absolute links. You have the following options for adding custom icons:</p>
+            <ul>
+                <li>
+                    <strong>A) Using the built-in themes folder (Recommended for portability):</strong><br>
+                    The application's internal themes folder serves as the default storage. If you copy custom icons here (for example, into a <code>icon/my_icons/</code> subfolder inside the themes folder), you can reference them universally in QSS. The skin manager will automatically search for the <code>{{CORE_THEMES_DIR}}</code> placeholder and replace it with the real absolute path upon loading.
+                    <br><br>
+                    <em>QSS entry example:</em><br>
+                    <code style="color: #ce9178; background-color: #252526; padding: 2px 5px; border-radius: 3px;">qproperty-icon: url({{CORE_THEMES_DIR}}/icon/my_icons/save.svg);</code>
+                </li>
+                <li style="margin-top: 15px;">
+                    <strong>B) Using an absolute path:</strong><br>
+                    If you want to keep icons in a fixed location outside the program installation, you can use a direct link (backslashes <code>\</code> must be rewritten as forward slashes <code>/</code>).
+                    <br><br>
+                    <em>QSS entry example:</em><br>
+                    <code style="color: #ce9178; background-color: #252526; padding: 2px 5px; border-radius: 3px;">qproperty-icon: url(C:/MyIcons/custom_icon.png);</code>
+                </li>
+            </ul>
+
+            <!-- DETAILNÉ VYSVETLENIE NÁHRADY ICONS A EMOJIS -->
+            <h3 style="margin-top: 30px; color: #d35400;">Masterclass: How to replace text Emojis with real SVG icons</h3>
+            <p>By default, the application uses Emojis or special characters (▶, 📁, 🔄, ⚙) on buttons in many places. You can completely replace them with professional SVG icons via QSS. However, it is <strong>critically important to distinguish</strong> what type of button it is. Otherwise, you might either delete the text or break translations!</p>
+            
+            <h4>Situation 1: Icon-ONLY buttons (e.g., Play ▶, Folder 📁, Settings ⚙)</h4>
+            <p>This is simple. In QSS, we completely hide the original Emoji character by setting <code>color: transparent !important;</code> and simply add your SVG icon to the background.</p>
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: Consolas, monospace; font-size: 13px; overflow-x: auto;">
+QPushButton#btn_play {
+    /* 1. Hides the text character ▶ so it doesn't overlap the new icon */
+    color: transparent !important; 
+    
+    /* 2. Loads the real graphic icon */
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/play.svg);
+    qproperty-iconSize: 16px 16px;
+    
+    /* 3. Clears the background */
+    background-color: transparent;
+    border: none;
+}</pre>
+
+            <h4 style="margin-top: 25px;">Situation 2: Buttons with BOTH Icon and Text (e.g., "🔄 Refresh", "❌ Uninstall")</h4>
+            <div class="alert" style="border-left-color: #e74c3c; background-color: #fdf2f0;">
+                <strong>What to watch out for:</strong> If you were to use <code>color: transparent</code> here, the text (e.g., "Refresh") would also disappear. If you tried to "cheat" it and hardcode <code>qproperty-text: "Refresh";</code> via QSS, <strong>you would break the application's multilingual support!</strong> VenvHub Pro uses <code>LanguageManager</code> – if the user switches the language to English, QSS would still forcibly keep the text in the original language.
+            </div>
+            <p><strong>Correct procedure:</strong></p>
+            <ol>
+                <li>Open the language files in the <code>translations/</code> folder (e.g., <code>sk_SK.json</code> and <code>en_US.json</code>).</li>
+                <li>Remove the Emoji character directly there. For example, change <code>"btn_refresh": "🔄 Refresh"</code> to a clean <code>"btn_refresh": "Refresh"</code>.</li>
+                <li>In QSS, <strong>do not hide</strong> the text (no transparent). Simply add the icon. The QT Framework will take care of inserting the SVG icon and rendering the text in the correct language right next to it.</li>
+            </ol>
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: Consolas, monospace; font-size: 13px; overflow-x: auto;">
+QPushButton#btn_refresh {
+    /* We just add the icon. Text and color are handled by LanguageManager. */
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/refresh.svg);
+    qproperty-iconSize: 16px 16px;
+    
+    /* Slight text offset from the icon for a better look */
+    padding-left: 10px;
+    text-align: left;
+}</pre>
+
+            <h4 style="margin-top: 25px;">Situation 3: Changing the main window icon (Application Header)</h4>
+            <p>The icon itself on the top left next to the application name (in your Custom Title Bar) is not a button, but a <code>QLabel</code> text field named <code>lbl_icon</code>. Therefore, <code>qproperty-pixmap</code> applies to it, not <code>qproperty-icon</code>.</p>
+            <p>When modifying it, we encounter a technical limitation: the Python core of the application explicitly prohibits automatic resizing of this element using the <code>self.lbl_icon.setScaledContents(False)</code> command. If you use a standard entry, large SVG icons will not shrink but will be ugly-cropped.</p>
+
+            <div class="tip">
+                <strong>Solution A: Forced adjustment with fixed dimensions in QSS</strong><br>
+                The QT Framework has a great feature – using the <code>qproperty-</code> prefix, you can override any setting previously defined in Python within QSS. Even if Python set the icon not to adjust in the code, we "override" it in QSS by forcing the <code>scaledContents</code> property directly through the style and defining a fixed size:
+            </div>
+
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: Consolas, monospace; font-size: 13px; overflow-x: auto;">
+QLabel#lbl_icon {
+    /* 1. Forcibly override the Python setting via QSS and enable pixmap scaling */
+    qproperty-scaledContents: true;
+
+    /* 2. Assign the new SVG icon */
+    qproperty-pixmap: url({{CORE_THEMES_DIR}}/icon/app_icon.svg);
+
+    /* 3. Define exact dimensions for the icon so it doesn't stretch across the bar */
+    min-width: 20px;
+    max-width: 200px; /* maximum width */
+    min-height: 20px;
+    max-height: 20px;
+}</pre>
+
+            <p><strong>How it works under the hood without touching Python:</strong><br>
+            Thanks to <code>qproperty-scaledContents: true;</code>, QSS searches for the <code>setScaledContents(true)</code> function in the <code>QLabel</code> C++ core and executes it when the theme is loaded. This completely ignores and overwrites the original Python prohibition (<code>setScaledContents(False)</code>). Subsequently, <code>qproperty-pixmap</code> applies your new SVG icon, which smoothly shrinks to the exact defined dimension.</p>
+
+            <div class="tip" style="border-left-color: #2ecc71; background-color: #f4fbf7;">
+                <strong>Solution B: Dynamic adjustment (Respecting dimensions from Python)</strong><br>
+                QSS can perfectly respect any dimensions set in the <code>.py</code> file (or in the <code>.ui</code> design). If you don't set any fixed widths in QSS (width, min-width, max-height), the QT Framework automatically uses the dimensions defined by the programmer in Python using: <code>self.lbl_icon.setFixedSize(30, 30)</code> (or any other number).
+                <br><br>
+                To let QSS know it should take your new SVG icon and adjust (crop/shrink) it exactly to the dimension already existing in Python, just tell it like this:
+            </div>
+
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: Consolas, monospace; font-size: 13px; overflow-x: auto;">
+QLabel#lbl_icon {
+    /* 1. Tell QSS: "Take the image and shrink it exactly to the size set for this window in Python" */
+    qproperty-scaledContents: true;
+
+    /* 2. Load the new icon */
+    qproperty-pixmap: url({{CORE_THEMES_DIR}}/icon/app_icon.svg);
+    
+    /* NO width or height settings (min-width, max-height) are written here! */
+    /* Consequently, QSS automatically respects the 30x30 dimension (or any other) in the .py code */
+}</pre>
+
+            <p><strong>Why is this solution ingenious and dynamic?</strong><br>
+            If you decide to change the icon size in the <code>.py</code> file in the future, e.g., to 40x40 or 25x25, you don't have to fix anything in QSS. QSS will read the current size from the Python memory at startup and automatically and smoothly fit your new SVG icon into it without distortion.</p>
+
+            <!-- IDENTIFIKÁTORY TLAČIDIEL (OBJECTNAMES) PRE PRESNÝ STYLING -->
+            <h3 style="margin-top: 30px;">Complete list of stylable buttons (QSS Selectors)</h3>
+            <p>The following table reflects the <strong>exact element IDs from the application code</strong> that carry a text or SVG icon and can be targeted in QSS:</p>
+
+            <table class="manual-table" style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 25px; border: 1px solid #ddd;">
+                <thead>
+                    <tr style="background-color: #f2f2f2; color: #222222; border-bottom: 2px solid #ddd;">
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Location (.ui file)</th>
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Identifier (QSS Selector)</th>
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Current symbol / QSS Procedure</th>
+                    </tr>
+                </thead>
+                <tbody style="color: inherit;">
+                    <!-- HLAVIČKA -->
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td rowspan="5" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Window Header<br><span style="font-weight:normal; font-size: 12px;">(custom_title_bar.ui)</span></td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QLabel#lbl_icon</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Change via <code>qproperty-pixmap</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_about</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Already has SVG (About)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_minimize</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(_) Requires <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_maximize</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(🗖) Requires <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_close</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(✕) Requires <code>color: transparent</code></td>
+                    </tr>
+
+                    <!-- MINIBAR -->
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td rowspan="8" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Mini-Bar<br><span style="font-weight:normal; font-size: 12px;">(widget.ui)</span></td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_vscode</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Already has SVG (VS Code)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_play</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(▶) Requires <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_stop</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(■) Requires <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_mgr</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(⚙ / ▼) Requires <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_open_mgr</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(🖥) Requires <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_pin</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(📌) Requires <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_toggle_mode</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Already has SVG (Single/Multi mode)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_close</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(✕) Requires <code>color: transparent</code></td>
+                    </tr>
+
+                    <!-- TABUĽKA VENV -->
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td rowspan="5" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Venvs Table Row<br><span style="font-weight:normal; font-size: 12px;">(venv_actions.ui)</span></td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_vscode</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Already has SVG (VS Code)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_run</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(▶) Requires <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_stop</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(■) Requires <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_venv_update</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Already has SVG (Pip Update)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_delete</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(✕) Requires <code>color: transparent</code></td>
+                    </tr>
+
+                    <!-- MANAGER (OBNOVA A ZLOŽKY) -->
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td rowspan="8" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Search and Paths<br><span style="font-weight:normal; font-size: 12px;">(manager.ui, builder, ver)</span></td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">
+                            #btn_refresh_projs<br>#btn_refresh_scripts<br>#btn_refresh
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(🔄) Refresh (Folders). Requires <code>color: transparent</code> for icon-only buttons (Situation 1) OR delete symbol from JSON for text buttons (Situation 2).</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">
+                            #btn_browse_script<br>#btn_set_proj<br>#btn_set_hub<br>#btn_set_local_pkg<br>#btn_set_pip_e_pkg<br>#btn_browse_output<br>#btn_browse<br>#btn_browse_birth_cert_path<br>#btn_browse_users_root
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(📁) Folder buttons. Ideally group them in QSS (separated by commas) and apply <code>color: transparent</code> + folder SVG.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">#btn_add_group<br>#btn_auto_add_group</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(➕) Buttons with text. <strong>Delete the symbol in the JSON</strong> and add the icon via QSS.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">#btn_remove_group<br>#btn_auto_delete_group</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(- / ❌)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">#btn_create_venv</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(+ CREATE) Delete "+" from JSON and add icon via QSS.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert" style="border-left-color: #3498db; background-color: #ebf5fb; margin-top: 20px;">
+                <strong>How to create a custom theme using AI (e.g., ChatGPT / Claude)?</strong>
+                <p>Don't like any of the default themes? Create your own, it's very easy!</p>
+                <ol>
+                    <li>Go to the application installation folder (where <code>VenvHubPro.exe</code> is). For the Portable version, you'll find the <code>core/themes/</code> folder there. For the standard version, go to <code>C:\Program Files\VenvHubPro\core\themes\</code>.</li>
+                    <li>Find any <code>.qss</code> file, such as <code>VS Dark.qss</code>, copy it to your Desktop, and open it in Notepad.</li>
+                    <li>Copy the entire text content of the file and paste it into an AI tool with the request: <em>"Here is a QSS style for a PyQt6 application. Change all colors to create a modern, bright 'Cyberpunk' theme. Emphasize neon colors for buttons."</em></li>
+                    <li>The AI will generate a new code for you. <strong>Important:</strong> Remember to add this header at the very beginning of the generated code so VenvHub Pro names the theme nicely:
+<pre><code>/*
+* Theme Name: My Cyberpunk Theme
+* Version: 1.0
+* Author: Your Name and AI
+*/</code></pre>
+                    </li>
+                    <li>Save the file as, for example, <code>Cyberpunk.qss</code>.</li>
+                    <li>Open VenvHub Pro, go to <strong>Settings</strong> and click <strong>Import theme...</strong>. Select your new file. The application will automatically copy it to your user folder and include it in the menu!</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 7.4 -->
+        <div id="jazyk" class="section-box">
+            <h1>7.4 Language Change (Language)</h1>
+            <p>The application language can be changed at any time in the <strong>Quick Settings</strong> panel (by clicking ⚙️ on the Mini-Bar).</p>
+
+            <p>In the "Language / Jazyk" dropdown list, you will find these options:</p>
+            <ul>
+                <li><strong>Auto:</strong> The application will attempt to detect your Windows operating system language and load the corresponding translation. If not found, it defaults to English (<code>en_US.json</code>).</li>
+                <li><strong>Other languages:</strong> The list is generated dynamically. The application scans the <code>translations</code> folder and loads all available <code>.json</code> language files. If you upload your own translation (e.g., <code>cs_CZ.json</code>) to this folder, it will immediately appear in the menu.</li>
+            </ul>
+            <p>After changing the language, the entire application interface, including all open windows, is translated immediately (without requiring a restart).</p>
+
+            <!-- NOVÁ SEKCIA: ÚPRAVA PREKLADOV POMOCOU AI -->
+            <div class="alert" style="border-left-color: #2ecc71; background-color: #f4fbf7; margin-top: 20px;">
+                <strong>How to edit a translation or create a new one using AI (e.g., ChatGPT / Claude)?</strong>
+                <p>Yes, you can easily edit existing translations, fix texts, or translate the entire application into a completely new language with the help of artificial intelligence.</p>
+                
+                <p><strong>Important operating rule:</strong> The application assigns translations to individual controls based on their technical identifier (<code>objectName</code>). In JSON files, it looks like a <code>"key": "value"</code> pair. When making any edits, you must change <strong>only the value on the right side</strong>. The key on the left side must remain exactly in its original form; otherwise, the translation will stop working.</p>
+
+                <p>Procedure for creating a new translation using AI:</p>
+                <ol>
+                    <li>Go to the application installation folder and open the <code>translations/</code> folder.</li>
+                    <li>Find the default English translation <code>en_US.json</code> (or Slovak <code>sk_SK.json</code>).</li>
+                    <li>Open the file in Notepad, copy its entire text content, and paste it into an AI tool with this request:
+                        <br><br>
+                        <em style="display: block; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #ddd; font-style: normal; font-size: 0.95em;">
+                            "Here is a JSON translation file for a PyQt6 application. Translate all text values (the right sides of the quoted values) into [insert desired language, e.g., French]. Keep the technical keys on the left side (e.g., widget and window names) in their original state without any changes."
+                        </em>
+                    </li>
+                    <li><strong>TIP for a nice name in the menu:</strong> If you want the language to be called nicely in the application dropdown menu (e.g., "Français" instead of the file name), add this key anywhere in your JSON file:<br>
+                    <code>"_language_name": "Français",</code></li>
+                    <li>Save the AI-generated code in the <code>translations/</code> folder under a new name according to standard language codes (e.g., <code>fr_FR.json</code> for French).</li>
+                    <li>Open VenvHub Pro and go to Quick Settings. The new language will automatically appear in the menu.</li>
+                </ol>
+                <p><em>Quick fix tip: If you just want to edit the translation of a specific button, just directly open the corresponding <code>.json</code> file, rewrite the text in quotes on the right side, and save the file.</em></p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code Profiles - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- LEFT MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="vscode_user.html" class="active">💻 12. VS Code Profiles</a>
+
+            <!-- SUB-CHAPTERS FOR VS CODE PROFILES -->
+            <div class="sub-menu">
+                <a href="#princip">12.1 Isolation Principle</a>
+                <a href="#nastavenie">12.2 Setup and Paths</a>
+                <a href="#sprava">12.3 Profile Creation and Import</a>
+                <a href="#aktivny">12.4 Active Profile and Automation</a>
+            </div>
+
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 12.1 -->
+        <div id="princip" class="section-box">
+            <h1>12.1 Principle of Isolation and Portability</h1>
+            <p>Standard VS Code stores all settings and extensions in two huge system folders in Windows (<code>%APPDATA%\Code\User</code> and <code>%USERPROFILE%\.vscode\extensions</code>). If you work on multiple projects with different requirements, or if you transfer work on a USB drive, this standard behavior is undesirable.</p>
+            
+            <p><strong>VenvHub Pro brings a "Portable" layer for VS Code:</strong></p>
+            <ul>
+                <li><strong>Isolation:</strong> Each profile you create has its own folder. This means separate <code>settings.json</code> files, custom keybindings, and most importantly, physically separate lists of installed Extensions.</li>
+                <li><strong>System Cleanliness:</strong> Your VS Code installation in Windows remains absolutely untouched. VenvHub Pro launches VS Code with special hidden parameters (<code>--user-data-dir</code> and <code>--extensions-dir</code>) that redirect it to your created folders.</li>
+                <li><strong>Portability:</strong> If your profiles are on an external drive, your workspace (including all plugins) will be identical on every computer where the drive is connected.</li>
+            </ul>
+        </div>
+
+        <!-- SUB-CHAPTER 12.2 -->
+        <div id="nastavenie" class="section-box">
+            <h1>12.2 Setting the Profile Root</h1>
+            <p>For the feature to function, you must tell the application where to physically store all these profiles.</p>
+            <ol>
+                <li>Open <strong>Manager</strong> and go to the <strong>Settings</strong> tab.</li>
+                <li>In the "VS Code Profile" section, click the <strong>Manage Accounts</strong> button.</li>
+                <li>In the newly opened window, you will see the <strong>Profile Root Folder</strong> field. Click the folder icon 📁 and select an empty folder (e.g., <code>vscode_users</code> in your portable directory).</li>
+            </ol>
+            
+            <div class="tip">
+                <strong>Intelligent Paths (UUID):</strong> Like other settings in VenvHub Pro, this path is protected by portable mode. If you change the drive letter (e.g., from E: to F:), the application automatically recalculates the path based on the unique drive ID, and the profiles remain functional.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 12.3 -->
+        <div id="sprava" class="section-box">
+            <h1>12.3 Creating and Importing Profiles</h1>
+            <p>In the right part of the "Manage VS Code Users" window, you can create new accounts.</p>
+            
+            <h3>Creating a New Profile</h3>
+            <ul>
+                <li><strong>User ID:</strong> Technical name of the folder on disk (do not use spaces or diacritics, e.g., <code>jozo_dev</code>).</li>
+                <li><strong>Display Name:</strong> Readable name that you will see in the list (e.g., "Jozef - Python Expert").</li>
+            </ul>
+
+            <h3>Importing from System</h3>
+            <p>Creating an empty profile means starting VS Code from scratch (clean editor without theme or plugins). If you want your new profile to look exactly as it currently does in your Windows system, use the <strong>Import</strong> function. The application physically copies data from <code>%APPDATA%</code> and <code>%USERPROFILE%</code> directly into the profile folder.</p>
+            
+            <ul>
+                <li><strong>Upon creation:</strong> Check "Copy from system upon creation," and the application will immediately start copying data after the folders are created.</li>
+                <li><strong>Additionally:</strong> You can select an existing profile in the list at any time and click <strong>📥 Import from system now</strong> (note that this will delete and replace the profile's previous settings with the system ones).</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Intelligent Rollback in the background:</strong> Copying extensions can take up hundreds of megabytes and several minutes. VenvHub Pro performs this operation safely. If you press the "Cancel" button during the download, the application won't leave half-functional junk on the disk:
+                <br><br>
+                - If you cancel the import <strong>during the creation of a brand new profile</strong>, VenvHub will <strong>automatically delete the entire incomplete profile from the disk</strong>. <br>
+                - If you cancel an <strong>additional import into an existing profile</strong>, VenvHub will only delete what it managed to copy and revert the profile to its original state.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 12.4 -->
+        <div id="aktivny" class="section-box">
+            <h1>12.4 Active Profile and "Triangular" Synchronization</h1>
+            <p>VenvHub Pro introduces an advanced application state synchronization system. The goal is for the user to see the same data and the same "Master" state regardless of which window the change was made through.</p>
+
+            <h3>1. Triple Synchronization Principle (Real-time Sync)</h3>
+            <p>The application continuously connects three main nodes. If you change a VS Code profile in any of these places, the change is transferred to the other two within a fraction of a second (via signals and slots):</p>
+            <ul>
+                <li><strong>Quick Settings:</strong> ComboBox in the Mini-Bar slide-out panel.</li>
+                <li><strong>Manager - Settings:</strong> Main ComboBox in the settings tab.</li>
+                <li><strong>Manage Accounts (VSCode User Window):</strong> Profile list, where a star <code>★ [ACTIVE]</code> appears and the text becomes bold for the active account.</li>
+            </ul>
+
+            <h3>2. Intelligent Venv Switching (Master Mode)</h3>
+            <p><strong>Every environment (Venv) change in Quick Settings (via Mini-Bar)</strong> behaves as a "Master" selection (Default):</p>
+            <ul>
+                <li><strong>Hard-Write to Config:</strong> The selected Venv is immediately written as primary for that project.</li>
+                <li><strong>VS Code Sync:</strong> The system automatically opens <code>.vscode/settings.json</code> in the project and overwrites the interpreter path (<code>python.defaultInterpreterPath</code>).</li>
+                <li><strong>Package Linker:</strong> If the selected Venv has local packages linked, the system immediately reports them to VS Code analysis (ExtraPaths).</li>
+                <li><strong>Visual Response:</strong> If you have the Manager window open, you will see the star ★ in the table jump to the new row exactly when you click in the Mini-Bar.</li>
+            </ul>
+
+            <h3>3. VS Code Launch Button in Mini-Bar</h3>
+            <p>The new VS Code icon on the main bar is linked to strict verification logic. What should the user expect?</p>
+            <ul>
+                <li><strong>Pre-start Check:</strong> Before launching, the system verifies if a project is selected, if the Venv physically exists on disk, and if its path is valid. If something is wrong, you receive a clear error message instead of a VS Code failure.</li>
+                <li><strong>Automatic Profile Injection:</strong> If an active profile is set, the button automatically "bundles" it with the command. VS Code will open with your extensions and settings, even if it was previously open in the system under a completely different configuration.</li>
+                <li><strong>Blocking in Multi-mode:</strong> The button is only available in Single mode. In Batch Launch (Multi) mode, it is automatically hidden to avoid confusion among multiple projects.</li>
+            </ul>
+
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Important Rule for Portability:</strong> For portability to work correctly, <strong>never modify the Python path directly in VS Code</strong>. Always change it in the VenvHub Pro environment (in the Manager or Quick Settings). VenvHub checks and overwrites these paths according to the current drive letter every time VS Code starts. If you change it manually in the editor, the environment will likely break when transferred to another PC on a USB drive.
+            </div>
+
+            <div class="tip">
+                <strong>Always on top (Pin):</strong> The pin button <code>📌</code> on the Mini-Bar now controls both windows at once. If you pin the Mini-Bar, the Quick Settings panel is also automatically fixed on top of other windows.
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

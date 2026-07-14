@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Bar - VenvHub Pro Manuál</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= ĽAVÉ MENU ================= -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="minibar.html" class="active">🚀 2. Mini-Bar a Quick Settings</a>
+
+            <!-- PODKAPITOLY PRE MINI-BAR -->
+            <div class="sub-menu">
+                <a href="#opis">2.1 Popis prvkov na lište</a>
+                <a href="#quick">2.2 Quick Settings (Vysúvací panel)</a>
+                <a href="#override">2.3 Dočasná vs. Trvalá zmena</a>
+                <a href="#rezimy-spustenia">2.4 Režimy spustenia</a>
+                <a href="#rezim-multi">2.5 Režim Multi-run na Mini-Bare</a>
+            </div>
+
+            <a href="manager.html">📁 3. Správca Prostredí</a>
+            <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+            <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profily</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+            <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+        </div>
+    </div>
+
+    <!-- ================= OBSAH ================= -->
+    <div class="content">
+
+        <!-- PODKAPITOLA 2.1 -->
+        <div id="opis" class="section-box">
+            <h1>2.1 Popis prvkov na lište (Mini-Bar)</h1>
+            <p>Mini-Bar je plávajúca lišta, ktorá bola navrhnutá tak, aby zaberala minimum miesta na obrazovke, ale poskytovala maximálnu kontrolu. Popis prvkov zľava doprava:</p>
+            
+            <ul style="list-style: none; padding-left: 0;">
+                <li><strong>● (Stavová bodka):</strong> Indikuje platnosť vybraného prostredia.
+                    <ul>
+                        <li><span style="color:#2ecc71; font-weight:bold;">Zelená:</span> Prostredie je v poriadku a existuje na disku.</li>
+                        <li><span style="color:#e74c3c; font-weight:bold;">Červená:</span> Prostredie neexistuje alebo je cesta k nemu neplatná.</li>
+                    </ul>
+                </li>
+                <li><strong>INFO Text / Zoznam skupín:</strong> Zobrazuje názov aktuálneho projektu a Venvu (v režime Single), alebo zoznam skupín (v režime Multi).</li>
+                <br>
+                <li><span style="color:#2ecc71; font-weight:bold;">▶ Play:</span> Spustí priradený skript alebo celú skupinu.</li>
+                <li><span style="color:#e74c3c; font-weight:bold;">■ Stop:</span> Okamžite ukončí bežiaci skript alebo celú skupinu.</li>
+                <li><strong>⚙ (Ozubené koleso):</strong> Otvorí/Zatvorí panel <strong>Quick Settings</strong>.</li>
+                <li><strong>🖥 (Monitor):</strong> Otvorí veľké okno <strong>Master Manager</strong> pre pokročilú správu.</li>
+                <li><strong>📌 (Pripináčik):</strong> Prepína režim "Vždy navrchu". Keď je aktívny, lišta prekryje aj iné okná (napr. IDE).</li>
+                <li><strong>M (Mode):</strong> Prepínač medzi režimom <strong>Single</strong> (jeden projekt) a <strong>Multi</strong> (hromadné spúšťanie).</li>
+                <li><strong>✕ (Krížik):</strong> Úplne ukončí celú aplikáciu VenvHub Pro.</li>
+            </ul>
+        </div>
+
+        <!-- PODKAPITOLA 2.2 -->
+        <div id="quick" class="section-box">
+            <h1>2.2 Quick Settings (Vysúvací panel)</h1>
+            <p>Kliknutím na ikonu ⚙ sa vysunie panel, ktorý vám umožní rýchlo meniť parametre bez nutnosti otvárať veľkého Manažéra.</p>
+            
+            <h3>Čo tu môžete nastaviť?</h3>
+            <ol>
+                <li><strong>Projekt a Venv:</strong> Rýchle prepínanie medzi projektmi a ich prostrediami.</li>
+                <li><strong>Spúšťací skript:</strong> Zobrazuje, ktorý súbor sa spustí. Táto cesta sa nastavuje v hlavnom Manažérovi.</li>
+                <li><strong>Jazyk a Vzhľad:</strong> Umožňuje okamžitú zmenu jazyka a témy (skinu) aplikácie.</li>
+                <li><strong>Rýchla inštalácia (Pip/UV):</strong> Zadajte názov balíčka (napr. <code>requests</code>) a stlačte Inštalovať. Balíček sa nainštaluje do práve vybraného prostredia pomocou správcu balíčkov, ktorého máte nastaveného ako predvoleného.</li>
+            </ol>
+        </div>
+
+        <!-- PODKAPITOLA 2.3 -->
+        <div id="override" class="section-box">
+            <h1>2.3 Dočasná vs. Trvalá zmena Venvu</h1>
+            <p>Toto je kľúčová vlastnosť VenvHub Pro. Aplikácia rozlišuje medzi tým, čo nastavíte v <strong>Quick Settings</strong> a čo v <strong>Master Manageri</strong>.</p>
+
+            <h3>Dočasná zmena (Override) - Quick Settings</h3>
+            <p>Ak v paneli Quick Settings zmeníte Venv, táto zmena je <strong>iba dočasná (v pamäti RAM)</strong>. </p>
+            <ul>
+                <li>Slúži na to, ak chcete "len na skúšku" spustiť projekt v inom prostredí.</li>
+                <li>Táto zmena sa <strong>nezapíše</strong> do konfiguračného súboru.</li>
+                <li>Po reštarte aplikácie sa projekt vráti k svojmu predvolenému prostrediu.</li>
+            </ul>
+
+            <h3>Trvalá zmena (Default) - Master Manager</h3>
+            <p>Ak chcete natrvalo zmeniť prostredie, ktoré sa má s projektom spúšťať, musíte ísť do okna <strong>Master Manager (🖥)</strong> a v tabuľke zaškrtnúť políčko <em>"Predvolený"</em>.</p>
+
+            <div class="tip">
+                <strong>Tip:</strong> V zozname Venvov v Quick Settings je predvolený (trvalý) venv označený hviezdičkou (★).
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 2.4 -->
+        <div id="rezimy-spustenia" class="section-box">
+            <h1>2.4 Režimy spustenia</h1>
+            <p>V sekcii "3. Akcie" si môžete vybrať, ako sa má správať tlačidlo <strong>Play ▶</strong>:</p>
+            
+            <ul>
+                <li><strong>Otovoriť terminál:</strong> Nespustí skript, iba otvorí príkazový riadok (CMD) aktivovaný v danom prostredí. Vhodné, ak chcete príkazy písať ručne.</li>
+                <li><strong>Spustiť v Termináli (Predvolené):</strong> Otvorí nové okno, aktivuje venv a automaticky spustí váš skript. Vidíte všetky výpisy (printy) a chyby.</li>
+                <li><strong>Spustiť na Pozadí (Silent):</strong> Skript sa spustí bez akéhokoľvek okna (neviditeľne). Vhodné pre finálne aplikácie, GUI programy alebo procesy na pozadí.</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Pozor pri Silent režime:</strong> Keďže nevidíte okno, skript musíte ukončiť buď cez tlačidlo <strong>Stop ■</strong> na lište, alebo cez Správcu úloh.
+            </div>
+        </div>
+
+        <!-- NOVÁ PODKAPITOLA 2.5 -->
+        <div id="rezim-multi" class="section-box">
+            <h1>2.5 Režim Multi-run na Mini-Bare</h1>
+            <p>Keď kliknete na tlačidlo <strong>M</strong>, Mini-Bar sa prepne do režimu hromadného spúšťania. Rozhranie sa zmení:</p>
+            
+            <ul>
+                <li>Namiesto textu s projektom sa zobrazí <strong>rozbaľovací zoznam</strong> so všetkými vašimi skupinami vytvorenými v Manažérovi.</li>
+                <li>Tlačidlo <strong>⚙ (Quick Settings)</strong> sa skryje, pretože v tomto režime nemajú nastavenia pre jednotlivé projekty význam.</li>
+                <li>Tlačidlá <strong>Play ▶</strong> a <strong>Stop ■</strong> teraz ovládajú <strong>celú vybranú skupinu naraz</strong>.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Výhoda:</strong> V tomto režime nemusíte otvárať hlavné okno. Stačí si na lište vybrať skupinu a jedným kliknutím spustiť alebo zastaviť všetky servery a procesy, ktoré do nej patria.
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

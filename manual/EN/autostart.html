@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Container and Autostart - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= LEFT MENU ================= -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="autostart.html" class="active">🔄 9. Container and Autostart</a>
+
+            <!-- SUB-MENU FOR AUTOSTART -->
+            <div class="sub-menu">
+                <a href="#hybrid">9.1 Hybrid Approach (Venv vs. Docker)</a>
+                <a href="#pridanie">9.2 Adding a Group and In-time Saving</a>
+                <a href="#ovladanie">9.3 Control Panel (LED, RAM, Modes)</a>
+                <a href="#sekvencia">9.4 Timing and Sequential Startup</a>
+                <a href="#respawn">9.5 Watchdog and Intelligent Respawn</a>
+                <a href="#boot">9.6 Application Boot and Conflict Protection</a>
+            </div>
+
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- ================= CONTENT ================= -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 9.1 -->
+        <div id="hybrid" class="section-box">
+            <h1>9.1 Hybrid Approach (Venv Orchestration)</h1>
+            <p>The <strong>Container / Autostart</strong> tab is not a classic container system like Docker. It does not virtualize the entire operating system or network layers. Instead, it is a <strong>native Windows Orchestrator</strong>.</p>
+            <p>It utilizes lightweight Python virtual environments (Venvs) and combines them into managed units. The result is an extremely fast application startup with minimal memory consumption (no Docker Daemon running), while maintaining important features like auto-start, automatic restart after a crash, and RAM monitoring.</p>
+        </div>
+
+        <!-- SUB-CHAPTER 9.2 -->
+        <div id="pridanie" class="section-box">
+            <h1>9.2 Adding a Group and In-time Saving</h1>
+            <p>This tab is closely linked to the <em>"Multi-run"</em> tab. You cannot create new groups from scratch here; you must <strong>import</strong> them.</p>
+
+            <ol>
+                <li>First, create and assemble a project group in the <em>Multi-run</em> tab.</li>
+                <li>Go to the <em>Container</em> tab and click on <strong>➕ Add New Group</strong>.</li>
+                <li>Select a group from the list. Its control panel (Widget) will be generated on the screen.</li>
+            </ol>
+
+            <div class="tip">
+                <strong>In-Time Saving (No Save Button):</strong> Unlike other parts of the program, <strong>everything is saved immediately</strong> in the Container. Any checkbox toggle or second-count overwrite is written to a dedicated <code>.json</code> file in a fraction of a second. The application is intelligent and adjusts the save path according to your mode: in the <em>Portable</em> version, it saves next to the program in <code>assets/autostart_multi/</code>, while in a regular installation, it saves securely to <code>%APPDATA%/VenvHubPro/autostart_multi/</code>. 
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 9.3 -->
+        <div id="ovladanie" class="section-box">
+            <h1>9.3 Group Control Panel (LED, RAM, Modes)</h1>
+            <p>Each imported panel serves as a separate control Dashboard for that group.</p>
+
+            <h3>1. Visual Diagnostics</h3>
+            <ul>
+                <li><strong>LED Diode:</strong> Indicates the status of the entire group in real-time.
+                    <ul>
+                        <li><strong style="color:gray;">Gray:</strong> No projects in the group (group is empty).</li>
+                        <li><strong style="color:#e74c3c;">Red:</strong> The group contains projects, but all are currently stopped.</li>
+                        <li><strong style="color:#2ecc71;">Green:</strong> At least one process is running and none are in an error state.</li>
+                        <li><strong style="color:#f39c12;">Flashing Orange:</strong> A crash detected in one or more processes. Flashes orange.</li>
+                    </ul>
+                </li>
+                <li><strong>RAM Monitor:</strong> The application scans the operating memory every 2 seconds. It doesn't just count the master terminal but recursively adds up the memory of <strong>all subprocesses</strong> (<code>python.exe</code> and its threads), giving you an accurate figure of your group's hardware requirements.</li>
+            </ul>
+
+            <h3>2. Global Group Settings (Header)</h3>
+            <ul>
+                <li><strong>Autostart:</strong> If checked, this group will automatically launch immediately after VenvHub Pro starts.</li>
+                <li><strong>T (Terminal) vs S (Silent):</strong> Launch mode for all projects in the group.
+                    <ul>
+                        <li><strong>T:</strong> A black window (CMD) opens for each process. Ideal for development and error tracking.</li>
+                        <li><strong>S:</strong> Processes run "invisibly" in the background. Ideal for production and bots.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Warning for Silent (S) mode:</strong> Although processes launch invisibly, VenvHub Pro utilizes the <em>Windows Job Object</em> mechanism, which automatically terminates all assigned subprocesses when the application is closed (even forced). Nevertheless, we recommend using the <strong>STOP</strong> button for a safe and clean group shutdown.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 9.4 -->
+        <div id="sekvencia" class="section-box">
+            <h1>9.4 Timing, Anchor (Hook), and Chain Stability</h1>
+            <p>VenvHub Pro v2.5.3 does not use a simple bulk start. Group launching is managed by a specialized thread (Launch Worker), which processes projects in strict top-to-bottom order and applies <strong>Chain Stability</strong> (each launched program monitors the stability of all its predecessors).</p>
+
+            <h2>1. Intelligent "Wait Timer" (Delay before start)</h2>
+            <p>Unlike standard scripts, the value in the <strong>Wait (s)</strong> column means a delay for the process start itself. For example, if you set 15 seconds for Program B:</p>
+            <ul>
+                <li>The thread pauses, and a message <code>⏱️ Counting down Wait 15s...</code> appears in the log.</li>
+                <li>The process (terminal window for Program B) opens only <strong>after</strong> this time has elapsed.</li>
+                <li><strong>Chain Protection:</strong> During this countdown, VenvHub scans all previously running programs (e.g., Program A) every half-second. If Program A crashes during the countdown, <strong>the countdown for Program B is immediately paused and reset</strong>, and it waits until Program A successfully restarts!</li>
+            </ul>
+
+            <h2>2. Anchor (Hook) - Hard-link to application logic</h2>
+            <p>The Anchor is the highest form of dependency management. If you activate it, VenvHub Pro stops being a "blind" launcher and starts communicating actively with the script:</p>
+            <ul>
+                <li><strong>Unique ID Marker:</strong> At each start, VenvHub generates a unique key and places its path into the <code>VENVHUB_KOTVA</code> environment variable.</li>
+                <li><strong>Queue Blocking:</strong> The startup sequence for that project completely stops. No further program in the list will start until VenvHub sees that your script has physically created this file on the disk.</li>
+                <li><strong>Post-crash Recovery (Anchor Recycling):</strong> If a program is restarted (Respawn), the same anchor path is reused (recycled), and the sequence waits for it faithfully again.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Full Time for Stability:</strong> If Program B was supposed to wait 15 seconds and was already at the 14th second, but Program A suddenly crashed, Program B's timer is <strong>reset</strong>. After Program A is fixed (and its new Anchor is received), Program B starts its 15-second countdown <strong>completely from zero</strong> to give the restarted Program A enough time to open ports and load data.
+            </div>
+
+            <h2>🛠 How to implement the Anchor signal in your code</h2>
+            <p>To let VenvHub Pro know that your program is ready, you must insert a short block of code into your Python script. Upon startup, VenvHub passes the <code>VENVHUB_KOTVA</code> environment variable to your program, which contains the path to a unique signal file.</p>
+            
+            <p>Insert the following code where your program finishes its initialization (e.g., after <code>app.listen()</code> or after loading data into RAM):</p>
+
+<pre><code>import os
+
+def signal_ready():
+    # 1. Check if VenvHub is requesting a signal
+    hook_path = os.environ.get("VENVHUB_KOTVA")
+    
+    if hook_path:
+        try:
+            # 2. Confirm readiness by creating an empty file at the given path
+            with open(hook_path, 'w') as f:
+                pass
+            print(f"⚓ Anchor: Signal sent successfully.")
+        except Exception as e:
+            print(f"⚠️ Anchor: Error sending signal: {e}")
+
+# Call this function when your program is 100% up and running
+signal_ready()</code></pre>
+
+            <div class="tip">
+                <strong>What happens after sending?</strong> VenvHub Pro immediately detects the creation of this file, deletes it (to clean the system), and instantly starts the countdown (Wait) for the next project in line.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 9.5 -->
+        <div id="respawn" class="section-box">
+            <h1>9.5 Collapse Detection and Domino Effect</h1>
+            <p>The system contains two levels of protection against application crashes, which behave differently depending on the project's phase.</p>
+
+            <h2>1. Domino Effect on Predecessor Failure</h2>
+            <p>The "One for All" architecture means that the youngest (currently starting) program constantly monitors all older programs above it. If any predecessor crashes during startup or waiting:</p>
+            <ul>
+                <li><strong>Watchdog Monitoring:</strong> Even during blocking wait (Wait) or Anchor phases, the Watchdog constantly checks the PIDs of all processes already started in the sequence.</li>
+                <li><strong>Grace Period (6s):</strong> During the Anchor phase, the system ignores the status for the first 6 seconds to give slow terminal startups and <code>python.exe</code> creation a chance.</li>
+                <li><strong>Fatal Break (Critical Failure):</strong> If a predecessor crashes 3 times in a row and exhausts its restart limit, <strong>the sequence is permanently blocked!</strong> VenvHub outputs <code>🛑 FATAL ERROR</code> and will not start any further projects in order. This prevents errors where Program B would fail because Program A cannot start.</li>
+            </ul>
+
+            <h2>2. Runtime Phase (Respawn Logic and 3-Strike Rule)</h2>
+            <p>If a project has successfully passed the Anchor phase and a crash occurs later during normal operation, the <strong>Respawn Manager</strong> is activated:</p>
+            <ul>
+                <li><strong>Incident Logging:</strong> Each crash is recorded in <code>crash_log.jsonl</code> directly in the venv folder (contains timestamp and status).</li>
+                <li><strong>Hard Cleanup:</strong> The system waits 2 seconds, forcibly kills the dead terminal window (if it remained hanging), and releases ports.</li>
+                <li><strong>Reincarnation:</strong> The project is restarted with the same <code>cwd</code> (current working directory) to avoid path errors with exclamation marks and spaces.</li>
+                <li><strong>3-Strike Rule:</strong> If a project crashes 3 times in a row, the system declares it unstable, blocks further Respawn attempts, and leaves the window (if there was one) available for developer error analysis.</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Important Notice:</strong> If the <strong>STOP</strong> button on the group panel is manually clicked, all crash counters are zeroed and the "3-Strike Rule" is reset for all programs.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 9.6 -->
+        <div id="boot" class="section-box">
+            <h1>9.6 Application Boot and Ownership Registry</h1>
+            
+            <h3>Process on VenvHub Pro Startup</h3>
+            <p>When you open the main application, a special service called <code>AutostartBooter</code> scans all your Containers. If it finds a group with <strong>Autostart</strong> checked, it attempts to launch it. Before doing so, it performs a <strong>conflict check</strong>:</p>
+            <ul>
+                <li>If it detects that some processes from this group are already running in Windows (e.g., because you closed VenvHub without stopping the processes and are now opening it again), <strong>Autostart is blocked just in case</strong> to prevent double-start attempts and port collisions.</li>
+            </ul>
+
+            <h3>Process Ownership Registry</h3>
+            <p>You can have the same project included in two different groups (e.g., in a <em>"Testing"</em> group and a <em>"Production"</em> group). If you launch the Testing group, the application records in internal memory (the "Registry") that this running process <strong>is owned by the Testing group</strong>.</p>
+            <p>If you subsequently try to click "Stop" in the Production group, the system detects that this group is not the owner of that process and refuses to terminate it. Through this mechanism, the application guarantees that operations of one group never interfere with the operation of another group.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

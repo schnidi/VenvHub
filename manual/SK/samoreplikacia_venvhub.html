@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architektúra a Kompilácia - VenvHub Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ĽAVÉ PEVNÉ MENU (GLOBÁLNE) -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+            <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+            <a href="manager.html">📁 3. Správca Prostredí</a>
+            <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+            <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profily</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="samoreplikacia_venvhub.html" class="active">14. Architektúra a Kompilácia</a>
+
+            <!-- PODKAPITOLY PRE ARCHITEKTÚRU A KOMPILÁCIU -->
+            <div class="sub-menu">
+                <a href="#kap12-1">14.1 Dual-Framework (PyQt6/PySide6)</a>
+                <a href="#kap12-2">14.2 Mágia .UI súborov</a>
+                <a href="#kap12-3">14.3 Samoreplikácia VenvHubu</a>
+                <a href="#kap12-4">14.4 Tvorba .EXE (PyInstaller)</a>
+                <a href="#kap12-5">14.5 Tvorba inštalátora (NSIS)</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRAVÁ STRANA (HLAVNÝ OBSAH KAPITOLY 12) -->
+    <div class="content">
+
+        <!-- HLAVNÝ NADPIS A ÚVOD -->
+        <div id="kap12-intro" class="section-box">
+            <h1>14. Architektúra, Kompilácia a Samoreplikácia</h1>
+            <p>VenvHub Pro nie je len bežná Python aplikácia. Vďaka unikátnym úpravám v jadre disponuje pokročilou architektúrou, ktorá mu umožňuje bežať na rôznych grafických knižniciach a dokonca kompilovať "sám seba" (samoreplikácia).</p>
+        </div>
+
+        <!-- 14.1 DUAL-FRAMEWORK -->
+        <div id="kap12-1" class="section-box">
+            <h2>14.1 Dual-Framework (Compatibility Bridge)</h2>
+            <p>Aplikácie v Pythone zvyčajne musia byť napísané buď pre <strong>PyQt6</strong>, alebo pre <strong>PySide6</strong>. VenvHub Pro to rieši pomocou <strong>Compatibility Bridge</strong> (<code>core/logic/pyqt_to_pyside.py</code>). Tento most využíva techniku <em>MetaPathFinder</em>.</p>
+            <ul>
+                <li>Pri spustení <code>main.py</code> sa aktivuje detekcia prostredia vo Venv.</li>
+                <li>Ak aplikácia nájde <code>PyQt6</code>, beží natívne.</li>
+                <li>Ak nájde <code>PySide6</code>, most sa vloží do systémovej pamäte. Akonáhle Python narazí na import <code>from PyQt6...</code>, náš interceptor zakročí, preloží požiadavku a vráti <code>PySide6</code>.</li>
+            </ul>
+            <div class="tip">
+                <strong>Výsledok:</strong> Zdrojový kód zostáva na 100% napísaný pre PyQt6, no softvér si za behu automaticky prepíše všetky importy, signály a sloty na PySide6, ak je to potrebné.
+            </div>
+        </div>
+
+        <!-- 14.2 MÁGIA .UI SÚBOROV -->
+        <div id="kap12-2" class="section-box">
+            <h2>14.2 Mágia .UI súborov</h2>
+            <p>Rozdiel medzi frameworkami je aj v načítavaní XML dizajnov (<code>.ui</code>).</p>
+            <ul>
+                <li><strong>PyQt6 (uic.loadUi):</strong> Natlačí tlačidlá priamo do existujúceho okna (<code>self</code>).</li>
+                <li><strong>PySide6 (QUiLoader):</strong> Vždy vytvorí úplne nové okno.</li>
+            </ul>
+            <p>VenvHub Pro obsahuje tzv. <strong>Mimic funkciu</strong>. Ak beží pod PySide6, táto funkcia nechá <code>QUiLoader</code> vytvoriť nové okno, <strong>vytrhá z neho všetky widgety a Layout</strong> a "nalepí" ich na tvoju originálnu <code>self</code> inštanciu. Správne tiež nastaví pracovný adresár, aby sa nestratili relatívne cesty k ikonám.</p>
+        </div>
+
+        <!-- 14.3 SAMOREPLIKÁCIA -->
+        <div id="kap12-3" class="section-box">
+            <h2>14.3 Samoreplikácia VenvHubu</h2>
+            <p>Pretože VenvHub Pro disponuje integrovaným nástrojom <strong>PyInstaller Builder</strong>, nepotrebujete na kompiláciu samotného VenvHubu žiadne externé skripty.</p>
+            <ol>
+                <li>Otvorte bežiaci VenvHub Pro.</li>
+                <li>V záložke <strong>Nastavenia</strong> vyberte koreň projektov, kde leží kód VenvHubu.</li>
+                <li>Prejdite do záložky <strong>PyInstaller Builder</strong> a ako spúšťací skript zvoľte <code>main.py</code>.</li>
+                <li>Nastavte Assets a parametre (viď sekciu nižšie).</li>
+                <li>Kliknite na <strong>BUILD .EXE</strong>.</li>
+            </ol>
+            <div class="alert">
+                Tento prístup (dogfooding) garantuje, že builder vo VenvHube je plne funkčný, keďže dokáže bezpečne skompilovať aj takú masívnu aplikáciu, akou je on sám.
+            </div>
+        </div>
+
+        <!-- 14.4 TVORBA .EXE -->
+        <div id="kap12-4" class="section-box">
+            <h2>14.4 Tvorba .EXE (PyInstaller)</h2>
+            <p>Keďže PyInstaller funguje na princípe statickej analýzy kódu, kompilácia sa mierne líši v závislosti od toho, ktorú grafickú knižnicu máte vo vašom <code>.venv</code>.</p>
+            
+            <p><strong>Spoločné pravidlo pre Assets (Záložka 2):</strong><br>
+            VŽDY musíte pribaliť nasledujúce priečinky (zdroj = cieľ):
+            <code>ui</code>, <code>core/themes</code>, <code>translations</code>, <code>assets</code>, <code>navod</code>.</p>
+
+            <h3>Vetva A: Kompilácia s PyQt6</h3>
+            <p>PyInstaller pri analýze súboru <code>main.py</code> priamo vidí importy a automaticky nabalí do <code>.exe</code> všetky potrebné DLL knižnice pre PyQt6. V záložke <strong>Importy (3)</strong> nemusíte nastavovať vôbec nič.</p>
+
+            <h3>Vetva B: Kompilácia s PySide6</h3>
+            <p>Z pohľadu kódu je všade napísané <code>PyQt6</code>. PyInstaller si PySide6 nevšimne. Musíme mu to prikázať natvrdo v záložke <strong>3. Importy</strong>:</p>
+            <ul>
+                <li><strong>Skryté Importy:</strong> Pridajte postupne: <code>PySide6</code>, <code>PySide6.QtCore</code>, <code>PySide6.QtGui</code>, <code>PySide6.QtWidgets</code>, <code>PySide6.QtNetwork</code>, <code>PySide6.QtUiTools</code>.</li>
+                <li><strong>Vylúčiť Moduly:</strong> Pridajte <code>PyQt6</code> (aby sa zbytočne nenabalil balast, ak tam po ňom ostali stopy).</li>
+            </ul>
+            <p>Po spustení výsledného <code>.exe</code> sa náš "Most" aktivuje a bez problémov spojí zdrojový kód s pribaleným PySide6.</p>
+        </div>
+
+        <!-- 14.5 NSIS -->
+        <div id="kap12-5" class="section-box">
+            <h2>14.5 Tvorba inštalátora (NSIS)</h2>
+            <p>Bez ohľadu na použitú vetvu, výsledkom kompilácie bude zložka <code>dist/VenvHubPro</code> (pri voľbe --onedir). Táto zložka obsahuje všetko potrebné na beh aplikácie.</p>
+            
+            <p>Pre vytvorenie inštalátora pomocou systému <strong>NSIS</strong> stačí túto celú zložku zbaliť do skriptu:</p>
+            <code>
+            # Vložte do vášho .nsi skriptu:<br>
+            File /r "cesta\k\projektu\dist\VenvHubPro\*"
+            </code>
+            <p>NSIS nezaujíma, aký framework beží vnútri. Iba zlisuje (LZMA kompresia) celú zložku do jedného <code>Setup.exe</code> súboru a vytvorí odkazy na plochu pre koncového používateľa.</p>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT PRE PLYNULÉ ZVÝRAZŇOVANIE MENU -->
+    <script>
+        const sections = document.querySelectorAll('.section-box, .section-box h2');
+        const navLinks = document.querySelectorAll('.sub-menu a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

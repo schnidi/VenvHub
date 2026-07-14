@@ -1,0 +1,323 @@
+/*
+ * Theme Name: GitHub Light (Clarity Edition)
+ * Version: 2.2
+* Author: Viliam Schneider
+ */
+
+/* HLAVNÉ NASTAVENIA */
+QWidget {
+    background-color: #ffffff;
+    color: #24292f;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+}
+
+/* ============================================= */
+/* === CHECKBOXY A RADIO BUTTONY (KRÚŽKY) === */
+/* ============================================= */
+
+/* Štýl pre krúžky (Radio Buttons) */
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 9px;
+    border: 1px solid #d0d7de; 
+    background-color: #ffffff;
+}
+
+QRadioButton::indicator:hover {
+    border-color: #0969da; /* GitHub Modrá */
+}
+
+QRadioButton::indicator:checked {
+    background-color: #0969da; 
+    border: 2px solid #ffffff;  /* Kontrastný vnútorný okraj */
+}
+
+/* Štýl pre štvorčeky (Checkboxes) */
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #d0d7de;
+    background-color: #ffffff;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #0969da;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #0969da;
+    border-color: #0969da;
+}
+
+/* Ak nemáš obrázok fajky, toto vytvorí aspoň vizuálnu zmenu */
+QCheckBox::indicator:checked {
+    background-color: #0969da;
+    border: 2px solid #ffffff;
+}
+
+/* ============================================= */
+/* === TLAČIDLÁ (BUTTONS) === */
+/* ============================================= */
+
+QPushButton {
+    background-color: #f6f8fa;
+    color: #24292f;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 5px 15px;
+}
+
+QPushButton:hover {
+    background-color: #f3f4f6;
+    border-color: #d0d7de;
+}
+
+QPushButton:pressed {
+    background-color: #ebecf0;
+}
+
+/* STAV OZNAČENÉHO TLAČIDLA (KEĎ JE AKTÍVNE) */
+QPushButton:checked {
+    background-color: #0969da !important;
+    color: #ffffff !important;
+    border: 1px solid #0550ae;
+    font-weight: bold;
+}
+
+/* Špecifické tlačidlá na lište */
+#ProjectMiniBar QPushButton {
+    background-color: transparent;
+    border: 1px solid transparent;
+}
+
+#ProjectMiniBar QPushButton:checked {
+    background-color: #ddf4ff;
+    border: 1px solid #0969da;
+}
+
+/* ============================================= */
+/* === ZÁLOŽKY (TABS) === */
+/* ============================================= */
+QTabWidget::pane {
+    border: 1px solid #d0d7de;
+}
+
+QTabBar::tab {
+    background-color: #f6f8fa;
+    color: #57606a;
+    padding: 8px 15px;
+    border: 1px solid #d0d7de;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: #ffffff;
+    color: #24292f;
+    border-bottom: 2px solid #fd8c73; /* GitHub typický oranžový akcent pod tabom */
+    font-weight: 600;
+}
+
+/* ============================================= */
+/* === VSTUPNÉ POLIA (INPUTS) === */
+/* ============================================= */
+QLineEdit, QComboBox {
+    background-color: #ffffff;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 4px;
+    color: #24292f;
+}
+
+QLineEdit:focus, QComboBox:focus {
+    border: 2px solid #0969da;
+    background-color: #ffffff;
+}
+
+/* TABUĽKY A VÝBER */
+
+/* ============================================= */
+/* === KOMPLETNÁ ÚPRAVA TABUĽKY (QTableWidget) === */
+/* ============================================= */
+
+QTableWidget {
+    background-color: #ffffff;   
+    border: 1px solid #d0d7de;
+    gridline-color: transparent; 
+    outline: none;               
+    selection-background-color: #ddf4ff; 
+}
+
+/* Hlavička tabuľky */
+QHeaderView::section {
+    background-color: #f6f8fa;
+    padding: 6px;
+    border: 1px solid #d0d7de;
+    font-weight: bold;
+    color: #57606a;
+}
+
+/* Štýl pre bunky a riadky */
+QTableWidget::item {
+    padding: 6px;
+    border: none;                
+    background-color: transparent;
+}
+
+/* 1. JEMNÝ HOVER */
+QTableWidget::item:hover {
+    background-color: #f6f8fa;   
+    color: #24292f;
+}
+
+/* 2. PODSVIETENIE CELÉHO VYBRANÉHO RIADKA */
+QTableWidget::item:selected {
+    background-color: #0969da;   
+    color: #ffffff;
+    border: none !important;     
+    border-left: none !important; 
+}
+
+/* ============================================= */
+/* === OPRAVA TLAČIDIEL (WIDGETOV) V TABUĽKE === */
+/* ============================================= */
+
+QTableWidget QWidget {
+    background-color: transparent;
+}
+
+QTableWidget QPushButton {
+    background-color: #f6f8fa;
+    color: #24292f;
+    border: 1px solid #d0d7de;
+    border-radius: 4px;
+    margin: 1px;         
+    padding: 0px;        
+    
+    min-width: 22px;     
+    max-width: 22px;
+    min-height: 22px;    
+    max-height: 22px;
+
+    font-size: 10px;     
+    qproperty-iconSize: 14px 14px; 
+}
+
+QTableWidget QPushButton#btn_play, 
+QTableWidget QPushButton#btn_stop {
+    font-size: 10px !important;
+}
+
+QTableWidget::item {
+    padding: 2px; 
+}
+
+QTableWidget QPushButton:hover {
+    background-color: #f3f4f6;
+    border: 1px solid #0969da;
+    color: #24292f;
+}
+
+/* FIX FARIEB PRE PLAY / STOP IKONY (GitHub paleta) */
+QTableWidget QPushButton#btn_play {
+    color: #1a7f37 !important;   /* GitHub Zelená */
+}
+
+QTableWidget QPushButton#btn_stop {
+    color: #cf222e !important;   /* GitHub Červená */
+}
+
+QTableWidget QPushButton#btn_mgr, 
+QTableWidget QPushButton#btn_refresh {
+    color: #0969da !important;   /* GitHub Modrá */
+}
+
+QTableWidget QHeaderView::corner-button {
+    background-color: #f6f8fa;
+    border: none;
+}
+
+QTextEdit {
+    background-color: #ffffff;
+    color: #24292f;
+    border: 1px solid #d0d7de;
+}
+
+/* ============================================= */
+/* === OHRANIČENIE FRAMELESS OKIEN (POP-UPS) === */
+/* ============================================= */
+#VSCodeUserWindow, #LocalPackagesWindow, #PipManagerWindow, #PipEWindow, #AboutDialog, #ProgressDialog, #MasterManager, #BuildLogDialog, #CustomMessageBox {
+    background-color: #ffffff;
+    border: 1px solid #0969da; 
+}
+
+#ProjectMiniBar {
+    background-color: #ffffff;
+    border: none; 
+}
+
+#QuickSettings {
+    background-color: #ffffff;
+    border: none; 
+}
+
+QPushButton#btn_about {
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/about_black.svg);
+    qproperty-iconSize: 18px 18px;
+    background-color: transparent;
+    border: none;
+}
+
+QPushButton#btn_about:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+QPushButton#btn_toggle_mode {
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/icon_mode_widget_black.svg);
+    qproperty-iconSize: 20px 20px;
+    background-color: transparent;
+    border: none;
+}
+
+QPushButton#btn_toggle_mode:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+QPushButton#btn_vscode {
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/vscode/vscode5.svg);
+    qproperty-iconSize: 18px 18px;
+    background-color: transparent;
+    border: none;
+}
+
+QPushButton#btn_vscode:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+/* Widget hover efekt */
+
+#ProjectMiniBar #btn_play, 
+#ProjectMiniBar #btn_stop, 
+#ProjectMiniBar #btn_open_mgr, 
+#ProjectMiniBar #btn_mgr,      
+#ProjectMiniBar #btn_refresh,
+#ProjectMiniBar #btn_pin,
+#ProjectMiniBar #btn_settings {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+}
+
+#ProjectMiniBar #btn_play:hover, 
+#ProjectMiniBar #btn_stop:hover, 
+#ProjectMiniBar #btn_open_mgr:hover, 
+#ProjectMiniBar #btn_mgr:hover, 
+#ProjectMiniBar #btn_refresh:hover,
+#ProjectMiniBar #btn_pin:hover,
+#ProjectMiniBar #btn_settings:hover {
+   

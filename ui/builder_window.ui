@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BuilderWindow</class>
+ <widget class="QWidget" name="BuilderWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PyInstaller Builder</string>
+  </property>
+  <layout class="QVBoxLayout" name="main_layout">
+   <!-- HLAVIČKA: PROJEKT, VENV, SKRIPT A CESTY -->
+   <item>
+    <widget class="QGroupBox" name="group_target">
+     <property name="title">
+      <string>Nastavenie cieľov a prostredia</string>
+     </property>
+     <layout class="QFormLayout" name="target_layout">
+      <!-- 1. VÝBER PROJEKTU -->
+      <item row="0" column="0">
+       <widget class="QLabel" name="lbl_project">
+        <property name="text">
+         <string>Výber Projektu:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <layout class="QHBoxLayout" name="row_project">
+        <item>
+         <widget class="QComboBox" name="combo_project">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_refresh_projects">
+          <property name="text">
+           <string>🔄</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <!-- 2. VÝBER VENVU -->
+      <item row="1" column="0">
+       <widget class="QLabel" name="lbl_venv">
+        <property name="text">
+         <string>Zdrojový Venv [Verzia Pythonu]:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="combo_venv">
+        <property name="toolTip">
+         <string>Zobrazuje dostupné venvy pre daný projekt a ich verziu Pythonu.</string>
+        </property>
+       </widget>
+      </item>
+      <!-- 3. VÝBER SKRIPTU -->
+      <item row="2" column="0">
+       <widget class="QLabel" name="lbl_main_script">
+        <property name="text">
+         <string>Spúšťací Skript projektu:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <layout class="QHBoxLayout" name="row_script">
+        <item>
+         <widget class="QComboBox" name="combo_script"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_refresh_scripts">
+          <property name="text">
+           <string>🔄</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <!-- 4. VÝSTUPNÝ PRIEČINOK -->
+      <item row="3" column="0">
+       <widget class="QLabel" name="lbl_output_path">
+        <property name="text">
+         <string>Kam uložiť .exe (--distpath):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <layout class="QHBoxLayout" name="row_output">
+        <item>
+         <widget class="QLineEdit" name="edit_output_path">
+          <property name="placeholderText">
+           <string>Predvolene: priečinok projektu/dist</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_browse_output">
+          <property name="text">
+           <string>📁</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <!-- HLAVNÉ ZÁLOŽKY S NASTAVENIAMI -->
+   <item>
+    <widget class="QTabWidget" name="tab_builder">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <!-- ZÁLOŽKA 1: BASIC -->
+     <widget class="QWidget" name="tab_basic">
+      <attribute name="title">
+       <string>1. Základné (Basic)</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="basic_layout">
+       <item>
+        <layout class="QFormLayout" name="form_basic">
+         <item row="0" column="0">
+          <widget class="QLabel" name="lbl_app_name">
+           <property name="text">
+            <string>Názov Aplikácie (--name):</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="edit_app_name">
+           <property name="placeholderText">
+            <string>Predvolene názov skriptu</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="lbl_icon">
+           <property name="text">
+            <string>Ikona (--icon):</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="icon_layout">
+           <item>
+            <widget class="QLineEdit" name="edit_icon">
+             <property name="placeholderText">
+              <string>Cesta k .ico alebo .icns súboru...</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_browse_icon">
+             <property name="text">
+              <string>Vybrať ikonu</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_mode">
+         <property name="title">
+          <string>Režim okna a konzoly</string>
+         </property>
+         <layout class="QHBoxLayout" name="mode_layout">
+          <item>
+           <widget class="QRadioButton" name="rb_console">
+            <property name="text">
+             <string>Zobraziť Konzolu (Pre CLI / Skripty)</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rb_windowed">
+            <property name="text">
+             <string>Skryť Konzolu (--noconsole / GUI app)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_packaging">
+         <property name="title">
+          <string>Spôsob Balenia</string>
+         </property>
+         <layout class="QHBoxLayout" name="packaging_layout">
+          <item>
+           <widget class="QRadioButton" name="rb_onedir">
+            <property name="text">
+             <string>Priečinok (--onedir) [Rýchlejší štart]</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rb_onefile">
+            <property name="text">
+             <string>Jeden súbor (--onefile) [Pomalší štart]</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_metadata">
+         <property name="title">
+          <string>Pribalené nástroje a dáta do .exe</string>
+         </property>
+         <layout class="QVBoxLayout" name="metadata_layout">
+          <item>
+           <widget class="QCheckBox" name="chk_add_birth_cert">
+            <property name="toolTip">
+             <string>Do výsledného .exe sa pridá JSON súbor s informáciami o verzii Pythonu a balíčkoch.</string>
+            </property>
+            <property name="text">
+             <string>Pribaliť metadáta aplikácie (app_birth_certificate.json)</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <!-- === NOVÁ SEKCIA PRE CESTU K METADÁTAM === -->
+          <item>
+           <layout class="QHBoxLayout" name="birth_cert_path_layout">
+            <item>
+             <widget class="QLabel" name="lbl_birth_cert_path">
+              <property name="text">
+               <string>Uložiť 'rodný list' do:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="edit_birth_cert_path">
+              <property name="placeholderText">
+               <string>Relatívna cesta v projekte (napr. data/about)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_browse_birth_cert_path">
+              <property name="text">
+               <string>📁</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <!-- ======================================= -->
+          <item>
+           <widget class="QCheckBox" name="chk_pack_uv">
+            <property name="toolTip">
+             <string>Do výsledného .exe pribalí rýchly inštalátor UV (uv.exe).</string>
+            </property>
+            <property name="text">
+             <string>Pribaliť k aplikácii inštalátor UV (uv.exe)</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer_basic">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <!-- ... OSTATNÉ ZÁLOŽKY ZOSTÁVAJÚ ROVNAKÉ ... -->
+     <widget class="QWidget" name="tab_assets">
+      <attribute name="title">
+       <string>2. Súbory a Dáta (Assets)</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="assets_layout">
+       <item>
+        <widget class="QLabel" name="lbl_data_desc">
+         <property name="text">
+          <string>Pridať priečinky alebo súbory, ktoré aplikácia potrebuje (napr. ui, ikony, preklady). Bude použité --add-data.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="table_data">
+         <column>
+          <property name="text">
+           <string>Zdrojová cesta (Zdroj)</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Cieľový priečinok v .exe</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="data_btn_layout">
+         <item>
+          <widget class="QPushButton" name="btn_add_data_file">
+           <property name="text">
+            <string>+ Súbor</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_add_data_dir">
+           <property name="text">
+            <string>+ Priečinok</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_remove_data">
+           <property name="text">
+            <string>- Odstrániť vybrané</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer_data">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_imports">
+      <attribute name="title">
+       <string>3. Importy (Imports)</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="imports_layout">
+       <item>
+        <widget class="QGroupBox" name="group_hidden">
+         <property name="title">
+          <string>Skryté Importy (--hidden-import)</string>
+         </property>
+         <layout class="QVBoxLayout" name="hidden_layout">
+          <item>
+           <widget class="QListWidget" name="list_hidden_imports"/>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="hidden_btn_layout">
+            <item>
+             <widget class="QLineEdit" name="edit_hidden"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_add_hidden">
+              <property name="text">
+               <string>+</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_rem_hidden">
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="group_exclude">
+         <property name="title">
+          <string>Vylúčiť Moduly (--exclude-module)</string>
+         </property>
+         <layout class="QVBoxLayout" name="exclude_layout">
+          <item>
+           <widget class="QListWidget" name="list_exclude_modules"/>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="exclude_btn_layout">
+            <item>
+             <widget class="QLineEdit" name="edit_exclude"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_add_exclude">
+              <property name="text">
+               <string>+</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_rem_exclude">
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_advanced">
+      <attribute name="title">
+       <string>4. Pokročilé (Advanced)</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="advanced_layout">
+       <item>
+        <widget class="QCheckBox" name="chk_clean">
+         <property name="text">
+          <string>Vyčistiť cache pred buildom (--clean)</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chk_admin">
+         <property name="text">
+          <string>Vyžiadať Administrátorské práva na Windows (--uac-admin)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="log_layout">
+         <item>
+          <widget class="QLabel" name="lbl_log_level">
+           <property name="text">
+            <string>Úroveň Logovania (--log-level):</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="combo_log_level">
+           <item>
+            <property name="text">
+             <string>INFO</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DEBUG</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>WARN</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ERROR</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>FATAL</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer_log">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="spacer_advanced">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <!-- SPODNÁ ČASŤ -->
+   <item>
+    <widget class="QGroupBox" name="group_preview">
+     <property name="title">
+      <string>Vygenerovaný Príkaz (Live Preview)</string>
+     </property>
+     <layout class="QVBoxLayout" name="preview_layout">
+      <item>
+       <layout class="QHBoxLayout" name="custom_args_layout">
+        <item>
+         <widget class="QLabel" name="lbl_custom_args">
+          <property name="text">
+           <string>Vlastné argumenty (Extra):</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edit_custom_args">
+          <property name="placeholderText">
+           <string>napr. --noupx --version-file=version.txt</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="text_preview_cmd">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>9</pointsize>
+         </font>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="html">
+         <string>&lt;span style=&quot;color:#007acc;&quot;&gt;pyinstaller&lt;/span&gt; &lt;span style=&quot;color:#d4d4d4;&quot;&gt;--clean --noconsole main.py&lt;/span&gt;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="bottom_buttons_layout">
+     <item>
+      <spacer name="spacer_buttons">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_cancel">
+       <property name="text">
+        <string>Zrušiť</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_build">
+       <property name="minimumSize">
+        <size>
+         <width>150</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string>background-color: #2ecc71; color: white;</string>
+       </property>
+       <property name="text">
+        <string>🛠 BUILD .EXE</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

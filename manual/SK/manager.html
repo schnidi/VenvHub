@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Správca Prostredí - VenvHub Pro Manuál</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ĽAVÉ MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+            <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="manager.html" class="active">📁 3. Správca Prostredí</a>
+
+            <!-- PODKAPITOLY PRE SPRÁVCU PROSTREDÍ -->
+            <div class="sub-menu">
+                <a href="#architektura">3.1 Architektúra Hub vs. Projekt</a>
+                <a href="#vytvaranie">3.2 Vytváranie a pomenovanie</a>
+                <a href="#row-actions">3.3 Akcie a správa procesov</a>
+                <a href="#linking">3.4 Logické prepájanie a skripty</a>
+                <a href="#cloning">3.5 Klonovanie (Rekonštrukcia)</a>
+                <a href="#validator">3.6 Venv Validator (Diagnostika)</a>
+                <a href="#birth-certificate">3.7 Rodný list prostredia</a>
+                <a href="#vscode">3.8 Integrácia s VS Code</a>
+                <a href="#vscode-meta">3.9 Rozšírené nástroje (Meta-Sync)</a>
+            </div>
+
+            <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+            <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profily</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+            <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+        </div>
+    </div>
+
+    <!-- OBSAH -->
+    <div class="content">
+
+        <!-- PODKAPITOLA 3.1 -->
+        <div id="architektura" class="section-box">
+            <h1>3.1 Architektúra: Hub vs. Projekt</h1>
+            <p>VenvHub Pro používa architektúru, ktorá striktne oddeľuje váš zdrojový kód od virtuálnych prostredí. Je dôležité pochopiť, ako to funguje na pozadí:</p>
+            <ul>
+                <li><strong>Projekty:</strong> Aplikácia len "číta" názvy priečinkov vo vašom <code>Projects Root</code>. Do týchto priečinkov nikdy nič nezapisuje (okrem <code>requirements.txt</code> na vyžiadanie alebo <code>.vscode/settings.json</code> pre integráciu).</li>
+                <li><strong>Venv Hub:</strong> Všetky virtuálne prostredia sú fyzicky uložené v centrálnom priečinku <code>Venv Hub</code>.</li>
+            </ul>
+            <div class="tip">
+                <strong>Výhoda:</strong> Ak omylom zmažete celé virtuálne prostredie, váš zdrojový kód (projekt) zostane úplne nedotknutý. Tieto dve veci sú na disku fyzicky oddelené.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 3.2 -->
+        <div id="vytvaranie" class="section-box">
+            <h1>3.2 Vytváranie a pomenovanie</h1>
+            <p>Pri vytváraní nového prostredia aplikácia používa prísnu konvenciu pomenovávania a inteligentne volí technológiu podľa zdroja Pythonu.</p>
+            
+            <h3>Proces vytvorenia a pomenovania:</h3>
+            <ol>
+                <li>Vyberiete projekt (napr. <code>MyEshop</code>) a verziu Pythonu (napr. <code>[Local] 3.12</code>).</li>
+                <li>Zadáte názov prostredia, napr. <code>Moja nová verzia!</code>.</li>
+                <li>Váš zadaný názov prejde cez interný filter <strong>sanitize_venv_name</strong>. Výsledok bude: <code>Moja_nová_verzia!</code>.</li>
+                <li>Aplikácia na disku v priečinku Hub vytvorí zložku s názvom: <br><code>MyEshop_Moja_nová_verzia!</code>.</li>
+            </ol>
+            
+            <div class="tip">
+                <strong>Čo robí <code>sanitize_venv_name</code>?</strong><br>
+                Tento filter pripraví bezpečný názov pre priečinok vo Windowse. Nahradí medzery za podtržníky a odstráni zakázané znaky (<code>&lt; &gt; : " / \ | ? *</code>), ale zámerne <strong>ponechá diakritiku, výkričníky</strong> a znaky z iných jazykov (napr. Azbuka), aby bola aplikácia globálne použiteľná.
+            </div>
+
+            <h3>Technológie na pozadí (System vs. Local)</h3>
+            <p>V závislosti od typu zvoleného Pythonu sa použije iná technológia:</p>
+            <ul>
+                <li><strong>Systémový Python:</strong> Využíva sa vstavaný modul <code>venv</code>. Je to štandardná a spoľahlivá metóda, ktorá vytvorí ľahké prostredie. Toto prostredie je však pevne <strong>prepojené s hlavnou inštaláciou Pythonu</strong> vo vašom PC. Z tohto dôvodu nie je prenosné.</li>
+                <br>
+                <li><strong>Local Python (Embeddable):</strong> Využíva sa pokročilejšia knižnica <code>virtualenv</code>. Je špeciálne navrhnutá na prácu s prenosnými verziami a dokáže vytvoriť <strong>plne sebestačné a izolované prostredie</strong>. Toto je ideálna voľba pre prenosnosť.</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Threading:</strong> Celý proces tvorby beží v samostatnom vlákne (QThread). To znamená, že aj keď tvorba prostredia trvá 10 sekúnd, aplikácia "nezamrzne" a vy môžete ďalej pracovať.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 3.3 -->
+        <div id="row-actions" class="section-box">
+            <h1>3.3 Akcie v riadku a správa procesov</h1>
+            <p>Každý riadok v tabuľke reprezentuje jedno fyzické prostredie. Tlačidlá v stĺpci "Akcie" majú priamy prístup k systémovým procesom.</p>
+
+            <h3>▶ Play (Bezpečné spustenie cez dočasný .BAT)</h3>
+            <p>Keď kliknete na Play v riadku, aplikácia sa nespolieha na dlhé a krehké <code>cmd.exe</code> príkazy spojené znakom <code>&&</code>, ktoré by zlyhali pri medzerách v názvoch zložiek. Namiesto toho generuje <strong>dočasný dávkový súbor (.bat)</strong> na pozadí:</p>
+            <ol>
+                <li>V zložke Temp sa vytvorí bezpečný súbor (napr. <code>venvhub_run_123.bat</code>).</li>
+                <li>Do neho sa na samostatné riadky zapíše zmena adresára priamo do projektu, aktivácia venvu a spustenie vášho skriptu.</li>
+                <li>Tento súbor sa spustí cez <code>cmd.exe /k</code>. Okno zostane po skončení skriptu otvorené, aby ste videli prípadné chyby.</li>
+            </ol>
+
+            <h3>■ Stop (Process Registry & Watchdog)</h3>
+            <p>VenvHub Pro obsahuje interný systém <strong>Process Registry</strong>. Keď spustíte skript, aplikácia si zapamätá jeho <strong>PID</strong> (Process ID) a spáruje ho s cestou k venvu. Súčasne sa na tento proces napojí tzv. <strong>"Watchdog"</strong> (strážny pes).</p>
+            <p>Keď stlačíte Stop:</p>
+            <ol>
+                <li>Aplikácia sa pozrie do registra, aké PID bežia pod týmto venvom.</li>
+                <li>Nájde nielen hlavný proces (cmd.exe), ale aj všetky jeho "deti" (python.exe, subprocessy).</li>
+                <li>Vykoná <strong>Kill Tree</strong> - násilne ukončí celý strom procesov, aby nič nezostalo visieť v pamäti (cez modul <code>psutil</code>).</li>
+            </ol>
+            <div class="tip">
+                <strong>Čo robí Watchdog?</strong><br>
+                Tento proces na pozadí neustále monitoruje bežiaci skript. Ak skript spadne sám od seba (napr. kvôli chybe v kóde), Watchdog to zistí a nahlási stav "Chyba!" do hlavnej aplikácie, aj keď ste nestlačili tlačidlo Stop.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 3.4 -->
+        <div id="linking" class="section-box">
+            <h1>3.4 Logické prepájanie a skripty</h1>
+            
+            <h3>Predvolený Venv (hviezdička ★)</h3>
+            <p>Projekt môže mať viacero prostredí, ale len jedno je "hlavné". Kliknutím na <em>"Predvolený"</em> sa táto informácia zapíše do súboru <code>venv_hub_pro_config.json</code>. Toto nastavenie je trvalé a používa ho napríklad Mini-Bar alebo integrácia s VS Code.</p>
+
+            <h3>Výber spúšťacieho skriptu (Validácia)</h3>
+            <p>Aplikácia obsahuje bezpečnostnú poistku pri výbere <code>.py</code> súboru. Používa funkciu <code>os.path.relpath</code> na kontrolu cesty.</p>
+            <div class="alert">
+                <strong>Pravidlo:</strong> Môžete vybrať iba skript, ktorý sa nachádza fyzicky <strong>vnútri</strong> priečinka projektu. Ak sa pokúsite vybrať súbor z iného disku, aplikácia to zamietne, aby sa zachovala prenositeľnosť projektov na USB kľúčoch.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 3.5 -->
+        <div id="cloning" class="section-box">
+            <h1>3.5 Klonovanie (Inteligentná rekonštrukcia)</h1>
+            <p>Funkcia "Klonovať" (pravý klik na riadok) <strong>nie je</strong> obyčajné kopírovanie priečinka. Na pozadí vykoná inteligentnú rekonštrukciu, kompatibilnú aj s rýchlym UV inštalátorom:</p>
+            <ol>
+                <li><strong>Freeze:</strong> Získa zoznam balíčkov zo starého prostredia.</li>
+                <li><strong>Create:</strong> Vytvorí úplne nové, čisté prostredie.</li>
+                <li><strong>Install:</strong> Nainštaluje všetky balíčky zo zoznamu do nového prostredia v izolovanom režime (<code>--no-build-isolation</code> pre stabilitu).</li>
+            </ol>
+            
+            <h3>Stratégia klonovania podľa typu Venv</h3>
+            <p>Aplikácia pri klonovaní automaticky volí najlepšiu stratégiu:</p>
+            
+            <h4>Scenár 1: Klonovanie systémového Venv</h4>
+            <p>Aplikácia použije ten istý systémový Python, ktorý vytvoril originál (napr. <code>C:\Python311\python.exe</code>) na vytvorenie nového prostredia. Klon bude takisto systémový a ne-prenosný.</p>
+            
+            <h4>Scenár 2: Klonovanie Local/Embed Venv (Plán A - Rýchly)</h4>
+            <p>Ak pôvodný "rodičovský" priečinok s prenosným Pythonom (Local) stále existuje, aplikácia si prečíta cestu z "Rodného listu" a použije tento rodičovský Python na priame a veľmi rýchle vytvorenie klonu cez <code>virtualenv</code>. Je to najrýchlejšia a najspoľahlivejšia metóda.</p>
+            
+            <h4>Scenár 3: Klonovanie Local/Embed Venv (Plán B - Záložný)</h4>
+            <p>Ak ste rodičovský priečinok s Pythonom medzitým zmazali, aplikácia má záložný plán:
+                <ol>
+                    <li>Dočasne nainštaluje knižnicu <code>virtualenv</code> priamo do prostredia, ktoré chcete klonovať.</li>
+                    <li>Použije <code>python.exe</code> zvnútra tohto prostredia na spustenie <code>virtualenv</code> a vytvorenie nového klonu.</li>
+                </ol>
+                Táto metóda zaručuje, že <strong>klonovanie sa podarí vždy</strong>, aj keď pôvodný zdroj už neexistuje.
+            </p>
+        </div>
+        
+        <!-- PODKAPITOLA 3.6 -->
+        <div id="validator" class="section-box">
+            <h1>3.6 Venv Validator (Diagnostika a Oprava)</h1>
+            <p>VenvHub Pro obsahuje inteligentný systém na pozadí, ktorý chráni vaše prostredia pred chybami po presune alebo zmene na disku.</p>
+
+            <div class="alert">
+                <strong>Prečo sú systémové venv nestabilné?</strong><br>
+                Odpoveď sa skrýva v súbore <code>pyvenv.cfg</code> vo vnútri prostredia. U systémového venv obsahuje <strong>fixnú, absolútnu cestu</strong> k hlavnej inštalácii Pythonu, napr. <code>home = C:\Python311</code>. Ak toto prostredie presuniete na iné PC, linka sa stane neplatnou.
+            </div>
+
+            <h3>Ako Validator funguje?</h3>
+            <p>Pri každom zobrazení tabuľky aplikácia porovná cestu v <code>pyvenv.cfg</code> s realitou. Na základe diagnostiky priradí stav:</p>
+            <ul>
+                <li><strong style="color:green">VALID:</strong> Všetko je v poriadku.</li>
+                <li><strong style="color:orange">BROKEN - FIXABLE:</strong> Cesta je zlá, ale v PC existuje kompatibilná verzia Pythonu (dokáže riešiť aj downgrade či upgrade tretieho patch čísla). Ponúkne sa automatická oprava prostredia bez zmazania balíčkov.</li>
+                <li><strong style="color:red">BROKEN - INCOMPATIBLE:</strong> Potrebná verzia Pythonu (rovnaká hlavná vetva) na PC chýba. Ponúkne sa rekonštrukcia pomocou inej verzie.</li>
+            </ul>
+        </div>
+        
+        <!-- PODKAPITOLA 3.7 -->
+        <div id="birth-certificate" class="section-box">
+            <h1>3.7 Rodný list prostredia (venv_birth_certificate.json)</h1>
+            <p>Každé prostredie vytvorené cez VenvHub Pro obsahuje súbor <code>venv_birth_certificate.json</code>. Tento súbor je mozgom pokročilých funkcií aplikácie.</p>
+            
+            <h3>Aké informácie obsahuje?</h3>
+            <ul>
+                <li><strong>Názov projektu:</strong> Ku ktorému projektu prostredie logicky patrí.</li>
+                <li><strong>Verzia Pythonu:</strong> Presná verzia použitá pri tvorbe (napr. <code>3.12.4</code>).</li>
+                <li><strong>Cesta k rodičovskému Pythonu:</strong> Cesta k <code>python.exe</code>, z ktorého bolo prostredie vytvorené. <strong>Toto je kľúčové pre rýchle klonovanie Plánu A.</strong></li>
+                <li><strong>Zoznam balíčkov:</strong> Kompletný zoznam nainštalovaných balíčkov vo formáte JSON, ktorý sa automaticky aktualizuje pri každej zmene v Pip Manažéri.</li>
+                <li><strong>Dátum vytvorenia a poslednej úpravy:</strong> Pre lepšiu orientáciu.</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Dôležité:</strong> Vďaka tomuto súboru nemusí VenvHub Pro pri operáciách ako Klonovanie alebo generovanie .EXE spúšťať pomalé príkazy (ako <code>pip freeze</code> na zisťovanie stavu). Všetky informácie vie načítať okamžite. <strong>Tento súbor nikdy nemažte.</strong>
+            </div>
+        </div>
+
+        <!-- NOVÁ PODKAPITOLA 3.8 -->
+        <div id="vscode" class="section-box">
+            <h1>3.8 Integrácia s VS Code (Automatický Sync)</h1>
+            <p>Jedným z najčastejších problémov vývojárov je fakt, že si vytvoria virtuálne prostredie, ale ich editor kódu (Visual Studio Code) o ňom nevie, podčiarkuje importy červenou farbou a nenašepkáva kód (Linter/IntelliSense nefunguje).</p>
+            
+            <p>VenvHub Pro rieši tento problém <strong>úplne automaticky</strong> prostredníctvom tichej integrácie. Komunikuje priamo so skrytým priečinkom <code>.vscode/settings.json</code> vo vnútri vášho projektu.</p>
+
+            <h3>1. Vytvorenie nového prostredia (Šetrný zápis)</h3>
+            <p>Keď vo VenvHub Pro kliknete na <strong>+ VYTVORIŤ</strong>, aplikácia po úspešnom vytvorení venvu skontroluje váš projekt. Ak zistí, že VS Code ešte nemá priradené žiadne prostredie, <strong>automaticky mu ho priradí</strong>. Ak už vo VS Code máte nejaké prostredie nastavené manuálne, VenvHub Pro ho z rešpektu <em>neprepíše</em>.</p>
+
+            <h3>2. Zmena predvoleného prostredia (Tlačidlo ★)</h3>
+            <p>Ak v tabuľke VenvHub Pro kliknete na tlačidlo <strong>"Predvolený"</strong> (hviezdička), poviete tým aplikácii: <em>"Toto je teraz hlavné prostredie pre tento projekt."</em></p>
+            <p>VenvHub Pro okamžite pošle túto informáciu do VS Code a <strong>vynútene prepíše</strong> cestu v <code>settings.json</code> (kľúč <code>python.defaultInterpreterPath</code>). Akonáhle otvoríte VS Code, okamžite začne používať toto nové prostredie pre našepkávanie kódu.</p>
+
+            <div class="tip">
+                <strong>Inteligentný prepis Lokálnych balíčkov:</strong> Na pozadí sa deje ešte jedna zásadná vec. Keď zmeníte predvolený Venv, aplikácia ho "preskenuje". Ak zistí, že tento nový Venv obsahuje prelinkované Lokálne balíčky, okamžite ich natlačí aj do VS Code (<code>python.analysis.extraPaths</code>). Ak ich nemá, vyčistí VS Code od starých lokálnych balíčkov predchádzajúceho Venvu, aby vo vašom editore nevznikal chaos a "falošné" našepkávanie.
+            </div>
+
+            <h3>3. Zmazanie prostredia a čistka</h3>
+            <p>Ak cez VenvHub Pro <strong>❌ Zmažete</strong> prostredie, ktoré bolo zároveň predvoleným pre VS Code, aplikácia nielen zmaže súbory z disku, ale aj <strong>uprace po sebe v editore</strong>. Otvorí <code>settings.json</code>, vymaže neplatné cesty, a ak v súbore už nič iné nezostane, zmaže celý súbor aj zložku <code>.vscode</code>, aby vo vašom projekte nezostal neporiadok.</p>
+
+            <div class="tip">
+                <strong>Portable režim a oprava ciest:</strong><br>
+                Zlatý klinec integrácie prichádza pri <strong>Portable (prenosnom)</strong> režime. Ak máte projekt a prostredie na USB kľúči a prenesiete ho na iný počítač, zmení sa písmeno disku (napr. z <code>E:</code> na <code>F:</code>). 
+                <br><br>
+                VS Code by za normálnych okolností "zblbol", lebo by stále hľadal prostredie na disku <code>E:</code>. <strong>VenvHub Pro však v prenosnom režime po spustení opravy potichu otvorí VS Code nastavenia a prepíše staré písmeno disku na nové (cez modul <code>PortablePathLogic</code>).</strong> Vy len otvoríte editor a všetko funguje bez chyby!
+            </div>
+
+            <h3>4. Bezpečné zlučovanie (Merge) a ošetrenie chýb</h3>
+            <p>Aplikácia pristupuje k súboru <code>.vscode/settings.json</code> nedeštruktívnym spôsobom. To znamená, že nikdy neprepíše celý súbor svojou vlastnou verziou, ale vykonáva inteligentné spájanie (merge) na úrovni kľúčov.</p>
+
+            <ul>
+                <li><strong>Zachovanie užívateľských nastavení:</strong> Pri úprave nastavení sa existujúci súbor najprv načíta a naparstruje. Aplikácia upraví alebo pridá výhradne kľúče, ktoré sama spravuje. Ostatné nastavenia (ako napr. formátovanie, tabulátory či konfigurácia iných rozšírení) zostávajú nedotknuté.</li>
+                <li><strong>Spravované kľúče interpretéra:</strong> 
+                    <ul>
+                        <li>Nastavuje sa kľúč <code>python.defaultInterpreterPath</code> na vybraný venv a kľúč <code>python.terminal.activateEnvironment</code> na hodnotu <code>true</code>.</li>
+                        <li>Zároveň sa kvôli prečisteniu starých konfigurácií odstraňujú prebytočné kľúče <code>python.venvPath</code> a <code>python.envFile</code>.</li>
+                    </ul>
+                </li>
+                <li><strong>Selektívna správa analýzy ciest:</strong> Pri zápise lokálnych balíčkov do kľúča <code>python.analysis.extraPaths</code> aplikácia neodstráni vaše vlastné pridané cesty. Zoznam prefiltruje, vymaže z neho iba tie cesty, ktoré patria pod spravovaný priečinok <code>venv_hub_root</code>, a k nim pripojí nové prelinkovania.</li>
+                <li><strong>Ošetrenie poškodených súborov (Fail-safe):</strong> 
+                    <ul>
+                        <li>Ak je súbor <code>settings.json</code> syntakticky poškodený (napr. chýbajúca zátvorka) a zlyhá jeho čítanie (<code>json.JSONDecodeError</code>), aplikácia nezlyhá, ale vytvorí novú korektnú štruktúru, do ktorej zapíše potrebné parametre.</li>
+                        <li>Prípadné diskové obmedzenia alebo chýbajúce prístupové práva sú ošetrené na úrovni zachytávania systémových výnimiek (<code>OSError</code>), vďaka čomu nedôjde k pádu celého rozhrania.</li>
+                    </ul>
+                </li>
+            </ul>
+            
+        </div>
+        <div id="vscode-meta" class="section-box">
+            <h1>3.9 Rozšírené nástroje: VS Code Meta-Sync</h1>
+            <p>VenvHub Pro umožňuje vytvárať vlastné <strong>"projektové moduly"</strong> (Lokálne balíčky / Linker), ktoré do Visual Studio Code automaticky pichnú nielen Python kód, ale aj preddefinované <strong>Tasky (Úlohy)</strong> a <strong>Keybindings (Klávesové skratky)</strong>.</p>
+            
+            <h3>Ako to funguje?</h3>
+            <p>Ak v priečinku <code>Local Packages</code> vytvoríte balíček, ktorý obsahuje súbor <code>local_meta.json</code>, VenvHub Pro pri každom jeho prepojení do Venvu (Apply Changes) skontroluje jeho obsah. Ak v ňom nájde sekciu <code>vscode_integration</code>, zapíše tieto nastavenia priamo do vášho projektu (súbory <code>tasks.json</code> a <code>keybindings.json</code>).</p>
+
+            <div class="tip">
+                <strong>Výhoda:</strong> Nemusíte manuálne konfigurovať <code>tasks.json</code> v každom novom projekte. Stačí k prostrediu pripojiť váš lokálny nástroj a VenvHub Pro to urobí za vás.
+            </div>
+
+            <h3>Príklad: AI Sync Tool</h3>
+            <p>Predstavte si balíček, ktorý slúži na porovnávanie zmien v kóde pomocou AI. V <code>local_meta.json</code> definujete:</p>
+    
+            <div class="code-container">
+            <pre><code>{
+    "name": "AI VS Code Sync",
+    "vscode_integration": {
+        "tasks": [
+            {
+                "label": "AI: Otvoriť Diff Editor",
+                "type": "shell",
+                "command": "${command:python.interpreterPath}",
+                "args": ["-m", "ai_sync", "prepare", "${file}"]
+            }
+        ],
+        "keybindings": [
+            {
+                "key": "ctrl+k d",
+                "command": "workbench.action.tasks.runTask",
+                "args": "AI: Otvoriť Diff Editor"
+            }
+        ]
+    }
+}</code></pre>
+            </div>
+
+            <h3>Bezpečnosť a Inteligentná Synchronizácia</h3>
+            <ul>
+                <li><strong>Nedupluje nastavenia:</strong> Validátor pred zápisom kontroluje, či už daný Task alebo Skratka v projekte existuje. Ak áno, preskočí ich, aby vám nepokazil vlastné úpravy.</li>
+                <li><strong>Používa správny Python:</strong> Tasky sú automaticky naviazané na <code>${command:python.interpreterPath}</code>, čo zaručuje, že sa spustia vo vnútri práve aktívneho virtuálneho prostredia (ktoré ste vo VenvHub nastavili ako predvolené).</li>
+                <li><strong>Detailné logovanie:</strong> Celý proces synchronizácie môžete sledovať v logovacom okne pri ukladaní zmien (vidíte presne, ktorý task bol pridaný a ktorý preskočený).</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Poznámka pre vývojárov:</strong> Táto funkcia robí z vašich lokálnych balíčkov skutočné pluginy do editora. Ak váš Python modul potrebuje špecifické ovládanie vo VS Code, <code>local_meta.json</code> je cesta, ako to doručiť koncovému užívateľovi bez nutnosti akéhokoľvek manuálneho nastavovania.
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

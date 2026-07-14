@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Packages - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= LEFT MENU ================= -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="local_packages.html" class="active">🔗 10. Local Packages (Linker)</a>
+
+            <!-- SUB-MENU FOR LOCAL PACKAGES -->
+            <div class="sub-menu">
+                <a href="#princip">10.1 Principle of Dynamic Linking</a>
+                <a href="#struktura">10.2 Structure (local_meta.json)</a>
+                <a href="#nastavenie">10.3 Root Path Setup</a>
+                <a href="#pouzitie">10.4 Linking into Venv</a>
+                <a href="#vscode">10.5 VS Code Integration</a>
+                <a href="#pyinstaller">10.6 Bundling into .EXE</a>
+                <a href="#samooprava">10.7 Path Auto-repair (Portable)</a>
+                <a href="#sietove-disky">10.8 Network Drives and NAS</a>
+            </div>
+
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- ================= CONTENT ================= -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 10.1 -->
+        <div id="princip" class="section-box">
+            <h1>10. Local Packages (Shared Libraries)</h1>
+            
+            <h2>10.1 Operating Principle (No UAC)</h2>
+            <p>The <strong>Local Packages</strong> feature solves a common developer problem: how to efficiently share your own code (libraries, modules) between multiple projects without the need for constant copying or installation.</p>
+            
+            <p>VenvHub Pro requires <strong>no administrator rights (UAC)</strong> for linking and does not create physical copies or directory junctions on the disk. Instead, it utilizes an exceptionally clean, fast, and secure <strong>Python Import Hooks (sys.meta_path)</strong> architecture. The system automatically handles:</p>
+            <ul>
+                <li>Creating the mapping file <code>venvhub.json</code> in the <code>site-packages</code> folder of the target Venv.</li>
+                <li>Inserting a dynamic loader (<code>.pth</code> and <code>.py</code> file) that intercepts your imports at Python startup and directs them straight to your code.</li>
+                <li>Automatic silent installation of required external (PIP/UV) dependencies for the package.</li>
+                <li>Complete injection of absolute paths and tasks into VS Code (IntelliSense).</li>
+            </ul>
+        </div>
+
+        <!-- SUB-CHAPTER 10.2 -->
+        <div id="struktura" class="section-box">
+            <h2>10.2 Package Structure (local_meta.json)</h2>
+            <p>For VenvHub Pro to work with your package, every folder in the archive must contain a <code>local_meta.json</code> configuration file. This file defines the name, version, and requirements of the package.</p>
+
+            <h3>Metadata Entry Example:</h3>
+            <pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto;">
+{
+    "name": "MyDatabase",
+    "version": "1.2.0",
+    "short_description": "Provides connection to MongoDB",
+    "requires_local": ["MyLogger"],
+    "requires_pip": ["colorama", "pymongo"],
+    "vscode_integration": {
+        "tasks": [
+            {
+                "label": "Clear Database Cache",
+                "type": "shell",
+                "command": "python -c \"import db; db.clear()\""
+            }
+        ],
+        "keybindings": [
+            {
+                "key": "ctrl+shift+d",
+                "command": "workbench.action.tasks.runTask",
+                "args": "Clear Database Cache"
+            }
+        ]
+    }
+}</pre>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background-color: #f1f1f1; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Key</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Meaning</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>short_description</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">A short description displayed directly in the VenvHub Pro table.</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>requires_local</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">List of names of other folders in the same archive that this package requires.</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>requires_pip</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">List of PyPI packages to be automatically installed.</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>vscode_integration</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Allows defining custom commands (Tasks) and keybindings that are automatically added to the target project.</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SUB-CHAPTER 10.3 -->
+        <div id="nastavenie" class="section-box">
+            <h2>10.3 Root Path Setup</h2>
+            <p>Before the first use, you must tell the application where your local code archive is located:</p>
+            <ol>
+                <li>Open <strong>Manager (🖥️)</strong> -> <strong>Settings</strong> tab.</li>
+                <li>In the <strong>Basic Paths</strong> section, find the <strong>Local Packages</strong> entry.</li>
+                <li>Click the folder icon 📁 and select the folder where you keep your modules (each module in its own subfolder).</li>
+            </ol>
+            <div class="tip">
+                <strong>Tip:</strong> If you are using the Portable version on a USB drive, the path automatically adjusts to the current drive letter.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 10.4 -->
+        <div id="pouzitie" class="section-box">
+            <h2>10.4 Linking into Venv</h2>
+            <p>The actual process of adding a package to a specific environment is as follows:</p>
+            <ol>
+                <li>In the environment table, <strong>right-click</strong> on the selected Venv.</li>
+                <li>Select the <strong>🔗 Local Packages</strong> option.</li>
+                <li>In the window that opens, check the packages you want to use in the project.</li>
+                <li>Click <strong>💾 Save Changes (Relink)</strong>.</li>
+            </ol>
+
+            <div class="alert">
+                <strong>Dependency Automation:</strong> If you check "Package A" which requires "Package B", the system automatically reads its `local_meta.json`, writes both paths into the `venvhub.json` in the Venv, and silently installs all necessary PIP packages.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 10.5 -->
+        <div id="vscode" class="section-box">
+            <h2>10.5 VS Code Integration</h2>
+            <p>One of the greatest advantages of VenvHub Pro is automatic synchronization with the VS Code development environment. When you make a change in local packages:</p>
+            <ul>
+                <li>VenvHub Pro reads your <code>venvhub.json</code> and extracts the absolute source paths of the packages.</li>
+                <li>It sends these paths to the <code>python.analysis.extraPaths</code> field in the <code>settings.json</code> file of your VS Code project. <strong>Result:</strong> Pylance immediately recognizes your imports, code completion (IntelliSense) works flawlessly, and imports don't show red errors.</li>
+                <li>Simultaneously, your custom tasks (<code>tasks.json</code>) and shortcuts (<code>keybindings.json</code>) from the metadata are securely connected to the project.</li>
+            </ul>
+        </div>
+
+        <!-- SUB-CHAPTER 10.6 -->
+        <div id="pyinstaller" class="section-box">
+            <h2>10.6 Bundling into PyInstaller (.EXE)</h2>
+            <p>Due to the new no-UAC architecture (Import Hooks), local packages are not physically present in the environment folder. Standard PyInstaller would not automatically find them during static code analysis.</p>
+            
+            <div class="tip">
+                <strong>VenvHub Auto-Injector (Full Automation):</strong> 
+                When creating the final <code>.exe</code> program, you don't have to do <strong>anything extra</strong> regarding local packages in the PyInstaller Builder! 
+                <br><br>
+                The VenvHub Pro Builder includes an intelligent pre-processor. Before launching PyInstaller, it automatically reads the <code>venvhub.json</code> file in your environment and generates in the background:
+                <ul style="margin-top: 10px; margin-bottom: 0;">
+                    <li>The <code>--paths</code> parameter, allowing PyInstaller to immediately find all your Python code from local packages (without needing to list "Hidden imports").</li>
+                    <li>The <code>--add-data</code> parameter for every single linked package. The application automatically bundles all your images, .json configurations, and UI templates found within your modules directly into the resulting <code>.exe</code>.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 10.7 -->
+        <div id="samooprava" class="section-box">
+            <h2>10.7 Path Auto-repair on USB Drive (Portable Mode)</h2>
+            <p>The new architecture makes transferring the application and projects on a USB drive extremely reliable and user-friendly.</p>
+            
+            <div class="tip">
+                <strong>Lightning-fast Silent Auto-repair:</strong> Whenever you launch the application on a new computer:
+                <ol>
+                    <li>VenvHub Pro detects that the drive letter has changed (e.g., from <code>E:\</code> to <code>F:\</code>).</li>
+                    <li>It opens the <code>venvhub.json</code> file in your environment folder.</li>
+                    <li>Instantly and <strong>completely silently</strong>, it overwrites the old drive letters with the new ones.</li>
+                </ol>
+                <p style="margin-bottom: 0;"><em>Compared to the older version (which used Windows Junctions), a <strong>UAC window never pops up</strong> for repair, and the process completes in a fraction of a second.</em></p>
+            </div>
+        </div>
+
+
+        <!-- SUB-CHAPTER 10.8 -->
+        <div id="sietove-disky" class="section-box">
+            <h2>10.8 Network Drives (NAS and Shared Folders)</h2>
+            <div class="tip" style="border-left-color: #28a745; background-color: #eafaf1; color: #333;">
+                <strong>✅ Full support for placement anywhere!</strong>
+                <p style="margin-top: 10px; margin-bottom: 0;">A huge advantage of the new "Hook" architecture (compared to outdated Hard Links) is that your "Local Packages Root" <strong>can be located truly anywhere</strong>. </p>
+                <br>
+                <p style="margin-bottom: 0;">Whether it's your local drive, a network drive (NAS), or a cloud folder – everything works without issues. Since VenvHub Pro writes paths only as plain text into a JSON file, the operating system (Windows/Linux) no longer cares about the type of drive where the data is physically stored.</p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

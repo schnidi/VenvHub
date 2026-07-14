@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PipEWindow</class>
+ <widget class="QDialog" name="PipEWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>750</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Editovateľné balíčky (pip -e)</string>
+  </property>
+  <layout class="QVBoxLayout" name="main_layout">
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <item>
+    <layout class="QVBoxLayout" name="content_layout">
+     <property name="leftMargin"><number>10</number></property>
+     <property name="topMargin"><number>10</number></property>
+     <property name="rightMargin"><number>10</number></property>
+     <property name="bottomMargin"><number>10</number></property>
+     <item>
+      <widget class="QLabel" name="lbl_header">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Inštalované cez pip -e pre: NázovVenvu</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTableWidget" name="table_packages">
+       <property name="columnCount"><number>3</number></property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <column><property name="text"><string>Názov balíčka</string></property></column>
+       <column><property name="text"><string>Verzia</string></property></column>
+       <column><property name="text"><string>Lokálna cesta</string></property></column>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="action_layout">
+       <item>
+        <widget class="QPushButton" name="btn_refresh">
+         <property name="text"><string>🔄 Obnoviť</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_remove_package">
+         <property name="text"><string>❌ Odinštalovať vybraný</string></property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation"><enum>Qt::Horizontal</enum></property>
+         <property name="sizeHint" stdset="0">
+          <size><width>40</width><height>20</height></size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_add_package">
+         <property name="minimumSize">
+          <size><width>180</width><height>30</height></size>
+         </property>
+         <property name="font">
+          <font><weight>75</weight><bold>true</bold></font>
+         </property>
+         <property name="text"><string>➕ Inštalovať z priečinka (pip -e)</string></property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="log_output">
+       <property name="maximumSize">
+        <size><width>16777215</width><height>100</height></size>
+       </property>
+       <property name="font">
+        <font><family>Consolas</family></font>
+       </property>
+       <property name="readOnly"><bool>true</bool></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

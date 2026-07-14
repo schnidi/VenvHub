@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= LEFT MENU ================= -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>VenvHub Pro</h2>
+        <span>User Manual v2.5.14</span>
+    </div>
+    <div class="nav-links">
+        <!-- FEATURES OVERVIEW (inactive) -->
+        <a href="features.html">✨ Features Overview</a>
+
+        <!-- 1. INSTALLATION (ACTIVE) -->
+        <a href="index.html" class="active">📥 1. Installation and First Run</a>
+        <!-- Sub-chapters for this page -->
+        <div class="sub-menu">
+            <a href="#proces">1.1 Installation Process</a>
+            <a href="#rezimy">1.2 Classic vs. Portable Version</a>
+            <a href="#cesty">1.3 Where is the data stored?</a>
+            <a href="#prenos">1.4 Project Transfer and Repairs</a>
+            <a href="#prve-spustenie">1.5 First Launch (Important)</a>
+        </div>
+
+        <!-- OTHER CHAPTERS -->
+        <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+        <a href="manager.html">📁 3. Environment Manager</a>
+        <a href="pip.html">📦 4. Pip Package Manager</a>
+        <a href="multirun.html">🔄 5. Batch Run</a>
+        <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+        <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+        <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+        <a href="autostart.html">🔄 9. Container and Autostart</a>
+        <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+        <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+        <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+        <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+        <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+    </div>
+</div>
+
+    <!-- ================= CONTENT ================= -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 1.1 -->
+        <div id="proces" class="section-box">
+            <h1>1. Installation and First Run</h1>
+            
+            <h2>1.1 Installation Process</h2>
+            <p>VenvHub Pro installation is designed to be as customizable as possible to fit your needs. After downloading and running the installer, the wizard will guide you through the following steps:</p>
+            <ol>
+                <li><strong>Language Selection:</strong> Right at the start, you choose the installer language (this language may differ from the application language, which you can change later).</li>
+                <li><strong>Mode Selection:</strong> This is the most important step of the installation. The installer will ask if you want to perform a <strong>Classic Windows Installation</strong>, or if you want to extract the application as a <strong>Portable</strong> version. The differences are detailed below.</li>
+                <li><strong>Folder Selection and Completion:</strong> Choose the location and the installer will prepare all necessary files.</li>
+            </ol>
+        </div>
+
+        <!-- SUB-CHAPTER 1.2 -->
+        <div id="rezimy" class="section-box">
+            <h2>1.2 What is the difference between Classic and Portable versions?</h2>
+            <p>VenvHub Pro includes intelligent environment detection. The way the application stores your settings, downloaded themes (skins), and other data depends exclusively on which type of installation you chose.</p>
+
+            <h3>🏢 Classic Windows Installation</h3>
+            <p>This mode is ideal for standard users who work on only one computer. The application is installed normally (for example, in <code>C:\Program Files\VenvHubPro</code>) and creates a shortcut in the Start menu.</p>
+            <ul>
+                <li><strong>Security:</strong> Since Windows protects the Program Files folder from overwriting, the application does not store your personal data there.</li>
+                <li><strong>User Separation:</strong> If multiple users use one computer (having different Windows accounts), each will have their own settings and their own themes.</li>
+            </ul>
+
+            <h3>🧳 Portable Installation</h3>
+            <p>This mode is intended for developers who want an "all-in-one" application. During this installation, a special file <code>_is_portable.ini</code> is created in the application folder, which serves as a flag for portable mode.</p>
+            <ul>
+                <li><strong>Independence:</strong> The application leaves almost no traces in the Windows system (no registry entries).</li>
+                <li><strong>Mobility:</strong> You can copy the entire VenvHub Pro folder to a USB drive and use it outside the primary disk.</li>
+            </ul>
+        </div>
+
+        <!-- SUB-CHAPTER 1.3 -->
+        <div id="cesty" class="section-box">
+            <h2>1.3 Where are my data stored? (Complete Overview)</h2>
+            <p>Depending on the choice above, the application stores its files in different locations on the disk:</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background-color: #f1f1f1; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Data Type</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Classic Installation</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Portable Version</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Configuration and Themes</strong><br><small>(<code>venv_hub_pro_config.json</code>, <code>themes/</code>)</small></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>%APPDATA%\VenvHubPro\</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Directly in the application folder</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Local Python Versions</strong><br><small>(<code>PyRuntimes/</code>)</small></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">
+                        <code>C:\ProgramData\VenvHubPro\PyRuntimes</code><br>
+                        <small>(if not available, <code>%LOCALAPPDATA%\VenvHubPro\PyRuntimes</code>)</small>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Directly in the application folder</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Autostart Groups</strong><br><small>(<code>autostart_multi/</code>)</small></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>%APPDATA%\VenvHubPro\autostart_multi\</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">In the <code>assets/autostart_multi/</code> folder</td>
+                </tr>
+                 <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Temporary Files</strong><br><small>(Downloaded Python ZIPs, etc.)</small></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>%APPDATA%\VenvHubPro\Downloads\</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">In the <code>Downloads/</code> folder</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SUB-CHAPTER 1.4 -->
+        <div id="prenos" class="section-box">
+            <h2>1.4 Project Transfer, Protection, and Repair Mechanisms</h2>
+            <p>VenvHub Pro contains intelligent protection and repair mechanisms that prevent environment damage when transferring between different computers or when changing drive letters on USB.</p>
+
+            <h3>Scenario A: Drive Letter Repair (Only for Embed venvs)</h3>
+            <p>This mechanism is automatically activated at application startup if it runs in Portable mode (e.g., from a USB drive). Imagine you have USB connected as drive <code>E:</code> at home and as <code>F:</code> at work.</p>
+            <ol>
+                <li>The application detects at startup that it is running from disk <code>F:</code>.</li>
+                <li>It loads paths to your portable (Embed) venvs, which still point to disk <code>E:</code>.</li>
+                <li>Automatically and silently in the background, it overwrites all old drive letters with the new letter <code>F:</code>. It repairs not only its settings but also paths inside the activation scripts (e.g., <code>activate.bat</code>) of each portable environment.</li>
+            </ol>
+            <div class="tip">
+                <strong>System Venvs are protected:</strong> For system environments, the paths to Python (pointing to the system disk <code>C:</code>) are never overwritten or modified. They remain in their original state so that they are immediately unlocked upon returning to the home computer.
+            </div>
+
+            <h3>Scenario B: Hardware Lock and Blocking (System Venv)</h3>
+            <p>This scenario occurs if you transfer a USB drive with system environments (which use the classic Python installed in your system on <code>C:</code>) to another computer (PC2), where this Python is not present or has a different version.</p>
+            <ol>
+                <li>When creating a system venv in Portable mode, the program quickly reads your computer's hardware fingerprint (formed from the PC name and the unique <code>ComputerHardwareId</code> identifier from the registries) and writes it to the <code>portable_system_py.json</code> file.</li>
+                <li>If you connect the USB drive to another computer (PC2), VenvHub Pro immediately detects the hardware mismatch against the <code>portable_system_py.json</code> file.</li>
+                <li>For security reasons (protection against C-library incompatibility and path corruption), the application <strong>completely blocks</strong> execution (Play), cloning, editing in VS Code, and access to the Pip manager for this venv.</li>
+            </ol>
+            <div class="alert">
+                <strong>Warning:</strong> A blocked system venv is not destroyed or modified. After reconnecting the USB drive to your original computer (PC1), the program verifies the hardware match and immediately unlocks the venv safely. On a foreign computer (PC2), you can only delete it or create a new clean portable (Embed) venv.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 1.5 -->
+        <div id="prve-spustenie" class="section-box">
+            <h2>1.5 First Launch (Path Settings)</h2>
+            <p>After successful installation (regardless of which mode you chose), launch the application. On the very first run, both the table and the project list will be empty. <strong>For the application to function at all, you must show it where you have your data on the disk.</strong></p>
+            
+            <p>Open the main Manager window (by clicking the 🖥️ icon or ⚙️ -> Settings) and set these two critical paths:</p>
+            
+            <ol>
+                <li><strong>Projects Root:</strong><br> Click the folder icon 📁 and select the main folder where you have all your Python projects stored (for example, <code>D:\Python_Projects</code>). The application will load all subfolders and treat them as separate projects.</li>
+                <br>
+                <li><strong>Venv Hub:</strong><br> This is the place where VenvHub Pro will physically create all virtual environments. <strong>We recommend creating a completely empty and separate folder</strong> specifically for this purpose (for example, <code>C:\Venvs</code> or <code>D:\My_Venvs</code>).</li>
+            </ol>
+
+            <div class="tip">
+                <strong>Only one instance:</strong> The application is designed to run only one copy at a time. If you try to run it a second time, the already running window will be brought to the foreground instead.
+            </div>
+
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Pro-tip from practice:</strong> Never set "Venv Hub" directly into the folder with your projects! The application manages environments centrally (in one place) and links them to projects only logically. Mixing code and virtual environments would cause chaos.
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

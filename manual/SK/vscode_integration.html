@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kompletná VS Code Integrácia - VenvHub Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Špecifické štýly pre diagram toku dát */
+        .diagram-container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            color: #d4d4d4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border: 1px solid #333;
+        }
+
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .diag-box {
+            background-color: #252526;
+            border: 2px solid #007acc;
+            border-radius: 6px;
+            padding: 15px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .diag-box.vscode {
+            border-color: #2ecc71;
+            background-color: #1a251e;
+        }
+
+        .diag-box h4 {
+            margin: 0 0 10px 0;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .diag-box p {
+            margin: 0;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .diag-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 12px;
+            min-width: 120px;
+        }
+
+        .diag-arrow span {
+            background-color: #333;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .arrow-line {
+            height: 2px;
+            width: 100%;
+            background-color: #007acc;
+            position: relative;
+        }
+
+        .arrow-line::after {
+            content: '▶';
+            position: absolute;
+            right: -8px;
+            top: -9px;
+            color: #007acc;
+            font-size: 16px;
+        }
+        
+        .code-inline {
+            background-color: #333;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #ce9178;
+            font-family: Consolas, monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ĽAVÉ MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+            <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+            <a href="manager.html">📁 3. Správca Prostredí</a>
+            <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+            <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profily</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="vscode_integration.html" class="active">🔌 13. VS Code Integrácia</a>
+
+            <!-- PODKAPITOLY PRE VS CODE INTEGRÁCIU -->
+            <div class="sub-menu">
+                <a href="#diagram">13.1 Schéma toku dát</a>
+                <a href="#settings-json">13.2 Inteligentný settings.json</a>
+                <a href="#pylance">13.3 Kŕmenie Pylance (IntelliSense)</a>
+                <a href="#meta-sync">13.4 Meta-Sync (Tasks a Keys)</a>
+            </div>
+
+            <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+        </div>
+    </div>
+
+    <!-- OBSAH -->
+    <div class="content">
+
+        <div class="section-box">
+            <h1>13. Kompletná integrácia s VS Code</h1>
+            <p>VenvHub Pro neslúži len ako "spúšťač" editora. Na pozadí obsahuje rozsiahlu logiku (v moduloch ako <code>vs_code_json.py</code> a <code>system_sync.py</code>), ktorá Visual Studio Code <strong>aktívne konfiguruje</strong>. Stará sa o to, aby bol váš editor vždy pripravený pracovať s tými správnymi závislosťami, cestami a nástrojmi, bez toho, aby ste museli čokoľvek konfigurovať ručne.</p>
+        </div>
+
+        <!-- SCHÉMA TOKU DÁT -->
+        <div id="diagram" class="section-box">
+            <h2>13.1 Schéma: Ako VenvHub kŕmi VS Code</h2>
+            <p>Tento diagram znázorňuje, čo všetko VenvHub Pro robí na pozadí predtým, než na monitore reálne uvidíte okno editora:</p>
+
+            <div class="diagram-container">
+                <!-- Riadok 1: Nastavenie Venvu -->
+                <div class="diagram-row">
+                    <div class="diag-box">
+                        <h4>VenvHub: Správca</h4>
+                        <p>Zmena predvoleného prostredia (Venv)</p>
+                    </div>
+                    <div class="diag-arrow">
+                        <span>Zlúčenie JSON</span>
+                        <div class="arrow-line"></div>
+                    </div>
+                    <div class="diag-box vscode">
+                        <h4>.vscode/settings.json</h4>
+                        <p>Zápis: <span class="code-inline">python.defaultInterpreterPath</span></p>
+                    </div>
+                </div>
+
+                <!-- Riadok 2: Lokálne balíčky (Linker) -->
+                <div class="diagram-row">
+                    <div class="diag-box">
+                        <h4>VenvHub: Linker</h4>
+                        <p>Prelinkovanie lokálnych kódov</p>
+                    </div>
+                    <div class="diag-arrow">
+                        <span>Injektovanie ciest</span>
+                        <div class="arrow-line"></div>
+                    </div>
+                    <div class="diag-box vscode">
+                        <h4>.vscode/settings.json</h4>
+                        <p>Zápis: <span class="code-inline">python.analysis.extraPaths</span></p>
+                    </div>
+                </div>
+
+                <!-- Riadok 3: Meta-Sync (Tasks) -->
+                <div class="diagram-row">
+                    <div class="diag-box">
+                        <h4>VenvHub: Meta-Sync</h4>
+                        <p>Čítanie <code>local_meta.json</code></p>
+                    </div>
+                    <div class="diag-arrow">
+                        <span>Generovanie</span>
+                        <div class="arrow-line"></div>
+                    </div>
+                    <div class="diag-box vscode">
+                        <h4>.vscode/tasks.json & keys</h4>
+                        <p>Vloženie skratiek a úloh editora</p>
+                    </div>
+                </div>
+
+                <!-- Riadok 4: Spustenie -->
+                <div class="diagram-row">
+                    <div class="diag-box">
+                        <h4>VenvHub: Mini-Bar</h4>
+                        <p>Kliknutie na ikonu VS Code</p>
+                    </div>
+                    <div class="diag-arrow">
+                        <span>CLI Parametre</span>
+                        <div class="arrow-line"></div>
+                    </div>
+                    <div class="diag-box vscode">
+                        <h4>Proces: code.exe</h4>
+                        <p><span class="code-inline">--user-data-dir</span> (Izolovaný Profil)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS.JSON -->
+        <div id="settings-json" class="section-box">
+            <h2>13.2 Bezpečné zlučovanie (Merge) v settings.json</h2>
+            <p>VenvHub Pro <strong>nikdy neprepíše celý váš konfiguračný súbor</strong>. Na manipuláciu s <code>.vscode/settings.json</code> používa pokročilý ne-deštruktívny algoritmus.</p>
+
+            <ul>
+                <li><strong>Naparsovanie a zachovanie:</strong> Aplikácia si najprv súbor prečíta. Zachová všetky vaše doterajšie osobné nastavenia (ako veľkosť tabulátorov, farby, nastavenia iných pluginov).</li>
+                <li><strong>Aplikovanie Interpretra:</strong> Premaže zastarané kľúče (napr. <code>python.venvPath</code>) a nastaví kľúč <code>python.defaultInterpreterPath</code> presne na <code>python.exe</code> z vami vybraného prostredia.</li>
+                <li><strong>Fail-Safe mechanizmus:</strong> Ak je váš <code>settings.json</code> poškodený (chýba zátvorka a nedá sa načítať cez <code>json.loads</code>), VenvHub aplikáciu nezhodí. Potichu vytvorí novú, zdravú štruktúru, aby IntelliSense nezlyhalo.</li>
+                <li><strong>Upratovanie pri mazaní:</strong> Keď z VenvHubu zmažete prostredie, ktoré bolo pre VS Code "Predvolené", aplikácia sama otvorí <code>settings.json</code> a túto neplatnú cestu z neho zmaže. Ak po nej zostane súbor úplne prázdny, zmaže celý súbor a zložku <code>.vscode</code>, aby vám v projekte nenechávala neporiadok.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Záchrana prenosnosti (USB Kľúče):</strong> Ak projekt prenesiete na iný PC a zmení sa písmeno disku, VS Code by za normálnych okolností prestal fungovať. VenvHub Pro však pri štarte preskenuje <code>settings.json</code> a v zlomku sekundy opraví staré písmeno disku za nové (cez <code>PortablePathLogic</code>).
+            </div>
+        </div>
+
+        <!-- PYLANCE A INTELLISENSE -->
+        <div id="pylance" class="section-box">
+            <h2>13.3 Kŕmenie Pylance (Našepkávanie kódu)</h2>
+            <p>Aby vám po pridaní vlastných lokálnych balíčkov nesvietili importy na červeno (ModuleNotFoundError vo VS Code), VenvHub Pro zabezpečuje kompatibilitu dvomi rôznymi spôsobmi, podľa toho, akú technológiu použijete:</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background-color: #f1f1f1; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Zvolená technológia</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Ako s ňou VenvHub prepája VS Code?</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Modul: Lokálne balíčky (Linker)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Keď pripojíte balíček, VenvHub vloží jeho absolútnu cestu do poľa <code>python.analysis.extraPaths</code> v <code>settings.json</code>. Pri odpojení balíčka aplikácia <strong>túto cestu nájde a z poľa ju bezpečne vymaže</strong> bez toho, aby vymazala vaše vlastné (ručne pridané) cesty.</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Modul: Editovateľné (pip -e)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Pri tejto metóde sa do <code>settings.json</code> <strong>nezapisuje vôbec nič</strong>. Namiesto toho Pip vo vnútri Venvu vytvorí <code>.pth</code> súbor. Analyzátor Pylance vo VS Code je natoľko inteligentný, že si tento súbor natívne prečíta sám. VenvHub sa v tomto prípade stará "len" o automatickú inštaláciu a opravu písmen diskov.</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- META-SYNC -->
+        <div id="meta-sync" class="section-box">
+            <h2>13.4 Meta-Sync (Injektovanie Tasks a Keybindings)</h2>
+            <p>Ak tvoríte pokročilé Python balíčky a nástroje, niekedy k nim potrebujete pridať aj špecifické ovládanie priamo do editora (napr. spúšťanie scriptu stlačením klávesy <code>F5</code> alebo príkaz v termináli VS Code).</p>
+            
+            <p>VenvHub Pro funguje ako "Plugin Manager" pre váš editor. Keď pomocou modulu <strong>Linker</strong> pripojíte do Venvu lokálny balíček, VenvHub na pozadí preskúma jeho konfiguráciu:</p>
+            
+            <ol>
+                <li>Nájde vo vašom balíčku súbor <code>local_meta.json</code>.</li>
+                <li>Hľadá v ňom špeciálny kľúč <code>"vscode_integration"</code>.</li>
+                <li>Vezme všetky zadefinované <strong>Tasks (Úlohy)</strong> a zapíše ich do <code>.vscode/tasks.json</code> vo vašom projekte.</li>
+                <li>Vezme všetky <strong>Keybindings (Skratky)</strong> a zapíše ich do <code>.vscode/keybindings.json</code>.</li>
+                <li><strong>Anti-duplikácia:</strong> Algoritmus pred zápisom vždy preverí, či sa daná úloha v súbore už nenachádza, aby nevytváral duplicity pri viacnásobnom prelinkovaní.</li>
+            </ol>
+
+            <div class="alert" style="border-left-color: #2ecc71; background-color: #f4fbf7;">
+                <strong>Sila premenných:</strong> Takto injektované úlohy sú vo vašom <code>local_meta.json</code> písané univerzálne. Vďaka premenej <code>${command:python.interpreterPath}</code> VS Code vždy spustí danú úlohu pod tým Python Venvom, ktorý ste mu vo VenvHub Pro priradili!
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

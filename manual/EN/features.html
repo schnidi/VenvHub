@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features Overview - VenvHub Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specific styles for this presentation page (supplementing style.css) */
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, #2c3e50 100%);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        .hero h1 { color: #fff; margin-bottom: 10px; border: none; font-size: 2.5em; }
+        .hero p { font-size: 1.2em; color: #a8b2bd; margin-top: 0; }
+        .hero .version { display: inline-block; background: var(--primary-color); padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em; margin-top: 15px; }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+            border-color: var(--primary-color);
+        }
+        .feature-card h3 { color: var(--primary-color); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        .feature-card p { font-size: 14px; color: #555; margin-bottom: 0; line-height: 1.6; }
+        
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        .comparison-table th, .comparison-table td { padding: 15px; text-align: center; border-bottom: 1px solid #eaeaea; }
+        .comparison-table th { background-color: #f8f9fa; font-weight: 600; color: #333; }
+        .comparison-table th:first-child { text-align: left; width: 40%; }
+        .comparison-table td:first-child { text-align: left; font-weight: 500; color: #444; }
+        .comparison-table .check { color: #2ecc71; font-weight: bold; font-size: 1.2em; }
+        .comparison-table .cross { color: #e74c3c; font-size: 1.2em; }
+        .comparison-table .highlight-col { background-color: #f0f7ff; border-left: 2px solid var(--primary-color); border-right: 2px solid var(--primary-color); }
+        .comparison-table th.highlight-col { background-color: var(--primary-color); color: white; border-top: 2px solid var(--primary-color); }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="features.html" class="active">✨ Features Overview</a>
+
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- HERO SECTION -->
+        <div class="hero">
+            <h1>VenvHub Pro</h1>
+            <p>The ultimate developer tool for managing, orchestrating, and distributing Python applications.</p>
+            <div class="version">Version v2.5.14 | Created by: Seal and Lube, spol. s r.o.</div>
+        </div>
+
+        <div class="section-box" style="padding-bottom: 20px;">
+            <h2>Why VenvHub Pro?</h2>
+            <p>VenvHub Pro is not just another GUI wrapper for the command line. It is a <strong>comprehensive IDE-agnostic environment</strong> that solves real-world problems for Python developers – from "Dependency Hell" and carrying code on USB sticks, to microservices orchestration and packaging into <code>.exe</code> files. It replaces 5 different tools with one smooth, asynchronous application with instant response (in-memory cache).</p>
+        </div>
+
+        <!-- FEATURES GRID -->
+        <div class="feature-grid">
+            <!-- Architecture -->
+            <div class="feature-card">
+                <h3>📁 Separated Architecture</h3>
+                <p>No more code clutter! VenvHub Pro <strong>physically separates your source code from virtual environments</strong>. Your projects stay clean, while all Venvs are centrally managed in a dedicated <em>Venv Hub</em> folder. If you delete a Venv, your code is safe.</p>
+            </div>
+
+            <!-- VS Code -->
+            <div class="feature-card">
+                <h3>💻 Isolated VS Code Profiles</h3>
+                <p>Open VS Code and IntelliSense works immediately. VenvHub silently synchronizes <code>settings.json</code>, assigns Venvs, Tasks, and Keybindings. <strong>Additionally, it offers fully isolated user profiles</strong> – each developer or project can have separate extensions and editor settings.</p>
+            </div>
+
+            <!-- Pip Manager -->
+            <div class="feature-card">
+                <h3>📦 Dual-Scan Pip & UV Autopilot</h3>
+                <p>Extremely fast package manager. It uses parallel scanning to detect outdated libraries. <strong>Revolutionary feature:</strong> When using the <code>uv</code> installer, VenvHub can perform a deep check after an update and <strong>automatically fix dependency conflicts (Auto-Fix)</strong> by precisely downgrading broken packages.</p>
+            </div>
+
+            <!-- Container -->
+            <div class="feature-card">
+                <h3>🔄 Venv Orchestrator & Watchdog</h3>
+                <p>Group Venvs (Frontend, Backend, DB) into Containers. VenvHub launches them in precise order using <strong>timers and a signaling "Hook"</strong> to guarantee startup. The Watchdog monitors process PIDs and <strong>intelligently restarts (Respawn)</strong> them up to 3 times in case of failure.</p>
+            </div>
+
+            <!-- PyInstaller -->
+            <div class="feature-card">
+                <h3>🛠 PyInstaller & Auto-Injector</h3>
+                <p>Visual creation of <code>.exe</code> files. Not only does it bundle the <code>uv.exe</code> installer and generate a "Birth Certificate" (JSON metadata) with the Python version, but thanks to the <strong>Auto-Injector</strong>, it automatically reads linked local packages and dynamically inserts their source code and assets into the build.</p>
+            </div>
+
+            <!-- Local Python -->
+            <div class="feature-card">
+                <h3>🐍 Local Embeddable Runtimes</h3>
+                <p>Download "Local" Python versions from ZIP archives without needing to install them into Windows (no registry or PATH modifications). VenvHub <strong>automatically "hacks" and repairs them</strong> (installs Pip, unlocks <code>site-packages</code> in the <code>._pth</code> file) so they behave like full installations.</p>
+            </div>
+
+            <!-- Portable -->
+            <div class="feature-card">
+                <h3>🧳 Portability Protection (Portable)</h3>
+                <p>Coding on a USB drive? If the drive letter changes on another PC, the <strong>Venv Validator</strong> automatically repairs all paths. <strong>Simultaneously protects your code:</strong> The System Listener monitors the computer's Hardware ID and prevents incompatible system Venvs from running on unauthorized machines.</p>
+            </div>
+
+            <!-- UI/UX -->
+            <div class="feature-card">
+                <h3>🎨 Dual-Theme & AI Modding</h3>
+                <p>Modern UI built on a robust bridge for PyQt6/PySide6, running completely asynchronously (doesn't block during installations). It includes a system of built-in and user-defined QSS skins. Have an AI recolor your skin and import it back into the application with one click!</p>
+            </div>
+        </div>
+
+        <!-- COMPARISON TABLE -->
+        <div class="section-box">
+            <h2>Comparison with Competition</h2>
+            <p>How does VenvHub Pro stack up against the standard Command Line (CLI) and common IDE tools (like PyCharm or VS Code)?</p>
+            
+            <div style="overflow-x: auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Pure CLI (Command Line)</th>
+                            <th>Common IDE (VS Code / PyCharm)</th>
+                            <th class="highlight-col">VenvHub Pro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Central Venv storage (separate from code)</td>
+                            <td><span class="cross">Tools like virtualenvwrapper</span></td>
+                            <td><span class="check">Partial</span></td>
+                            <td class="highlight-col"><span class="check">Yes (Venv Hub Architecture)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Pip Manager (Dual-Scan & UV Auto-Fix)</td>
+                            <td><span class="cross">No</span></td>
+                            <td><span class="check">Basic</span></td>
+                            <td class="highlight-col"><span class="check">Yes (Auto Dependency Fix)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Portability protection & USB path Auto-Fix</td>
+                            <td><span class="cross">No (Environment breaks)</span></td>
+                            <td><span class="cross">No</span></td>
+                            <td class="highlight-col"><span class="check">Yes (Hardware ID Hashing)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Isolated Editor User Profiles</td>
+                            <td><span class="cross">No</span></td>
+                            <td><span class="cross">No (Global/Workspace only)</span></td>
+                            <td class="highlight-col"><span class="check">Yes (Custom extensions & data)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Orchestration, Hook, and Auto-Respawn after crash</td>
+                            <td><span class="cross">No (Requires PM2 / Docker)</span></td>
+                            <td><span class="cross">No</span></td>
+                            <td class="highlight-col"><span class="check">Yes (Integrated into GUI)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Download & Fix Embeddable Pythons</td>
+                            <td><span class="cross">Manual ZIP downloads</span></td>
+                            <td><span class="cross">No</span></td>
+                            <td class="highlight-col"><span class="check">Yes (Directly from UI)</span></td>
+                        </tr>
+                        <tr>
+                            <td>PyInstaller GUI with Local Package Auto-Injector</td>
+                            <td><span class="cross">Long terminal commands</span></td>
+                            <td><span class="cross">No</span></td>
+                            <td class="highlight-col"><span class="check">Yes (Integrated Builder)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

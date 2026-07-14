@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete VS Code Integration - VenvHub Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specific styles for the data flow diagram */
+        .diagram-container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            color: #d4d4d4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border: 1px solid #333;
+        }
+
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .diag-box {
+            background-color: #252526;
+            border: 2px solid #007acc;
+            border-radius: 6px;
+            padding: 15px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .diag-box.vscode {
+            border-color: #2ecc71;
+            background-color: #1a251e;
+        }
+
+        .diag-box h4 {
+            margin: 0 0 10px 0;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .diag-box p {
+            margin: 0;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .diag-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 12px;
+            min-width: 120px;
+        }
+
+        .diag-arrow span {
+            background-color: #333;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .arrow-line {
+            height: 2px;
+            width: 100%;
+            background-color: #007acc;
+            position: relative;
+        }
+
+        .arrow-line::after {
+            content: '▶';
+            position: absolute;
+            right: -8px;
+            top: -9px;
+            color: #007acc;
+            font-size: 16px;
+        }
+        
+        .code-inline {
+            background-color: #333;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #ce9178;
+            font-family: Consolas, monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="vscode_integration.html" class="active">🔌 13. VS Code Integration</a>
+
+            <!-- SUB-CHAPTERS FOR VS CODE INTEGRATION -->
+            <div class="sub-menu">
+                <a href="#diagram">13.1 Data Flow Diagram</a>
+                <a href="#settings-json">13.2 Intelligent settings.json</a>
+                <a href="#pylance">13.3 Feeding Pylance (IntelliSense)</a>
+                <a href="#meta-sync">13.4 Meta-Sync (Tasks and Keys)</a>
+            </div>
+
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <div class="section-box">
+            <h1>13. Complete integration with VS Code</h1>
+            <p>VenvHub Pro does not just serve as a "launcher" for the editor. In the background, it contains extensive logic (in modules such as <code>vs_code_json.py</code> and <code>system_sync.py</code>) that <strong>actively configures</strong> Visual Studio Code. It ensures your editor is always ready to work with the correct dependencies, paths, and tools without you having to configure anything manually.</p>
+        </div>
+
+        <!-- DATA FLOW DIAGRAM -->
+        <div id="diagram" class="section-box">
+            <h2>13.1 Diagram: How VenvHub feeds VS Code</h2>
+            <p>This diagram illustrates all the actions VenvHub Pro performs in the background before the editor window actually appears on your monitor:</p>
+
+            <div class="diagram-container">
+                <!-- Row 1: Venv Setup -->
+                <div class="diagram-row">
+                    <div class="diag-box">
+                        <h4>VenvHub: Manager</h4>
+                        <p>Change default environment (Venv)</p>
+                    </div>
+                    <div class="diag-arrow">
+                        <span>JSON Merge</span>
+                        <div class="arrow-line"></div>
+                    </div>
+                    <div class="diag-box vscode">
+                        <h4>.vscode/settings.json</h4>
+                        <p>Write: <span class="code-inline">python.defaultInterpreterPath</span></p>
+                    </div>
+                </div>
+
+                <!-- Row 2: Local Packages (Linker) -->
+                <div class="diagram-row">
+                    <div class="diag-box">
+                        <h4>VenvHub: Linker</h4>
+                        <p>Linking local code</p>
+                    </div>
+                    <div class="diag-arrow">
+                        <span>Path injection</span>
+                        <div class="arrow-line"></div>
+                    </div>
+                    <div class="diag-box vscode">
+                        <h4>.vscode/settings.json</h4>
+                        <p>Write: <span class="code-inline">python.analysis.extraPaths</span></p>
+                    </div>
+                </div>
+
+                <!-- Row 3: Meta-Sync (Tasks) -->
+                <div class="diagram-row">
+                    <div class="diag-box">
+                        <h4>VenvHub: Meta-Sync</h4>
+                        <p>Reading <code>local_meta.json</code></p>
+                    </div>
+                    <div class="diag-arrow">
+                        <span>Generating</span>
+                        <div class="arrow-line"></div>
+                    </div>
+                    <div class="diag-box vscode">
+                        <h4>.vscode/tasks.json & keys</h4>
+                        <p>Inserting shortcuts and editor tasks</p>
+                    </div>
+                </div>
+
+                <!-- Row 4: Launch -->
+                <div class="diagram-row">
+                    <div class="diag-box">
+                        <h4>VenvHub: Mini-Bar</h4>
+                        <p>Clicking the VS Code icon</p>
+                    </div>
+                    <div class="diag-arrow">
+                        <span>CLI Parameters</span>
+                        <div class="arrow-line"></div>
+                    </div>
+                    <div class="diag-box vscode">
+                        <h4>Process: code.exe</h4>
+                        <p><span class="code-inline">--user-data-dir</span> (Isolated Profile)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS.JSON -->
+        <div id="settings-json" class="section-box">
+            <h2>13.2 Safe merging in settings.json</h2>
+            <p>VenvHub Pro <strong>never overwrites your entire configuration file</strong>. It uses an advanced non-destructive algorithm to manipulate <code>.vscode/settings.json</code>.</p>
+
+            <ul>
+                <li><strong>Parsing and preservation:</strong> The application reads the file first. It preserves all your existing personal settings (such as tab size, colors, or other plugin settings).</li>
+                <li><strong>Applying the Interpreter:</strong> It clears outdated keys (e.g., <code>python.venvPath</code>) and sets the <code>python.defaultInterpreterPath</code> key exactly to the <code>python.exe</code> from your selected environment.</li>
+                <li><strong>Fail-Safe mechanism:</strong> If your <code>settings.json</code> is corrupted (e.g., a missing bracket and cannot be loaded via <code>json.loads</code>), VenvHub won't crash. It silently creates a new, healthy structure so that IntelliSense doesn't fail.</li>
+                <li><strong>Cleanup upon deletion:</strong> When you delete an environment from VenvHub that was set as "Default" for VS Code, the application automatically opens <code>settings.json</code> and removes the invalid path. If the file remains completely empty as a result, it deletes the entire file and the <code>.vscode</code> folder to avoid leaving clutter in your project.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Portability Rescue (USB Drives):</strong> If you move a project to another PC and the drive letter changes, VS Code would normally stop working. However, VenvHub Pro scans <code>settings.json</code> upon startup and fixes the old drive letter with the new one in a fraction of a second (via <code>PortablePathLogic</code>).
+            </div>
+        </div>
+
+        <!-- PYLANCE AND INTELLISENSE -->
+        <div id="pylance" class="section-box">
+            <h2>13.3 Feeding Pylance (Code Completion)</h2>
+            <p>To ensure that imports don't show up in red (ModuleNotFoundError in VS Code) after adding your own local packages, VenvHub Pro ensures compatibility in two different ways, depending on the technology you use:</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background-color: #f1f1f1; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Chosen Technology</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">How VenvHub links it to VS Code?</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Module: Local Packages (Linker)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">When you link a package, VenvHub inserts its absolute path into the <code>python.analysis.extraPaths</code> array in <code>settings.json</code>. When unlinking, the application <strong>finds this path and safely removes it</strong> from the array without deleting your own (manually added) paths.</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Module: Editable (pip -e)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">With this method, <strong>nothing is written</strong> to <code>settings.json</code> at all. Instead, Pip creates a <code>.pth</code> file inside the Venv. The Pylance analyzer in VS Code is intelligent enough to read this file natively. In this case, VenvHub "only" handles the automatic installation and drive letter repairs.</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- META-SYNC -->
+        <div id="meta-sync" class="section-box">
+            <h2>13.4 Meta-Sync (Injecting Tasks and Keybindings)</h2>
+            <p>If you are creating advanced Python packages and tools, you sometimes need to add specific controls directly to the editor (e.g., running a script by pressing <code>F5</code> or a terminal command in VS Code).</p>
+            
+            <p>VenvHub Pro functions as a "Plugin Manager" for your editor. When you link a local package to a Venv using the <strong>Linker</strong> module, VenvHub examines its configuration in the background:</p>
+            
+            <ol>
+                <li>It finds the <code>local_meta.json</code> file in your package.</li>
+                <li>It looks for the special <code>"vscode_integration"</code> key.</li>
+                <li>It takes all defined <strong>Tasks</strong> and writes them to <code>.vscode/tasks.json</code> in your project.</li>
+                <li>It takes all <strong>Keybindings</strong> and writes them to <code>.vscode/keybindings.json</code>.</li>
+                <li><strong>Anti-duplication:</strong> The algorithm always verifies if the task already exists in the file before writing to avoid creating duplicates during multiple re-linking.</li>
+            </ol>
+
+            <div class="alert" style="border-left-color: #2ecc71; background-color: #f4fbf7;">
+                <strong>Power of Variables:</strong> Tasks injected this way are written universally in your <code>local_meta.json</code>. Thanks to the <code>${command:python.interpreterPath}</code> variable, VS Code will always run the task using the Python Venv you assigned to it in VenvHub Pro!
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

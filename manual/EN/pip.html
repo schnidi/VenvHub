@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pip Manager - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- LEFT MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="pip.html" class="active">📦 4. Pip Package Manager</a>
+
+            <!-- SUB-MENU FOR PIP MANAGER -->
+            <div class="sub-menu">
+                <a href="#architektura">4.1 Architecture and Loading</a>
+                <a href="#single-manage">4.2 Single Package Management</a>
+                <a href="#downgrade">4.3 Downgrade (Return to Older Version)</a>
+                <a href="#update-all">4.4 Bulk Update (Pip vs UV)</a>
+                <a href="#freeze">4.5 Freeze and Logging</a>
+            </div>
+
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 4.1 -->
+        <div id="architektura" class="section-box">
+            <h1>4.1 Architecture and Loading (Dual-Scan)</h1>
+            <p>The Pip Manager is a separate window that opens after a double-click or right-click on an environment in the main Manager. It utilizes an advanced <strong>Dual-Scan algorithm</strong>. To provide you with a perfect overview, the application performs two parallel processes in the background:</p>
+            <ol>
+                <li><strong>Local Scan:</strong> Determines what is installed on your disk (<code>pip list --format=json</code>).</li>
+                <li><strong>Cloud Scan:</strong> Connects to PyPI servers and identifies the latest versions (<code>pip list --outdated --format=json</code>).</li>
+            </ol>
+            <p>The results are combined into a single table. If the version number is <span style="color:green; font-weight:bold;">GREEN</span>, you have the latest version. If it is <span style="color:red; font-weight:bold;">RED</span>, a newer update exists.</p>
+            
+            <div class="tip">
+                <strong>Intelligent Fallback:</strong> For absolute stability (and to ensure 100% compatibility with the upcoming Python 3.14), the <em>scanning</em> of the package list <strong>always occurs via the standard Pip module</strong>. Even if you have the UV installer enabled in the settings, the application silently switches the query engine to Pip when listing. The fast UV installer is used exclusively for the heavy lifting – installation and deletion.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 4.2 -->
+        <div id="single-manage" class="section-box">
+            <h1>4.2 Single Package Management (Interactive Panel)</h1>
+            <p>The right panel is <strong>context-sensitive</strong>. It is activated only after clicking a specific row in the table (e.g., the <code>requests</code> package).</p>
+
+            <h3>Intelligent "Update" Button</h3>
+            <ul>
+                <li><strong>Something to update:</strong> If the versions differ, the button will be active with the text: <strong>"⬆️ Update to [version]"</strong>.</li>
+                <li><strong>Up to date:</strong> If you have the latest version, the button will be <strong>disabled</strong> and display: <strong>"✅ Version is up to date"</strong>.</li>
+            </ul>
+
+            <h3>Uninstallation Safety Mechanism</h3>
+            <p>The <strong>❌ Uninstall</strong> button starts a destructive process. Therefore, the application will always stop you with a confirmation dialog (Yes/No) to prevent accidental deletion of an important library.</p>
+
+            <h3>Live Birth Certificate Update</h3>
+            <p>The system thinks of everything for you. With every successful installation, update, or uninstallation of a package (whether individually or in bulk), the application instantly runs the <code>BirthCertificateGenerator</code> process in the background. It automatically overwrites your <code>venv_birth_certificate.json</code> file. Thus, your environment's Birth Certificate always 100% reflects reality without you having to manually confirm anything.</p>
+        </div>
+
+        <!-- SUB-CHAPTER 4.3 -->
+        <div id="downgrade" class="section-box">
+            <h1>4.3 Downgrade (Returning to an Older Version)</h1>
+            <p>Sometimes the latest version of a package contains bugs or is incompatible with your code. In such cases, you need to perform a <strong>Downgrade</strong>.</p>
+
+            <p>In the right panel, under the <em>"Install another version"</em> section:</p>
+            
+            <ol>
+                <li>Look at the <em>"Installed version"</em> column (e.g., <code>2.5.0</code>).</li>
+                <li>Type the <strong>lower version number</strong> you need into the text field (e.g., <code>2.4.0</code>).</li>
+                <li>Click the <strong>Install version</strong> button.</li>
+            </ol>
+            
+            <p>The application runs the command for installing the exact version in the background (e.g., <code>pip install package==2.4.0</code>). The installer automatically detects that you have a newer version, removes it first, and then installs the requested older version.</p>
+        </div>
+
+        <!-- SUB-CHAPTER 4.4 -->
+        <div id="update-all" class="section-box">
+            <h1>4.4 Bulk Update and Conflict Resolution</h1>
+            <p>The <strong>⬆️ Update all outdated</strong> button starts a batch process that tries to upgrade all red packages to the latest version at once. However, the behavior of this process <strong>differs significantly</strong> depending on which package manager you have set in the Application Settings.</p>
+
+            <h3>Standard Manager (Classic Pip)</h3>
+            <p>Classic <code>pip</code> tries to resolve dependencies during installation. However, if updating one package (e.g., <code>lib_A</code> to version 2.0) causes another package (<code>lib_B</code>) to require an older version (<code>lib_A==1.0</code>), a conflict known as "Dependency Hell" occurs.</p>
+            <div class="alert">
+                <strong>What to do on Pip error: Manual Repair</strong><br>
+                Standard <code>pip</code> does not include a built-in command for quick and reliable environment re-checking. If the process fails or you suspect a conflict:
+                <ol>
+                    <li><strong>Read the output in the Log window.</strong> Look for error messages like <code>ResolutionImpossible</code> or texts such as <code>"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed."</code></li>
+                    <li><strong>Identify problematic packages.</strong> The log will often state which package requires which version.</li>
+                    <li><strong>Perform a manual downgrade.</strong> In the right panel of the Pip Manager, find the package that needs to be reverted to an older version, enter the exact version number, and click "Install version".</li>
+                </ol>
+            </div>
+
+            <h3>Ultra-fast Manager (UV - Astral) ✨ Autopilot</h3>
+            <p>If you use the modern <code>uv</code> manager in Settings, VenvHub Pro will launch an intelligent <strong>Autopilot for dependency checking and repair</strong> after every bulk update:</p>
+            
+            <ol>
+                <li><strong>Update:</strong> First, the latest versions of all outdated packages are downloaded and installed extremely quickly.</li>
+                <li><strong>Deep Check (<code>uv pip check</code>):</strong> Immediately after installation, the application verifies the integrity of the entire environment in the background.</li>
+                <li><strong>Auto-Fix:</strong> If any updated package has broken the dependencies of another (e.g., <em>"The package X requires Y==1.5, but 2.0 is installed"</em>), the application automatically reads this error from the log, <strong>forces the installation (downgrade) of the exact required version itself</strong>, and then performs the check again.</li>
+            </ol>
+
+            <div class="tip">
+                <strong>Result:</strong> By using <code>uv</code>, you get a maximally up-to-date yet 100% stable and error-free environment without having to manually decipher red logs and search for correct versions. The entire process runs on autopilot.
+            </div>
+
+            <h3>Is it possible to mix Pip and UV?</h3>
+            <p><strong>Yes, it is safe.</strong></p>
+            <p>Both tools, <code>pip</code> and <code>uv</code>, work with the same standard package format and store them in the same location inside the virtual environment (in the <code>Lib/site-packages</code> folder). They are fully compatible with each other.</p>
+            <p>For example, you can:</p>
+            <ul>
+                <li>Install a package using <code>pip</code>.</li>
+                <li>Subsequently run a bulk update using <code>uv</code>.</li>
+                <li>UV will recognize the packages installed by pip without issue, check them, and update or fix their dependencies if necessary.</li>
+            </ul>
+            <p>Thanks to this compatibility, you can switch freely between package managers in the Settings depending on which one suits your situation better (e.g., UV for speed and repairs, Pip for maximum certainty and long-term stability).</p>
+        </div>
+
+        <!-- SUB-CHAPTER 4.5 -->
+        <div id="freeze" class="section-box">
+            <h1>4.5 Freeze and Logging</h1>
+            <p>The <strong>📜 Freeze</strong> button generates a <code>requirements.txt</code> file with the exact versions of all packages directly into the root of your project.</p>
+
+            <h3>Logging and Safety Lock</h3>
+            <p>All operations (Install, Update, Uninstall) run in their own thread (asynchronously), and their complete output is displayed in real-time in the bottom <strong>Log</strong> window. During any ongoing operation, the application <strong>deactivates (grays out) all buttons</strong>. This is an important safeguard against starting two installations at once, which could damage the virtual environment.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

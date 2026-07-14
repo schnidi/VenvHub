@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QuickSettings</class>
+ <widget class="QWidget" name="QuickSettings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>480</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Quick Settings</string>
+  </property>
+  <layout class="QVBoxLayout" name="main_v_layout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <property name="leftMargin">
+    <number>10</number>
+   </property>
+   <property name="topMargin">
+    <number>10</number>
+   </property>
+   <property name="rightMargin">
+    <number>10</number>
+   </property>
+   <property name="bottomMargin">
+    <number>10</number>
+   </property>
+   <item>
+    <widget class="QGroupBox" name="group_selection">
+     <property name="title">
+      <string>1. Výber prostredia a profilu</string>
+     </property>
+     <layout class="QFormLayout" name="form_layout_selection">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lbl_project">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Projekt:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="combo_project"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lbl_venv">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Prostredie (Venv):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="combo_venv"/>
+      </item>
+      <!-- PRIDANÝ RIADOK PRE VS CODE PROFIL -->
+      <item row="2" column="0">
+       <widget class="QLabel" name="lbl_vscode_user">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>VS Code Profil:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="combo_vscode_user"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="group_run_settings">
+     <property name="title">
+      <string>2. Nastavenie spustenia</string>
+     </property>
+     <layout class="QFormLayout" name="form_layout_run">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lbl_script">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Spustiť skript:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="edit_script">
+        <property name="placeholderText">
+         <string>napr. main.py</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="group_qs_actions">
+     <property name="title">
+      <string>3. Akcie</string>
+     </property>
+     <layout class="QHBoxLayout" name="h_layout_actions">
+      <item>
+       <widget class="QRadioButton" name="radioButton">
+        <property name="text">
+         <string>Otvorit terminál</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton_2">
+        <property name="text">
+         <string>Spustiť v Termináli</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton_3">
+        <property name="text">
+         <string>Spustiť na Pozadí</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="group_language">
+     <property name="title">
+      <string>Jazyk / Language</string>
+     </property>
+     <layout class="QHBoxLayout" name="h_layout_lang">
+      <item>
+       <widget class="QComboBox" name="combo_language"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="group_pip_quick_setup">
+     <property name="title">
+      <string>Rýchla inštalácia (Pip)</string>
+     </property>
+     <layout class="QHBoxLayout" name="h_layout_pip">
+      <item>
+       <widget class="QLineEdit" name="edit_pip_pkg">
+        <property name="placeholderText">
+         <string>balíček...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_pip_install">
+        <property name="text">
+         <string>Inštalovať</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="log_output">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>Tu sa zobrazí výstup z inštalácie...</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

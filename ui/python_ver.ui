@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PythonVerWindow</class>
+ <widget class="QWidget" name="PythonVerWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>750</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="main_layout">
+   
+   <!-- SEKCIA: ZDROJE A INŠTALÁCIA -->
+   <item>
+    <widget class="QGroupBox" name="group_install">
+     <property name="title">
+      <string>Inštalácia Python verzie</string>
+     </property>
+     <layout class="QVBoxLayout" name="install_layout">
+      <item>
+       <layout class="QHBoxLayout" name="url_layout">
+        <item>
+         <widget class="QLabel" name="lbl_url">
+          <property name="text"><string>Verzie (JSONL):</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="combo_urls"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_edit_urls">
+          <property name="text"><string>✏️ Upraviť zoznam</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="local_layout">
+        <item>
+         <widget class="QLineEdit" name="edit_path">
+          <property name="placeholderText"><string>URL alebo cesta k .zip súboru...</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_browse">
+          <property name="text"><string>📁</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_install">
+        <property name="text"><string>🛠 INŠTALOVAŤ</string></property>
+       </widget>
+      </item>
+      <!-- === SEKCIA S PROGRESS BAROM === -->
+      <item>
+       <layout class="QHBoxLayout" name="progress_layout">
+        <item>
+         <spacer name="progress_spacer_left">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QProgressBar" name="progress_bar">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="textVisible">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="progress_spacer_right">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <!-- ==================================== -->
+     </layout>
+    </widget>
+   </item>
+
+   <!-- SEKCIA: ZOZNAM -->
+   <item>
+    <widget class="QGroupBox" name="group_list">
+     <property name="title"><string>Nainštalované runtimy</string></property>
+     <layout class="QVBoxLayout" name="list_layout">
+      <item>
+       <widget class="QTableWidget" name="table_runtimes">
+        <column><property name="text"><string>Verzia</string></property></column>
+        <column><property name="text"><string>Cesta</string></property></column>
+        <column><property name="text"><string>Stav PIP</string></property></column>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="buttons_layout">
+        <item><widget class="QPushButton" name="btn_repair"><property name="text"><string>✅ Opraviť PIP</string></property></widget></item>
+        <item><widget class="QPushButton" name="btn_delete"><property name="text"><string>❌ Odstrániť</string></property></widget></item>
+        <item><widget class="QPushButton" name="btn_refresh"><property name="text"><string>🔄</string></property></widget></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <!-- SEKCIA: LOG -->
+   <item>
+    <widget class="QTextEdit" name="log_output">
+     <property name="readOnly"><bool>true</bool></property>
+		<property name="maximumSize">
+			<size>
+				<width>16777215</width>
+				<height>100</height>
+			</size>
+		</property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+</ui>

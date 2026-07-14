@@ -1,0 +1,5 @@
+Pyside6
+psutil
+pyinstaller
+uv
+requests

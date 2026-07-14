@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AutostartWindow</class>
+ <widget class="QWidget" name="AutostartWindow">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>750</width><height>650</height></rect>
+  </property>
+  <layout class="QVBoxLayout" name="main_layout">
+   
+   <!-- FIXNÁ HLAVIČKA -->
+   <item>
+    <layout class="QHBoxLayout" name="header_layout">
+     <item>
+      <widget class="QLabel" name="lbl_auto_title">
+       <property name="font"><font><pointsize>14</pointsize><weight>75</weight><bold>true</bold></font></property>
+       <property name="text"><string>Autostart Multiprojekt</string></property>
+      </widget>
+     </item>
+     
+     <!-- OPRAVENÝ HORIZONTÁLNY SPACER -->
+     <item>
+      <spacer name="h_spacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+
+     <item>
+      <widget class="QPushButton" name="btn_auto_add_group">
+       <property name="minimumSize"><size><width>150</width><height>30</height></size></property>
+       <property name="text"><string>➕ Pridať novú skupinu</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+
+   <!-- PRÁZDNY KONTAJNER -->
+   <item>
+    <widget class="QScrollArea" name="main_scroll_area">
+     <property name="widgetResizable"><bool>true</bool></property>
+     <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+     <widget class="QWidget" name="scroll_content">
+      <layout class="QVBoxLayout" name="group_container_layout">
+       <property name="spacing"><number>10</number></property>
+       
+       <!-- SEM BUDE PYTHON VKLADAŤ ŠABLÓNY -->
+       
+       <!-- OPRAVENÝ VERTIKÁLNY SPACER -->
+       <item>
+        <spacer name="v_spacer_main">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+</ui>

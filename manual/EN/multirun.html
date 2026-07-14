@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-run - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= LEFT MENU ================= -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="multirun.html" class="active">🔄 5. Multi-run (Batch Launch)</a>
+
+            <!-- SUB-MENU FOR MULTI-RUN -->
+            <div class="sub-menu">
+                <a href="#princip">5.1 Multi-run Principle</a>
+                <a href="#vytvorenie">5.2 Creating and Populating a Group</a>
+                <a href="#nastavenie">5.3 Order and Scripts (Drag & Drop)</a>
+                <a href="#spustenie">5.4 Launch and Error States</a>
+                <a href="#vlastnictvo">5.5 Process Ownership</a>
+                <a href="#job-objects">5.6 Windows Job Objects and Handles</a>
+            </div>
+
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- ================= CONTENT ================= -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 5.1 -->
+        <div id="princip" class="section-box">
+            <h1>5.1 Principle of Multi-run (Batch Launching)</h1>
+            <p>Modern applications often consist of several parts that must run simultaneously (e.g., Backend + Frontend + Worker). Manually starting each one separately is tedious.</p>
+            <p>The <strong>Multi-run</strong> mode allows you to define "Groups". With one click of the Play button, the entire group starts at once, with each project running in its own, fully isolated process.</p>
+        </div>
+
+        <!-- SUB-CHAPTER 5.2 -->
+        <div id="vytvorenie" class="section-box">
+            <h1>5.2 Creating and Populating a Group</h1>
+            <p>Go to the Environment Manager window and navigate to the <em>"Multi-run"</em> tab.</p>
+            
+            <ol>
+                <li><strong>Create Group:</strong> In the left panel, click the <strong>+</strong> button and enter a name (e.g., <em>"FullStack Dev"</em>).</li>
+                <li><strong>Select Members:</strong> In the middle panel, you can see a tree structure of all your projects and their environments. Check an environment (checkbox) to add it to the group.</li>
+                <li><strong>Save:</strong> Members will appear in the right table. Don't forget to click <strong>Save Changes in Group</strong>! Your settings will be written to the main configuration file.</li>
+            </ol>
+        </div>
+
+        <!-- SUB-CHAPTER 5.3 -->
+        <div id="nastavenie" class="section-box">
+            <h1>5.3 Order and Scripts (Advanced Drag & Drop)</h1>
+            <p>In the right table ("Group Members"), you can fine-tune the details:</p>
+            
+            <h3>Advanced Reordering (3-zone Drag & Drop)</h3>
+            <p>The table order determines the launch sequence. If you need the database to start before the server, you can drag and drop the rows. The table uses an intelligent 3-zone system:</p>
+            <ul>
+                <li><strong>Insert:</strong> If you drop the mouse on the <strong>top or bottom edge</strong> of a target row, the dragged row is inserted before or after it.</li>
+                <li><strong>Swap:</strong> If you drop the mouse in the <strong>center</strong> of a target row, the rows simply swap positions.</li>
+            </ul>
+
+            <h3>Changing the Launch Script</h3>
+            <p>By default, the application uses the script you have set in the main "Environment Manager" tab for each project. However, if you need to run a different file for a specific project in this group (e.g., <code>worker.py</code>), you can simply <strong>double-click and overwrite</strong> the script name in the table.</p>
+            
+            <div class="tip">
+                <strong>Automatic Saving:</strong> After every reorder (Drag & Drop) or script edit, remember to click the <strong>Save Changes in Group</strong> button.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 5.4 -->
+        <div id="spustenie" class="section-box">
+            <h1>5.4 Launch and Error States</h1>
+            <p>To start a group, switch the Mini-Bar to <strong>M (Multi)</strong> mode, select the group, and click <strong>Play ▶</strong>.</p>
+
+            <h3>Conflict and Duplicate Run Prevention</h3>
+            <p>The application includes protection that prevents a process from starting if it is already running. If you try to launch a group containing a project that is already active (e.g., started manually or belonging to another group), a warning will appear and the launch will be aborted to prevent conflicts.</p>
+
+            <h3>Smart Restart</h3>
+            <p>What should you do if one of the projects in a group crashes, but others keep running?</p>
+            <ol>
+                <li>Fix the error in your code.</li>
+                <li>Press the <strong>Play ▶</strong> button on the Mini-Bar again.</li>
+            </ol>
+            
+            <p><strong>The application behaves intelligently:</strong></p>
+            <ul>
+                <li>It checks the entire group.</li>
+                <li>It detects that projects A and C are still running -> <span style="color:#f39c12; font-weight:bold;">These projects are SKIPPED</span>.</li>
+                <li>It detects that project B (which crashed) is not running -> <span style="color:#2ecc71; font-weight:bold;">This project is RESTARTED</span>.</li>
+            </ul>
+            <p>You don't need to shut down the entire group and start over. Just "re-launch" only the processes that crashed.</p>
+        </div>
+
+        <!-- SUB-CHAPTER 5.5 -->
+        <div id="vlastnictvo" class="section-box">
+            <h1>5.5 Process Ownership</h1>
+            <p>In the background, important logic runs that assigns an "owner" to each process launch. When you start a group named "MyAPI", each process records in memory that it belongs to this group.</p>
+            
+            <h3>Why is this important?</h3>
+            <p>Imagine you have two groups:</p>
+            <ul>
+                <li><strong>Group A:</strong> contains Project 1 and Project 2.</li>
+                <li><strong>Group B:</strong> contains Project 2 and Project 3.</li>
+            </ul>
+            <p>First, you start Group A. Projects 1 and 2 are running. Later, you decide to stop Group B. Without the ownership system, the application could accidentally shut down the running Project 2, even though you originally launched it as part of Group A.</p>
+
+            <div class="alert">
+                <strong>Safety Lock:</strong> Thanks to the ownership system, VenvHub Pro ensures that when you press the <strong>Stop ■</strong> button for a specific group, <strong>only and exclusively</strong> those processes launched under that group's header are terminated. Other running processes remain untouched.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 5.6 -->
+        <div id="job-objects" class="section-box">
+            <h1>5.6 Low-level Windows Stability (Job Objects and Handles)</h1>
+            <p>VenvHub Pro includes a process management implementation tailored for Windows (utilizing native calls via the <code>ctypes</code> library). This architecture solves two critical problems of standard Python applications.</p>
+
+            <h3>1. Prevention of "Hanging" Processes (Windows Job Objects)</h3>
+            <p>Upon application startup, a system process container is created in the background – a <strong>Job Object</strong> with the <code>JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE</code> restriction set.</p>
+            <ul>
+                <li>The registry assigns a system flag to each new subprocess and associates it with this Job.</li>
+                <li>If the parent application VenvHub Pro crashes unexpectedly, the Windows operating system internally detects the closure of the Job Object and <strong>immediately terminates all assigned child processes</strong>.</li>
+                <li>This ensures no orphaned processes remain running in the background, which would otherwise block ports or RAM.</li>
+            </ul>
+
+            <h3>2. Protection against Process Substitution (Windows Handles)</h3>
+            <p>Windows recycles Process IDs (PID) relatively quickly. If a monitored process ends and the system assigns the same PID to another application, the registry could receive incorrect information.</p>
+            <ul>
+                <li>VenvHub Pro opens and maintains an open system reference – a <strong>Process Handle</strong> – during process registration.</li>
+                <li>As long as this Handle is open, Windows guarantees that <strong>the given PID will not be recycled or assigned to another application</strong> until the registry safely closes it.</li>
+                <li>Process status detection is thus precise, eliminating the risk of the application accidentally monitoring or terminating another (foreign) program.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Safety First:</strong> All system references (Handles) are internally protected by Thread Locks and correctly closed during every stop, crash, or process cleanup, preventing memory leaks.
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

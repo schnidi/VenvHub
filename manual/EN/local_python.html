@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Python - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- LEFT MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+            <a href="manager.html">📁 3. Environment Manager</a>
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="local_python.html" class="active">🐍 8. Local Python (Runtime)</a>
+
+            <!-- SUB-MENU FOR LOCAL PYTHON -->
+            <div class="sub-menu">
+                <a href="#co-je-local">8.1 What is Local Python?</a>
+                <a href="#instalacia">8.2 Installation and Sources (URL/ZIP)</a>
+                <a href="#pip-oprava">8.3 Critical Step: Repairing PIP</a>
+                <a href="#jsonl-uprava">8.4 Editing the Version List</a>
+                <a href="#sprava-cache">8.5 Management, Deletion, and Cache</a>
+            </div>
+
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 8.1 -->
+        <div id="co-je-local" class="section-box">
+            <h1>8.1 What is Local Python (Embeddable Runtime)?</h1>
+            <p>The <strong>Local Python</strong> tab is used to download and manage so-called "Windows Embeddable" versions of Python. These are official but minimized versions of Python directly from <em>python.org</em>.</p>
+            
+            <h3>Why use them instead of a classic installation?</h3>
+            <ul>
+                <li><strong>Absolute Isolation:</strong> These versions are not installed into Windows. They do not write anything to the system registry and do not modify system variables (PATH).</li>
+                <li><strong>Portability:</strong> If you create a virtual environment (venv) from Local Python, the entire structure is portable. You can copy it to a USB drive and it will work on any other computer.</li>
+                <li><strong>Multi-version Testing:</strong> You can have Python 3.9, 3.10, and 3.12 downloaded side-by-side without them "clashing" in your system.</li>
+            </ul>
+        </div>
+
+        <!-- SUB-CHAPTER 8.2 -->
+        <div id="instalacia" class="section-box">
+            <h1>8.2 Installation and Sources (URL/ZIP)</h1>
+            <p>In the upper part of the tab, you can add a new Python version to the application. You have three options:</p>
+            
+            <ol>
+                <li><strong>Select from Default List:</strong> In the dropdown menu, you will find pre-prepared safe download links for the most used versions directly from Python servers.</li>
+                <li><strong>Custom URL Address:</strong> If your version is missing from the list, paste a direct link to a <code>.zip</code> file (must start with <em>http/https</em> and end with <em>.zip</em>).</li>
+                <li><strong>Local ZIP File:</strong> If you already have the Python <code>.zip</code> downloaded on your PC, click the folder icon 📁 and select it. The application won't need to download it, just extract it.</li>
+            </ol>
+
+            <h3>Installation Process and Access Rights</h3>
+            <p>The default path for storing downloaded runtimes is the shared folder <code>C:\ProgramData\VenvHubPro\PyRuntimes</code>. This folder is common to all computer users, preventing data duplication.</p>
+            
+            <div class="tip">
+                <strong>Seamless Operation without UAC:</strong> The system installer automatically unlocked access permissions for this folder during initial setup (the standard Windows users group was granted full control). This means that downloading, installing, and managing local Python versions happens completely in the background <strong>without requiring administrator (UAC) rights</strong> during daily use.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 8.3 -->
+        <div id="pip-oprava" class="section-box">
+            <h1>8.3 Critical Step: Repairing PIP (Must-do!)</h1>
+            <p>As soon as a new version is installed and appears in the <em>"Installed Runtimes"</em> table, you will notice that the "PIP Status" column shows a red <strong style="color:#e74c3c;">❌ Missing</strong>.</p>
+            
+            <p><strong>Reason:</strong> The minimized "Embeddable" versions of Python from the <em>python.org</em> developers are intentionally "blind". By default, they do not include a package installer (Pip) and have blocked access to so-called <code>site-packages</code> (third-party libraries).</p>
+
+            <h3>What do you need to do?</h3>
+            <p>Click on the row in the table and press the <strong>✅ Repair PIP</strong> button. At this moment, VenvHub Pro performs a series of extremely important "hacks" and modifications:</p>
+            <ol>
+                <li><strong>Downloads Bootstrap:</strong> The application silently downloads the official <code>get-pip.py</code> script.</li>
+                <li><strong>Unlocks "Blindness" (._pth file):</strong> VenvHub Pro finds a hidden configuration file inside Python (e.g., <code>python312._pth</code>) and programmatically uncomments the <code>import site</code> line. Without this step, Python would ignore any packages you install into it.</li>
+                <li><strong>Installs PIP and Virtualenv:</strong> The script runs, installs Pip, and subsequently downloads the <code>virtualenv</code> package. (Embed versions do not contain the standard <code>venv</code> module for creating environments, so VenvHub replaces it with the more powerful <code>virtualenv</code> tool).</li>
+            </ol>
+
+            <div class="tip">
+                <strong>Result:</strong> After completing this process, the status in the table changes to <strong style="color:#2ecc71;">✅ OK</strong>. From this moment on, this "restricted" Python behaves like a full-featured, high-performance, and portable installation, and you can create environments from it in the main Manager.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 8.4 -->
+        <div id="jsonl-uprava" class="section-box">
+            <h1>8.4 Editing the Version List (JSONL)</h1>
+            <p>The list of versions in the dropdown menu is not hard-coded in the application. It is read from a text file called <code>jso_python_ver.jsonl</code> in the <code>assets</code> folder. If a new version of Python is released (e.g., 3.14), you can add it to the list yourself.</p>
+
+            <ol>
+                <li>Click the <strong>✏️ Edit List</strong> button.</li>
+                <li>The application will open the file in Notepad. <em>(Note: If the program is in Program Files, Notepad will request Administrator rights via UAC).</em></li>
+                <li>Add a new record on a new line in exactly this format:
+                    <code>{"name": "Name (e.g., Python 3.14.0)", "url": "https://link-to-zip-file.zip"}</code>
+                </li>
+                <li>Save the file (Ctrl+S) and close Notepad.</li>
+            </ol>
+            <p>VenvHub Pro automatically monitors changes in this file. As soon as you save it, the dropdown menu in the application will update instantly without a restart.</p>
+        </div>
+
+        <!-- SUB-CHAPTER 8.5 -->
+        <div id="sprava-cache" class="section-box">
+            <h1>8.5 Management, Deletion, and Cache</h1>
+            
+            <h3>Speed through Caching</h3>
+            <p>To prevent lag and slow loading, VenvHub Pro does not read the list of installed Python versions and their statuses from the disk every time you switch tabs. It keeps them in fast operational memory (RAM).</p>
+
+            <h3>How to correctly delete Python versions?</h3>
+            <p>Because the application uses a Cache, <strong>never delete Python folders manually via Windows Explorer!</strong> The application wouldn't know about it, the version would still appear in the table, and the program would crash when trying to use it.</p>
+            
+            <ul>
+                <li>Always use the <strong>❌ Remove</strong> button directly in the application. VenvHub Pro safely deletes all files from the disk and immediately clears the record from its internal memory.</li>
+            </ul>
+
+            <h3>What if the table "gets stuck"? (Refresh Button)</h3>
+            <p>If you deleted a folder manually despite the warning, or if you added one by copying from another PC, click the <strong>🔄 (Refresh)</strong> button under the table.</p>
+            <p>This forces a "Hard Refresh". The application discards its cache memory, physically scans the entire disk, and re-tests all found Python versions, synchronizing the table with reality.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

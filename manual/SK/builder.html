@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyInstaller Builder - VenvHub Pro Manuál</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= ĽAVÉ MENU ================= -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+            <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+            <a href="manager.html">📁 3. Správca Prostredí</a>
+            <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="builder.html" class="active">🛠 6. Tvorba .EXE (Builder)</a>
+
+            <!-- PODKAPITOLY PRE BUILDER -->
+            <div class="sub-menu">
+                <a href="#priprava">6.1 Výber cieľov a prostredia</a>
+                <a href="#zakladne">6.2 Základné nastavenia (OneFile)</a>
+                <a href="#assets">6.3 Pridávanie dát (Assets)</a>
+                <a href="#unikatne">6.4 Pribalenie UV, Metadát a Auto-Injector</a>
+                <a href="#importy">6.5 Importy a Pokročilé</a>
+                <a href="#build">6.6 Proces Buildovania</a>
+            </div>
+
+            <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profily</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+            <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+        </div>
+    </div>
+
+    <!-- ================= OBSAH ================= -->
+    <div class="content">
+
+        <!-- PODKAPITOLA 6.1 -->
+        <div id="priprava" class="section-box">
+            <h1>6.1 Výber cieľov a prostredia</h1>
+            <p>VenvHub Pro obsahuje integrovaný vizuálny nástroj na konverziu Python skriptov (<code>.py</code>) na samostatne spustiteľné aplikácie (<code>.exe</code>) pre Windows. Nástroj funguje ako nadstavba (wrapper) nad populárnou knižnicou <strong>PyInstaller</strong>.</p>
+            
+            <h3>Horná sekcia: Kde začať?</h3>
+            <ol>
+                <li><strong>Výber Projektu:</strong> Zvoľte projekt, ktorý chcete zabaliť.</li>
+                <li><strong>Zdrojový Venv:</strong> Toto je kritické. PyInstaller si "vycucne" a zabalí presne tie knižnice a verzie, ktoré sú aktuálne nainštalované v tomto vybranom prostredí.</li>
+                <li><strong>Spúšťací Skript:</strong> Hlavný súbor (napr. <code>main.py</code>). Aplikácia automaticky prehľadá <strong>iba koreňový priečinok</strong> vášho projektu a ponúkne vám všetky <code>.py</code> súbory, ktoré tam nájde.</li>
+                <li><strong>Výstupný priečinok:</strong> Kam sa uloží hotový <code>.exe</code> súbor a dočasné <code>build</code> súbory. Predvolene je to zložka <code>dist</code> priamo vo vnútri vášho projektu.</li>
+            </ol>
+
+            <div class="alert">
+                <strong>Kontrola inštalácie:</strong> Ak vo vybranom Venv-e chýba samotný balíček <code>pyinstaller</code>, nemusíte ho inštalovať ručne. VenvHub Pro to pri kliknutí na "BUILD" zistí a ponúkne vám jeho bleskovú inštaláciu na pozadí.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 6.2 -->
+        <div id="zakladne" class="section-box">
+            <h1>6.2 Záložka 1: Základné nastavenia</h1>
+            
+            <h3>Režim okna a konzoly</h3>
+            <ul>
+                <li><strong>Zobraziť Konzolu:</strong> Vhodné pre CLI (Command Line) nástroje alebo počas vývoja. Ak vaša aplikácia spadne, v čiernom okne uvidíte chybový výpis.</li>
+                <li><strong>Skryť Konzolu (Windowed / --noconsole):</strong> Určené pre finálne grafické aplikácie (GUI). Po spustení <code>.exe</code> sa zobrazí len vaše rozhranie, bez rušivého čierneho okna na pozadí.</li>
+            </ul>
+
+            <h3>Spôsob Balenia (Výkon vs. Prenositeľnosť)</h3>
+            <ul>
+                <li><strong>Jeden súbor (--onefile):</strong> Všetko (váš kód, knižnice, Python interpreter) sa zlisuje do jediného <code>.exe</code> súboru.
+                    <ul>
+                        <li><em>Výhoda:</em> Extrémne jednoduchá distribúcia užívateľom.</li>
+                        <li><em>Nevýhoda:</em> <strong>Pomalší štart.</strong> Pri každom spustení musí program najprv rozbaliť celý svoj obsah do dočasnej zložky vo Windowse (Temp), čo môže trvať aj niekoľko sekúnd.</li>
+                    </ul>
+                </li>
+                <li><strong>Priečinok (--onedir):</strong> Aplikácia sa vygeneruje ako zložka, v ktorej je <code>.exe</code> súbor obklopený stovkami <code>.dll</code> a <code>.pyd</code> súborov.
+                    <ul>
+                        <li><em>Výhoda:</em> <strong>Okamžitý štart.</strong> Súbory sú už rozbalené, systém ich len načíta do RAM.</li>
+                        <li><em>Nevýhoda:</em> Užívateľovi musíte poslať celú zložku (najlepšie zazipovanú), nielen jeden súbor.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PODKAPITOLA 6.3 -->
+        <div id="assets" class="section-box">
+            <h1>6.3 Záložka 2: Pridávanie dát (Assets)</h1>
+            <p>PyInstaller je navrhnutý tak, aby hľadal a balil <strong>iba Python kód</strong> (súbory importované cez <code>import</code>). Ak vaša aplikácia potrebuje k behu obrázky, zvuky, fonty, alebo konfiguračné súbory (napr. <code>config.json</code>), <strong>musíte ich sem pridať ručne</strong>. Inak aplikácia po zabalení spadne s chybou <em>FileNotFoundError</em>.</p>
+
+            <h3>Ako vyplniť tabuľku?</h3>
+            <p>V tabuľke definujete mapovanie: <em>"Vezmi tento súbor z môjho disku a ulož ho do .exe súboru pod takýmto názvom/zložkou."</em></p>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background-color: #f1f1f1; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Stĺpec "Zdroj"</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Stĺpec "Cieľový priečinok"</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Význam</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>C:\Projekt\logo.png</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>.</code> (bodka)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Obrázok sa skopíruje priamo k <code>.exe</code> súboru (do koreňa).</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>C:\Projekt\ui_files\</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>gui/templates</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Celý obsah zložky sa zbalí a vo vnútri <code>.exe</code> preň vznikne nová štruktúra <code>gui/templates/</code>.</td>
+                </tr>
+            </table>
+
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Kritické upozornenie pre programátorov:</strong> Po zabalení (najmä v režime OneFile) už obyčajné relatívne cesty vo vašom kóde ako <code>open("logo.png")</code> <strong>nebudú fungovať</strong>! Váš kód sa totiž fyzicky spúšťa z náhodnej dočasnej Temp zložky, ktorú Windows vytvorí.<br><br>
+                Vo vašom Python kóde musíte použiť nasledujúci trik, aby ste súbory našli:
+<pre><code>import sys
+import os
+
+def get_resource_path(relative_path):
+    """Získa absolútnu cestu k súboru, funguje pre dev aj pre PyInstaller"""
+    try:
+        # PyInstaller vytvára dočasnú zložku a cestu ukladá sem
+        base_path = sys._MEIPASS
+    except AttributeError:
+        # Sme vo vývojovom režime (ide sa z normálnej zložky)
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+# Použitie:
+logo = get_resource_path("logo.png")</code></pre>
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 6.4 -->
+        <div id="unikatne" class="section-box">
+            <h1>6.4 Unikátne funkcie VenvHub Pro</h1>
+            <p>V Builder rozhraní nájdete tri veľmi silné funkcie, ktoré čistý PyInstaller bez našej nadstavby nedokáže spraviť sám.</p>
+
+            <h3>1. Pribalenie Rodného listu (Metadáta aplikácie)</h3>
+            <p>Táto funkcia vezme kompletný zoznam balíčkov a verziu Pythonu z vášho prostredia a pred samotným buildom z nich vygeneruje <code>[NázovProjektu]_birth_certificate.json</code>.</p>
+            <p><strong>Ako to použiť:</strong> Do textového poľa zadajte <strong>relatívnu cestu</strong> vo vnútri vášho projektu (napríklad <code>data/metadata</code>). VenvHub Pro tento súbor vytvorí na vašom disku, na pozadí ho vloží do tabuľky Assets a zabezpečí, že sa zbalí priamo do <code>.exe</code>. Vaša hotová aplikácia si tak môže "pamätať" a vypísať, v akom prostredí a kedy bola skompilovaná.</p>
+            
+            <div class="tip">
+                <strong>Bezpečnostná poistka:</strong> Aplikácia prísne stráži, aby ste omylom nevybrali priečinok mimo vášho projektu (napr. na inom disku). Ak sa o to pokúsite, systém matematicky prepočíta cesty, zablokuje akciu a upozorní vás. Týmto sa garantuje, že váš projekt zostane vždy bezpečne zbaliteľný a prenosný.
+            </div>
+
+            <h3>2. Pribalenie inštalátora UV (uv.exe)</h3>
+            <p>Máte aplikáciu, ktorá si po inštalácii u klienta potrebuje dynamicky sťahovať a doinštalovávať ďalšie Python knižnice (napríklad pluginy)? Klasický <code>pip</code> je na to príliš pomalý.</p>
+            <ul>
+                <li>Zaškrtnutím tejto voľby VenvHub Pro prehľadá vaše aktívne Venv prostredie.</li>
+                <li>Nájde v ňom súbor <code>uv.exe</code>.</li>
+                <li>Automaticky pridá argument <code>--add-binary</code> a pribalí <code>uv.exe</code> do jadra vašej výslednej aplikácie.</li>
+                <li>Ak aplikácia zistí, že <code>uv.exe</code> vo vnútri Venvu chýba, ponúkne vám jeho stiahnutie a inštaláciu (vyžaduje internet).</li>
+            </ul>
+
+            <h3>3. Automatické pribalenie Lokálnych balíčkov (VenvHub Auto-Injector)</h3>
+            <p>Ak vo svojich projektoch používate funkciu <strong>Lokálne balíčky (Linker)</strong>, pri kompilácii nemusíte ručne pridávať desiatky skrytých importov ani zložito hľadať cesty k ich statickým dátam (obrázky, .json, .ui súbory).</p>
+            <p>VenvHub Pro obsahuje inteligentný predprocesor, ktorý pred spustením PyInstallera urobí všetku prácu za vás:</p>
+            <ul>
+                <li><strong>Automatické vyhľadanie kódu:</strong> VenvHub Pro si na pozadí prečíta konfiguračný súbor <code>venvhub.json</code> aktívneho Venvu, zistí cesty k prelinkovaným lokálnym balíčkom a automaticky vygeneruje parameter <code>--paths</code> pre ich materské priečinky. PyInstaller tak váš kód bez problémov nájde a skompiluje.</li>
+                <li><strong>Automatické pribalenie Assets:</strong> Pre každý zaškrtnutý balíček systém sám vygeneruje parameter <code>--add-data "C:\Cesta\Balicek;Balicek"</code>. To zaručí, že všetky obrázky, preklady či konfigurácie vnútri vášho modulu sa prekopírujú presne tam, kde ich program očakáva.</li>
+            </ul>
+
+            <div class="alert" style="border-left-color: #f39c12; background-color: #fef9eb;">
+                <strong>⚠️ Malé, ale dôležité upozornenie (mimo VenvHubu):</strong>
+                <p style="margin-top: 10px; margin-bottom: 10px;">Všimli sme si, že niektorí vývojári používajú názvy zložiek s medzerami (napr. <code>ai sync</code>).</p>
+                <p style="margin-bottom: 10px;">VenvHub Pro to dokáže spracovať absolútne bezchybne – pri generovaní príkazu pre PyInstaller tieto cesty automaticky a bezpečne obalí do úvodzoviek, takže kompilácia prebehne v poriadku (ako vidno aj v Live Preview).</p>
+                <p style="margin-bottom: 0;"><strong>Pozor však na samotný Python:</strong> Python podľa štandardu PEP 8 nepovoľuje medzery v názvoch modulov. V kóde by ste preto nevedeli napísať <code>import ai sync</code>. Odporúčame vám preto vždy premenovať zložku lokálneho balíčka na disku na verziu s podčiarknikom, napríklad <code>ai_sync</code>. Ak je to len preklep a v skutočnosti to máte dobre, tak toto upozornenie ignorujte.</p>
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 6.5 -->
+        <div id="importy" class="section-box">
+            <h1>6.5 Záložky 3 a 4: Importy a Pokročilé</h1>
+            
+            <h3>3. Skryté Importy (Hidden Imports)</h3>
+            <p>PyInstaller skenuje váš kód a hľadá príkazy <code>import</code>, aby zistil, aké knižnice má zabaliť. Niekedy sú však knižnice volané skryte, dynamicky (napr. cez <code>importlib</code> alebo ich volajú iné, komplexné knižnice zvnútra).<br>
+            Ak vám výsledný <code>.exe</code> po spustení okamžite spadne s chybou <em>"ModuleNotFoundError: No module named 'nieco'"</em>, zadajte názov tohto chýbajúceho modulu do tabuľky <strong>Skryté Importy</strong>. PyInstaller ho pribalí "nasilu".</p>
+
+            <h3>3. Vylúčené Moduly (Exclude Modules)</h3>
+            <p>PyInstaller niekedy pribalí aj obrovské knižnice, ktoré vaša aplikácia vôbec nepoužíva, čím zbytočne nafúkne veľkosť <code>.exe</code> súboru (často sa to stáva s knižnicami ako <code>tkinter</code>, <code>pandas</code> alebo <code>numpy</code>, ak ich volá iná knižnica len ako voliteľnú závislosť). Pridaním ich názvov sem poviete PyInstalleru: <em>"Túto knižnicu ignoruj, aj keby ju niekto vyžadoval."</em></p>
+
+            <h3>4. Pokročilé: Čistenie cache a UAC</h3>
+            <ul>
+                <li><strong>Vyčistiť cache (--clean):</strong> Odporúčame nechať zapnuté. Zmaže dočasné súbory v zložke <code>build</code> z predchádzajúcich pokusov, čím zabráni zabaľovaniu zastaraného kódu.</li>
+                <li><strong>Vyžiadať Admin práva (--uac-admin):</strong> Výsledný <code>.exe</code> súbor dostane do svojej ikony malý štít. Keď ho užívateľ spustí, Windows ho najprv vyzve na udelenie Administrátorských práv (vhodné pre aplikácie, ktoré menia systémové súbory alebo registre).</li>
+            </ul>
+        </div>
+
+        <!-- PODKAPITOLA 6.6 -->
+        <div id="build" class="section-box">
+            <h1>6.6 Proces Buildovania a Live Preview</h1>
+            
+            <h3>Živý náhľad príkazu (Live Preview)</h3>
+            <p>V spodnej časti okna vidíte textové pole, ktoré v reálnom čase generuje finálny príkaz, presne tak, ako by ste ho museli písať do konzoly. Okrem toho obsahuje pole <strong>"Vlastné argumenty"</strong>. Ak poznáte nejaký argument PyInstalleru, ktorý v GUI chýba (napr. <code>--noupx</code> pre vypnutie kompresie), môžete ho sem vpísať.</p>
+
+            <h3>Spustenie a Log</h3>
+            <ol>
+                <li>Kliknite na veľké zelené tlačidlo <strong>🛠 BUILD .EXE</strong>.</li>
+                <li>Otvorí sa úplne nové okno (Build Log Dialog).</li>
+                <li>Proces beží v samostatnom vlákne (Worker Thread). V reálnom čase vidíte presný výstup z PyInstalleru a vaše hlavné okno pritom nezamrzne.</li>
+                <li>Ak proces uviazne, môžete ho kedykoľvek prerušiť tlačidlom <strong>Zrušiť</strong> v okne logu.</li>
+                <li>Po úspešnom dokončení (zelená správa ✅ HOTOVO) nájdete vašu aplikáciu vo výstupnom priečinku.</li>
+            </ol>
+        </div>
+
+    </div>
+
+</body>
+</html>

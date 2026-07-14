@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VSCodeUserWindow</class>
+ <widget class="QWidget" name="VSCodeUserWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>750</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Správa VS Code Používateľov</string>
+  </property>
+  <layout class="QVBoxLayout" name="main_layout">
+   
+   <!-- SEKCIA 1: KOREŇOVÝ PRIEČINOK PRE PROFILY -->
+   <item>
+    <widget class="QGroupBox" name="group_root">
+     <property name="title">
+      <string>Konfigurácia prenosného prostredia VS Code</string>
+     </property>
+     <layout class="QVBoxLayout" name="root_layout">
+      <item>
+       <widget class="QLabel" name="lbl_root_info">
+        <property name="text">
+         <string>Definujte spoločný priečinok, kde budú uložené všetky používateľské profily (nastavenia a rozšírenia VS Code).</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="root_path_layout">
+        <item>
+         <widget class="QLabel" name="lbl_users_root">
+          <property name="text">
+           <string>Koreňový priečinok profilov:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edit_vscode_users_root">
+          <property name="placeholderText">
+           <string>Cesta k priečinku vscode_users...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_browse_users_root">
+          <property name="text">
+           <string>📁 Prehliadať...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <!-- SEKCIA 2: HLAVNÝ OBSAH (ZOZNAM A DETAILY VEDĽA SEBA) -->
+   <item>
+    <layout class="QHBoxLayout" name="content_layout">
+     
+     <!--ĽAVÁ STRANA: ZOZNAM PROFILOV -->
+     <item>
+      <widget class="QGroupBox" name="group_profiles_list">
+       <property name="title">
+        <string>Používateľské profily VS Code</string>
+       </property>
+       <layout class="QVBoxLayout" name="profiles_list_layout">
+        <item>
+         <widget class="QListWidget" name="list_vscode_users"/>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="list_actions_layout">
+          <item>
+           <widget class="QPushButton" name="btn_vscode_user_set_active">
+            <property name="text">
+             <string>⭐ Nastaviť ako aktívny</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_vscode_user_open_folder">
+            <property name="text">
+             <string>📂 Otvoriť v Prieskumníku</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_vscode_user_remove">
+            <property name="text">
+             <string>❌ Odstrániť profil</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+
+     <!-- PRAVÁ STRANA: DETAILY A EDITÁCIA/PRIDANIE -->
+     <item>
+      <widget class="QGroupBox" name="group_profile_details">
+       <property name="title">
+        <string>Detaily a správa profilu</string>
+       </property>
+       <layout class="QVBoxLayout" name="profile_details_layout">
+        <item>
+         <layout class="QFormLayout" name="form_layout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lbl_user_id">
+            <property name="text">
+             <string>ID Používateľa:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="edit_user_id">
+            <property name="placeholderText">
+             <string>len písmená, čísla, podčiarknik (napr. jan_sk)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lbl_display_name">
+            <property name="text">
+             <string>Zobrazované meno:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="edit_display_name">
+            <property name="placeholderText">
+             <string>Čitateľný názov (napr. Ján - SK layout)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        
+        <item>
+         <widget class="QGroupBox" name="group_import">
+          <property name="title">
+           <string>Možnosti inicializácie / importu</string>
+          </property>
+          <layout class="QVBoxLayout" name="import_layout">
+           <item>
+            <widget class="QCheckBox" name="chk_copy_from_system">
+             <property name="text">
+              <string>Pri vytvorení kopírovať zo systému</string>
+             </property>
+             <property name="toolTip">
+              <string>Skopíruje nastavenia (%APPDATA%\Code\User) a rozšírenia (%USERPROFILE%\.vscode\extensions) do nového profilu.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_vscode_user_import_system">
+             <property name="text">
+              <string>📥 Importovať zo systému teraz</string>
+             </property>
+             <property name="toolTip">
+              <string>Prepíše vybraný profil aktuálnymi systémovými nastaveniami a rozšíreniami.</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        
+        <item>
+         <spacer name="details_spacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        
+        <item>
+         <layout class="QHBoxLayout" name="detail_buttons_layout">
+          <item>
+           <widget class="QPushButton" name="btn_vscode_user_add">
+            <property name="text">
+             <string>➕ Pridať nový profil</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_vscode_user_save">
+            <property name="text">
+             <string>💾 Uložiť zmeny</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+
+    </layout>
+   </item>
+
+   <!-- SEKCIA 3: LOG / STAVOVÝ VÝSTUP -->
+   <item>
+    <widget class="QTextEdit" name="log_output">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>120</height>
+      </size>
+     </property>
+     <property name="placeholderText">
+      <string>Systémový log pre správu VS Code používateľov...</string>
+     </property>
+    </widget>
+   </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

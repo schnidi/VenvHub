@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nastavenia - VenvHub Pro Manuál</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ĽAVÉ MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+            <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+            <a href="manager.html">📁 3. Správca Prostredí</a>
+            <a href="pip.html">📦 4. Pip Manažér balíčkov</a>
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+            <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="settings.html" class="active">⚙️ 7. Nastavenia a Vzhľad</a>
+
+            <!-- PODKAPITOLY PRE NASTAVENIA -->
+            <div class="sub-menu">
+                <a href="#cesty">7.1 Základné cesty (Riziká)</a>
+                <a href="#pkg-manager">7.2 Výber inštalátora (Pip vs UV)</a>
+                <a href="#vzhlad">7.3 Skiny a úprava pomocou AI</a>
+                <a href="#jazyk">7.4 Zmena jazyka</a>
+            </div>
+
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profily</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+            <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+        </div>
+    </div>
+
+    <!-- OBSAH -->
+    <div class="content">
+
+        <!-- PODKAPITOLA 7.1 -->
+        <div id="cesty" class="section-box">
+            <h1>7.1 Základné cesty (Paths) a riziká</h1>
+            <p>Záložka "Nastavenia" v hlavnom okne Správcu (Manager) slúži na konfiguráciu kľúčových priečinkov a správania aplikácie. Toto sú tie isté cesty, ktoré ste nastavovali pri prvom spustení, rozšírené o pokročilé funkcie:</p>
+            <ul>
+                <li><strong>Koreň projektov:</strong> Hlavný priečinok, kde VenvHub Pro hľadá vaše zdrojové kódy (zložky projektov).</li>
+                <li><strong>Venv Hub:</strong> Centrálny priečinok, kam sa fyzicky ukladajú a izolujú všetky virtuálne prostredia.</li>
+                <li><strong>Lokálne balíčky:</strong> Priečinok pre vaše vlastné zdieľané moduly, ktoré aplikácia dynamicky prepája do venvov bez použitia UAC (modul Linker).</li>
+                <li><strong>Lokálne balíčky (pip -e):</strong> Priečinok pre vaše zdrojové kódy inštalované v editovateľnom režime (vyžadujú <code>setup.py</code> alebo <code>pyproject.toml</code>).</li>
+                <li><strong>VS Code Profil:</strong> Výber aktívneho, plne izolovaného používateľského profilu pre editor Visual Studio Code (vlastné rozšírenia a nastavenia).</li>
+            </ul>
+            
+            <div class="alert" style="border-left-color: #e74c3c;">
+                <strong>Varovanie pred zmenou ciest!</strong><br>
+                Aplikácia si logicky prepája vaše projekty s prostrediami. Ak už máte vytvorené prostredia a zmeníte cestu k "Venv Hub", aplikácia sa pozrie do novej prázdnej zložky, nič tam nenájde a v tabuľke vaše prostredia "zmiznú" (hoci na starom disku stále fyzicky existujú).
+                <br><br>
+                <strong>Ako na to správne?</strong> Ak potrebujete presunúť dáta na iný disk (napr. z C: na D:):
+                <ol>
+                    <li>Zatvorte VenvHub Pro.</li>
+                    <li>Cez Windows Prieskumník presuňte celú zložku s Venvami na nový disk.</li>
+                    <li>Otvorte VenvHub Pro a v Nastaveniach zmeňte cestu na nové umiestnenie.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 7.2 -->
+        <div id="pkg-manager" class="section-box">
+            <h1>7.2 Správca balíčkov (Pip vs UV)</h1>
+            <p>Toto je jedno z najdôležitejších nastavení, ktoré definuje "motor" aplikácie pod kapotou. Určuje, aký nástroj sa použije vždy, keď kliknete na Inštalovať, Odinštalovať, Aktualizovať, alebo keď sa vytvárajú a klonujú prostredia.</p>
+
+            <h3>Základný (Pip)</h3>
+            <p>Tradičný, rokmi overený štandard v Pythone. Je pomalší a pri hromadných aktualizáciách nedokáže automaticky riešiť zložité konflikty závislostí. Jeho výhodou je 100% kompatibilita so všetkými systémami (nepotrebujete inštalovať nič navyše).</p>
+
+            <h3>Ultra rýchly (UV - Astral)</h3>
+            <p>Extrémne rýchly nástroj napísaný v jazyku Rust, ktorý nahrádza Pip. Inštalácie sú často 10x až 100x rýchlejšie vďaka globálnej cache pamäti. Navyše odomyká funkciu <strong>"Autopilot"</strong>, ktorá dokáže automaticky opravovať rozbité prostredia po aktualizáciách.</p>
+            
+            <div class="tip">
+                <strong>Dôležité upozornenie:</strong> UV nie je štandardnou súčasťou Pythonu. Ak prepnete na UV, ale vo vašom Windowse tento nástroj chýba, VenvHub Pro to okamžite zistí (cez interný UV Detector), zobrazí vám chybovú hlášku (aby ste si ho nainštalovali príkazom <code>pip install uv</code>) a bezpečne prepne rozhranie späť na Pip, aby nedošlo k havárii aplikácie.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 7.3 -->
+        <div id="vzhlad" class="section-box">
+            <h1>7.3 Vzhľad (Skiny) a úprava pomocou AI</h1>
+            <p>VenvHub Pro podporuje kompletné prispôsobenie vzhľadu pomocou súborov <code>.qss</code> (Qt Style Sheets), čo je obdoba CSS pre webové stránky.</p>
+
+            <h3>Dvoj-úrovňový (Dual-Theme) systém</h3>
+            <p>Aplikácia automaticky hľadá a kombinuje témy z dvoch miest:</p>
+            <ol>
+                <li><strong>Zabudované (Built-in):</strong> Témy schované priamo v zdrojovom kóde alebo inštalačnom priečinku aplikácie (napr. VS Dark, Dracula, Solarized).</li>
+                <li><strong>Užívateľské (Custom):</strong> Témy, ktoré ste si stiahli alebo vytvorili. Nachádzajú sa v priečinku <code>themes</code> buď vedľa súboru <code>VenvHubPro.exe</code> (pri Portable inštalácii), alebo v <code>%APPDATA%\VenvHubPro\themes</code>.</li>
+            </ol>
+            
+            <p><strong>Overridding (Prepisovanie):</strong> Ak máte vo vašom užívateľskom priečinku tému s rovnakým názvom, ako je zabudovaná téma (napr. upravíte si farbu v <code>Dracula.qss</code>), aplikácia uprednostní váš súbor. Oficiálnu tému teda môžete ľubovoľne modifikovať bez obáv, že o úpravy prídete pri aktualizácii programu.</p>
+
+            <h3>Práca s ikonami v témach</h3>
+            <p>Keďže aplikácia beží ako samostatný skompilovaný program, bežné relatívne cesty k obrázkom v QSS súboroch nemusia fungovať spoľahlivo. Systém preto využíva kombináciu dynamického nahrádzania systémových ciest a absolútnych odkazov. Pre pridanie vlastných ikon máte nasledujúce možnosti:</p>
+            <ul>
+                <li>
+                    <strong>A) Použitie vstavaného priečinka tém (Odporúčané pre prenosnosť):</strong><br>
+                    Interný priečinok s témami aplikácie slúži ako predvolené úložisko. Ak sem nakopírujete vlastné ikony (napríklad do podzložky <code>icon/moje_ikony/</code> vo vnútri priečinka tém), môžete na ne v QSS odkazovať univerzálne. Manažér skinov pri načítaní automaticky vyhľadá zástupný znak <code>{{CORE_THEMES_DIR}}</code> a nahradí ho reálnou absolútnou cestou.
+                    <br><br>
+                    <em>Príklad zápisu v .qss:</em><br>
+                    <code style="color: #ce9178; background-color: #252526; padding: 2px 5px; border-radius: 3px;">qproperty-icon: url({{CORE_THEMES_DIR}}/icon/moje_ikony/ulozit.svg);</code>
+                </li>
+                <li style="margin-top: 15px;">
+                    <strong>B) Použitie absolútnej cesty:</strong><br>
+                    Ak chcete mať ikony uložené na pevnom mieste mimo inštalácie programu, môžete použiť priamy odkaz (spätné lomítka <code>\</code> musíte prepísať na dopredné <code>/</code>).
+                    <br><br>
+                    <em>Príklad zápisu v .qss:</em><br>
+                    <code style="color: #ce9178; background-color: #252526; padding: 2px 5px; border-radius: 3px;">qproperty-icon: url(C:/MojeIkony/vlastna_ikona.png);</code>
+                </li>
+            </ul>
+
+            <!-- DETAILNÉ VYSVETLENIE NÁHRADY ICONS A EMOJIS -->
+            <h3 style="margin-top: 30px; color: #d35400;">Masterclass: Ako nahradiť textové Emoji za skutočné SVG ikony</h3>
+            <p>V predvolenom stave aplikácia na mnohých miestach využíva na tlačidlách Emoji alebo špeciálne znaky (▶, 📁, 🔄, ⚙). Cez QSS ich viete kompletne nahradiť za profesionálne SVG ikony. Je však <strong>kriticky dôležité rozlišovať</strong>, o aký typ tlačidla ide. Inak si buď zmažete text, alebo znefunkčníte preklady!</p>
+            
+            <h4>Situácia 1: Tlačidlá LEN s Ikonou (napr. Play ▶, Priečinok 📁, Nastavenia ⚙)</h4>
+            <p>Tu je to jednoduché. V QSS úplne skryjeme pôvodný Emoji znak nastavením <code>color: transparent !important;</code> a jednoducho pridáme vašu SVG ikonu na pozadie.</p>
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: Consolas, monospace; font-size: 13px; overflow-x: auto;">
+QPushButton#btn_play {
+    /* 1. Skryje textový znak ▶, aby neprekrýval novú ikonu */
+    color: transparent !important; 
+    
+    /* 2. Načíta reálnu grafickú ikonu */
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/play.svg);
+    qproperty-iconSize: 16px 16px;
+    
+    /* 3. Vyčistí pozadie */
+    background-color: transparent;
+    border: none;
+}</pre>
+
+            <h4 style="margin-top: 25px;">Situácia 2: Tlačidlá s Ikonou AJ Textom (napr. "🔄 Obnoviť", "❌ Odinštalovať")</h4>
+            <div class="alert" style="border-left-color: #e74c3c; background-color: #fdf2f0;">
+                <strong>Na čo si dať pozor:</strong> Ak by ste tu použili <code>color: transparent</code>, zmizol by vám aj text (napr. "Obnoviť"). Ak by ste sa to pokúsili "oklamať" a cez QSS natvrdo pridali <code>qproperty-text: "Obnoviť";</code>, <strong>zničíte viacjazyčnosť aplikácie!</strong> VenvHub Pro používa <code>LanguageManager</code> – ak používateľ prepne jazyk na Angličtinu, QSS by text aj tak násilne udržiavalo po slovensky.
+            </div>
+            <p><strong>Správny postup:</strong></p>
+            <ol>
+                <li>Otvorte jazykové súbory v zložke <code>translations/</code> (napr. <code>sk_SK.json</code> a <code>en_US.json</code>).</li>
+                <li>Vymažte Emoji znak priamo tam. Napríklad zmeníte <code>"btn_refresh": "🔄 Obnoviť"</code> na čisté <code>"btn_refresh": "Obnoviť"</code>.</li>
+                <li>V QSS následne text <strong>neskrývajte</strong> (žiadne transparent). Iba pridajte ikonu. QT Framework sa sám postará o to, že vloží SVG ikonu a hneď vedľa nej vykreslí text v správnom jazyku.</li>
+            </ol>
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: Consolas, monospace; font-size: 13px; overflow-x: auto;">
+QPushButton#btn_refresh {
+    /* Len pridáme ikonu. Text a farbu neriešime, dodá ich LanguageManager. */
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/refresh.svg);
+    qproperty-iconSize: 16px 16px;
+    
+    /* Mierne odsadenie textu od ikony pre krajší vzhľad */
+    padding-left: 10px;
+    text-align: left;
+}</pre>
+
+            <h4 style="margin-top: 25px;">Situácia 3: Zmena hlavnej ikony okna (Hlavička aplikácie)</h4>
+            <p>Samotná ikona vľavo hore vedľa názvu aplikácie (vo vašej Custom Title Bar) nie je tlačidlo, ale textové pole <code>QLabel</code> s názvom <code>lbl_icon</code>. Preto sa na ňu neaplikuje <code>qproperty-icon</code>, ale <strong><code>qproperty-pixmap</code></strong>.</p>
+            <p>Pri jej úprave sa však stretávame s technickým obmedzením: Python v jadre aplikácie explicitne zakazuje automatické prispôsobovanie veľkosti tohto prvku pomocou príkazu <code>self.lbl_icon.setScaledContents(False)</code>. Ak použijete bežný zápis, veľké SVG ikony sa nezmenšia, ale škaredo orežú.</p>
+
+            <div class="tip">
+                <strong>Riešenie A: Vynútené prispôsobenie s pevnými rozmermi v QSS</strong><br>
+                QT Framework má skvelú vlastnosť – pomocou predpony <code>qproperty-</code> dokážete v QSS prepísať akékoľvek nastavenie, ktoré bolo predtým zadefinované v Pythone. Aj keď Python v kóde nastavil, že sa ikona nemá prispôsobovať, my to v QSS "prebijeme" tým, že si vynútime zapnutie vlastnosti <code>scaledContents</code> priamo cez štýl a zadefinujeme pevný rozmer:
+            </div>
+
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: Consolas, monospace; font-size: 13px; overflow-x: auto;">
+QLabel#lbl_icon {
+    /* 1. Násilne cez QSS prebijeme nastavenie z Pythonu a zapneme škálovanie pixmapy */
+    qproperty-scaledContents: true;
+
+    /* 2. Priradíme novú SVG ikonu */
+    qproperty-pixmap: url({{CORE_THEMES_DIR}}/icon/app_ikona.svg);
+
+    /* 3. Definujeme presné rozmery pre ikonu, aby sa neroztiahla na polku lišty */
+    min-width: 20px;
+    max-width: 200px; /* maximálna šírka */
+    min-height: 20px;
+    max-height: 20px;
+}</pre>
+
+            <p><strong>Como to funguje pod kapotou bez zásahu do Pythonu:</strong><br>
+            Vďaka <code>qproperty-scaledContents: true;</code> QSS vyhľadá v C++ jadre triedy <code>QLabel</code> funkciu <code>setScaledContents(true)</code> a spustí ju pri načítaní témy. Tým sa úplne ignoruje a prepíše pôvodný Python zákaz (<code>setScaledContents(False)</code>). Následne <code>qproperty-pixmap</code> aplikuje vašu novú SVG ikonu a tá sa plynule zmenší na presný zadefinovaný rozmer.</p>
+
+            <div class="tip" style="border-left-color: #2ecc71; background-color: #f4fbf7;">
+                <strong>Riešenie B: Dynamické prispôsobenie (Rešpektovanie rozmerov z Pythonu)</strong><br>
+                QSS dokáže dokonale rešpektovať akékoľvek rozmery, ktoré boli nastavené v <code>.py</code> súbore (alebo v <code>.ui</code> návrhu). Ak v QSS nenastavíte žiadne pevné šírky (width, min-width, max-height), QT Framework automaticky použije rozmery, ktoré zadefinoval programátor v Pythone pomocou: <code>self.lbl_icon.setFixedSize(30, 30)</code> (alebo akékoľvek iné číslo).
+                <br><br>
+                Aby QSS vedel, že má vziať vašu novú SVG ikonu a prispôsobiť (orezať/zmenšiť) ju presne na ten rozmer, ktorý už v Pythone existuje, stačí mu to povedať takto:
+            </div>
+
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: Consolas, monospace; font-size: 13px; overflow-x: auto;">
+QLabel#lbl_icon {
+    /* 1. Povieme QSS: "Zober obrázok a zmenši ho presne na taký rozmer, aký má toto okno nastavené v Pythone" */
+    qproperty-scaledContents: true;
+
+    /* 2. Načítame novú ikonu */
+    qproperty-pixmap: url({{CORE_THEMES_DIR}}/icon/app_ikona.svg);
+    
+    /* ŽIADNE nastavenia šírky a výšky (min-width, max-height) tu nepíšeme! */
+    /* QSS tým pádom automaticky rešpektuje rozmer 30x30 (alebo akýkoľvek iný), ktorý je v .py kóde */
+}</pre>
+
+            <p><strong>Prečo je toto riešenie geniálne a dynamické?</strong><br>
+            Ak sa v budúcnosti rozhodnete v <code>.py</code> súbore zmeniť veľkosť ikony napr. na 40x40 alebo 25x25, nemusíte v QSS opravovať vôbec nič. QSS si pri štarte prečíta aktuálnu veľkosť z pamäte Pythonu a vašu novú SVG ikonu do nej automaticky a plynulo vtesná bez deformácie.</p>
+
+            <!-- IDENTIFIKÁTORY TLAČIDIEL (OBJECTNAMES) PRE PRESNÝ STYLING -->
+            <h3 style="margin-top: 30px;">Kompletný zoznam štýlovateľných tlačidiel (Selektory pre QSS)</h3>
+            <p>Nasledujúca tabuľka reflektuje <strong>presné ID prvkov z kódu aplikácie</strong>, ktoré nesú textovú alebo SVG ikonu a môžete ich v QSS zacieliť:</p>
+
+            <table class="manual-table" style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 25px; border: 1px solid #ddd;">
+                <thead>
+                    <tr style="background-color: #f2f2f2; color: #222222; border-bottom: 2px solid #ddd;">
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Umiestnenie (Súbor .ui)</th>
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Identifikátor (Selector v QSS)</th>
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Aktuálny znak / Postup pre QSS</th>
+                    </tr>
+                </thead>
+                <tbody style="color: inherit;">
+                    <!-- HLAVIČKA -->
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td rowspan="5" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Hlavička okna<br><span style="font-weight:normal; font-size: 12px;">(custom_title_bar.ui)</span></td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QLabel#lbl_icon</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Zmena cez <code>qproperty-pixmap</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_about</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Už má SVG (O programe)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_minimize</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(_) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_maximize</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(🗖) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_close</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(✕) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+
+                    <!-- MINIBAR -->
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td rowspan="8" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Mini-Bar<br><span style="font-weight:normal; font-size: 12px;">(widget.ui)</span></td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_vscode</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Už má SVG (VS Code)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_play</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(▶) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_stop</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(■) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_mgr</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(⚙ / ▼) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_open_mgr</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(🖥) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_pin</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(📌) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_toggle_mode</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Už má SVG (Single/Multi mód)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_close</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(✕) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+
+                    <!-- TABUĽKA VENV -->
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td rowspan="5" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Riadok v tabuľke Venvs<br><span style="font-weight:normal; font-size: 12px;">(venv_actions.ui)</span></td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_vscode</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Už má SVG (VS Code)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_run</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(▶) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_stop</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(■) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_venv_update</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Už má SVG (Pip Update)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd; background-color: #fafafa;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">QPushButton#btn_delete</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(✕) Vyžaduje <code>color: transparent</code></td>
+                    </tr>
+
+                    <!-- MANAGER (OBNOVA A ZLOŽKY) -->
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td rowspan="8" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Hľadanie a cesty<br><span style="font-weight:normal; font-size: 12px;">(manager.ui, builder, ver)</span></td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">
+                            #btn_refresh_projs<br>#btn_refresh_scripts<br>#btn_refresh
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(🔄) Obnoviť (Zložky). Vyžaduje <code>color: transparent</code> pre čisto ikonové tlačidlá (situácia 1) ALEBO vymazať znak z JSONu, ak ide o tlačidlo s textom (situácia 2).</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">
+                            #btn_browse_script<br>#btn_set_proj<br>#btn_set_hub<br>#btn_set_local_pkg<br>#btn_set_pip_e_pkg<br>#btn_browse_output<br>#btn_browse<br>#btn_browse_birth_cert_path<br>#btn_browse_users_root
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(📁) Tlačidlá priečinkov. Ideálne ich v QSS spojiť (oddelením cez čiarku) a aplikovať <code>color: transparent</code> + SVG priečinka.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">#btn_add_group<br>#btn_auto_add_group</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(➕) Tlačidlá s textom. <strong>Zmažte znak v JSONe</strong> a doplňte ikonu cez QSS.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">#btn_remove_group<br>#btn_auto_delete_group</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(- / ❌)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace; color: #0056b3;">#btn_create_venv</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">(+ VYTVORIŤ) Zmažte "+" z JSONu a doplňte ikonu cez QSS.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert" style="border-left-color: #3498db; background-color: #ebf5fb; margin-top: 20px;">
+                <strong>Ako vytvoriť vlastnú tému pomocou AI (napr. ChatGPT / Claude)?</strong>
+                <p>Nepáči sa vám žiadna z predvolených tém? Vytvorte si vlastnú, je to veľmi jednoduché!</p>
+                <ol>
+                    <li>Prejdite do inštalačného priečinka aplikácie (tam, kde je <code>VenvHubPro.exe</code>). Ak máte Portable verziu, nájdete tam zložku <code>core/themes/</code>. Ak máte klasickú, choďte do <code>C:\Program Files\VenvHubPro\core\themes\</code>.</li>
+                    <li>Nájdite niektorý z <code>.qss</code> súborov, napríklad <code>VS Dark.qss</code>, skopírujte si ho na Plochu a otvorte v Poznámkovom bloku.</li>
+                    <li>Skopírujte celý textový obsah súboru a vložte ho do AI nástroja s požiadavkou: <em>"Tu je QSS štýl pre PyQt6 aplikáciu. Zmeň všetky farby tak, aby vznikla moderná, svetlá 'Cyberpunk' téma. Daj dôraz na neónové farby tlačidiel."</em></li>
+                    <li>AI vám vygeneruje nový kód. <strong>Dôležité:</strong> Na úplný začiatok vygenerovaného kódu nezabudnite pridať túto hlavičku, aby VenvHub Pro tému pekne pomenoval:
+<pre><code>/*
+* Theme Name: Moja Cyberpunk Téma
+* Version: 1.0
+* Author: Vaše Meno a AI
+*/</code></pre>
+                    </li>
+                    <li>Uložte súbor napríklad ako <code>Cyberpunk.qss</code>.</li>
+                    <li>Otvorte VenvHub Pro, prejdite do <strong>Nastavení</strong> a kliknite na <strong>Importovať tému...</strong>. Vyberte váš nový súbor. Aplikácia si ho automaticky skopíruje do vašej užívateľskej zložky a zaradí ho do ponuky!</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 7.4 -->
+        <div id="jazyk" class="section-box">
+            <h1>7.4 Zmena jazyka (Language)</h1>
+            <p>Jazyk aplikácie sa dá kedykoľvek zmeniť v paneli <strong>Quick Settings</strong> (po kliknutí na ⚙️ na Mini-Bare).</p>
+
+            <p>V rozbaľovacom zozname "Jazyk / Language" nájdete tieto možnosti:</p>
+            <ul>
+                <li><strong>Automaticky / Auto:</strong> Aplikácia sa pokúsi zistiť jazyk vášho operačného systému Windows a načítať zodpovedajúci preklad. Ak ho nenájde, predvolene použije Angličtinu (<code>en_US.json</code>).</li>
+                <li><strong>Ostatné jazyky:</strong> Zoznam sa generuje dynamicky. Aplikácia preskenuje priečinok <code>translations</code> a načíta všetky dostupné jazykové súbory <code>.json</code>. Ak si do tohto priečinka nahráte vlastný preklad (napríklad <code>cs_CZ.json</code>), okamžite sa objaví v ponuke.</li>
+            </ul>
+            <p>Po zmene jazyka sa okamžite (bez nutnosti reštartu) preloží celé rozhranie aplikácie vrátane všetkých otvorených okien.</p>
+
+            <!-- NOVÁ SEKCIA: ÚPRAVA PREKLADOV POMOCOU AI -->
+            <div class="alert" style="border-left-color: #2ecc71; background-color: #f4fbf7; margin-top: 20px;">
+                <strong>Ako upraviť preklad alebo vytvoriť nový pomocou AI (napr. ChatGPT / Claude)?</strong>
+                <p>Áno, existujúce preklady môžete veľmi jednoducho upravovať, opravovať v nich texty, alebo s pomocou umelej inteligencie preložiť celú aplikáciu do úplne nového jazyka.</p>
+                
+                <p><strong>Dôležité pravidlo fungovania:</strong> Aplikácia priraďuje preklady k jednotlivým ovládacím prvkom na základe ich technického identifikátora (<code>objectName</code>). V JSON súboroch to vyzerá ako dvojica <code>"kluc": "hodnota"</code>. Pri akýchkoľvek úpravách musíte zmeniť <strong>iba hodnotu na pravej strane</strong>. Kľúč na ľavej strane musí zostať presne v pôvodnom znení, inak preklad prestane fungovať.</p>
+
+                <p>Postup na vytvorenie nového prekladu pomocou AI:</p>
+                <ol>
+                    <li>Prejdite do inštalačného priečinka aplikácie a otvorte zložku <code>translations/</code>.</li>
+                    <li>Nájdite predvolený anglický preklad <code>en_US.json</code> (prípadne slovenský <code>sk_SK.json</code>).</li>
+                    <li>Otvorte súbor v Poznámkovom bloku, skopírujte celý jeho textový obsah a vložte ho do AI nástroja s touto požiadavkou:
+                        <br><br>
+                        <em style="display: block; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #ddd; font-style: normal; font-size: 0.95em;">
+                            "Tu je JSON prekladový súbor pre PyQt6 aplikáciu. Prelož všetky textové hodnoty (pravé strany hodnôt v úvodzovkách) do [doplňte požadovaný jazyk, napr. češtiny]. Technické kľúče na ľavej strane (napr. názvy widgetov a okien) ponechaj v pôvodnom stave bez akejkoľvek zmeny."
+                        </em>
+                    </li>
+                    <li><strong>TIP na pekný názov v menu:</strong> Ak chcete, aby sa jazyk v roletovom menu aplikácie volal pekne (napríklad "Čeština" namiesto názvu súboru), pridajte do vášho JSON súboru na ľubovoľné miesto tento kľúč:<br>
+                    <code>"_language_name": "Čeština",</code></li>
+                    <li>Vygenerovaný kód od AI uložte do zložky <code>translations/</code> pod novým názvom podľa štandardných kódov jazykov (napr. <code>cs_CZ.json</code> pre češtinu).</li>
+                    <li>Otvorte program VenvHub Pro a prejdite do Quick Settings. Nový jazyk sa v ponuke objaví automaticky.</li>
+                </ol>
+                <p><em>Tip na rýchlu opravu: Ak chcete iba upraviť preklad nejakého konkrétneho tlačidla, stačí priamo otvoriť daný <code>.json</code> súbor, prepísať text v úvodzovkách na pravej strane a súbor uložiť.</em></p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

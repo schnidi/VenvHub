@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GroupItem</class>
+ <widget class="QGroupBox" name="auto_group_box">
+  <property name="minimumSize"><size><width>710</width><height>320</height></size></property>
+  <property name="maximumSize"><size><width>16777215</width><height>320</height></size></property>
+  <property name="title"><string>Názov multiskupiny</string></property>
+  
+  <layout class="QVBoxLayout" name="v_layout_group">
+   <!-- Rad 1: Ovládanie -->
+   <item>
+    <layout class="QHBoxLayout" name="group_ctrl_layout">
+     <item><widget class="QLabel" name="auto_led_status"><property name="text"><string>●</string></property><property name="styleSheet"><string>color: gray; font-size: 16pt;</string></property></widget></item>
+     <item><widget class="QCheckBox" name="auto_chk_autostart"><property name="text"><string>Autostart</string></property></widget></item>
+     <item><widget class="QCheckBox" name="auto_chk_master_respawn"><property name="text"><string>Respawn</string></property></widget></item>
+     <item><widget class="QLabel" name="auto_lbl_resources"><property name="text"><string>[ RAM: 0 MB ]</string></property><property name="styleSheet"><string>color: blue; font-weight: bold;</string></property></widget></item>
+     
+     <item>
+      <spacer name="h_spacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     
+     <item><widget class="QCheckBox" name="auto_chk_terminal"><property name="text"><string>T</string></property></widget></item>
+     <item><widget class="QCheckBox" name="auto_chk_silent"><property name="text"><string>S</string></property></widget></item>
+     <item><widget class="QPushButton" name="btn_auto_start_group"><property name="text"><string>START</string></property></widget></item>
+     <item><widget class="QPushButton" name="btn_auto_stop_group"><property name="text"><string>STOP</string></property></widget></item>
+     <item><widget class="QPushButton" name="btn_auto_delete_group"><property name="text"><string>❌</string></property></widget></item>
+    </layout>
+   </item>
+
+   <!-- Rad 2: Tabuľka -->
+   <item>
+    <widget class="QTableWidget" name="auto_table_projects">
+     <!-- ZMENA Z 7 NA 6 STĹPCOV -->
+     <property name="columnCount"><number>6</number></property>
+     <column><property name="text"><string>Projekt</string></property></column>
+     <column><property name="text"><string>ID</string></property></column>
+     <column><property name="text"><string>Kotva</string></property></column>
+     <column><property name="text"><string>Čakať (s)</string></property></column>
+     <column><property name="text"><string>Respawn</string></property></column>
+     <column><property name="text"><string>Monitoring</string></property></column>
+     <attribute name="horizontalHeaderStretchLastSection"><bool>true</bool></attribute>
+    </widget>
+   </item>
+
+   <!-- Rad 3: Log a Aktivita -->
+   <item><widget class="QTextEdit" name="auto_log_output"><property name="maximumSize"><size><width>16777215</width><height>80</height></size></property></widget></item>
+   <item><widget class="QLabel" name="auto_lbl_last_run"><property name="text"><string>Aktivita: --:--</string></property><property name="alignment"><set>Qt::AlignRight</set></property></widget></item>
+  </layout>
+ </widget>
+</ui>

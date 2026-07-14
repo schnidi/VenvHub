@@ -1,0 +1,336 @@
+/*
+ * Theme Name: System_Light_(Enhanced_Clarity)
+ * Version: 2.2
+ * Author: Viliam Schneider
+ */
+
+/* HLAVNÉ NASTAVENIA */
+QWidget {
+    background-color: #ffffff;
+    color: #252525;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+}
+
+/* ============================================= */
+/* === CHECKBOXY A RADIO BUTTONY (KRÚŽKY) === */
+/* ============================================= */
+
+/* Štýl pre krúžky (Radio Buttons) */
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 9px;
+    border: 2px solid #b0b0b0; /* Svetlejší šedý okraj */
+    background-color: #ffffff;
+}
+
+QRadioButton::indicator:hover {
+    border-color: #005fb8; /* Klasická modrá hover */
+}
+
+QRadioButton::indicator:checked {
+    background-color: #005fb8; /* Výrazná modrá výplň */
+    border: 2px solid #ffffff;  /* Biely okraj pre kontrast vo vnútri */
+}
+
+/* Štýl pre štvorčeky (Checkboxes) */
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #b0b0b0;
+    background-color: #ffffff;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #005fb8;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #005fb8;
+    border-color: #005fb8;
+    image: url(check_icon_dark.png); /* Ak máš ikonu pre svetlý režim */
+}
+
+/* Ak nemáš obrázok fajky, toto vytvorí aspoň vizuálnu zmenu */
+QCheckBox::indicator:checked {
+    background-color: #005fb8;
+    border: 2px solid #ffffff;
+}
+
+/* ============================================= */
+/* === TLAČIDLÁ (BUTTONS) === */
+/* ============================================= */
+
+QPushButton {
+    background-color: #eeeeee;
+    color: #333333;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    padding: 5px 15px;
+}
+
+QPushButton:hover {
+    background-color: #e5e5e5;
+    border-color: #005fb8;
+}
+
+QPushButton:pressed {
+    background-color: #ced4da;
+    color: #000000;
+}
+
+/* STAV OZNAČENÉHO TLAČIDLA (KEĎ JE AKTÍVNE) */
+QPushButton:checked {
+    background-color: #005fb8 !important;
+    color: #ffffff !important;
+    border: 1px solid #004a8f;
+    font-weight: bold;
+}
+
+/* Špecifické tlačidlá na lište */
+#ProjectMiniBar QPushButton {
+    background-color: transparent;
+    border: 1px solid transparent;
+}
+
+#ProjectMiniBar QPushButton:checked {
+    background-color: #e0eef9;
+    border: 1px solid #005fb8;
+}
+
+/* ============================================= */
+/* === ZÁLOŽKY (TABS) === */
+/* ============================================= */
+QTabWidget::pane {
+    border: 1px solid #dcdcdc;
+}
+
+QTabBar::tab {
+    background-color: #f3f3f3;
+    color: #616161;
+    padding: 8px 15px;
+    border: 1px solid #dcdcdc;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: #ffffff;
+    color: #000000;
+    border-bottom: 2px solid #005fb8;
+    font-weight: normal;
+}
+
+/* ============================================= */
+/* === VSTUPNÉ POLIA (INPUTS) === */
+/* ============================================= */
+QLineEdit, QComboBox {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    padding: 4px;
+    color: #000000;
+}
+
+QLineEdit:focus, QComboBox:focus {
+    border: 1px solid #005fb8;
+    background-color: #ffffff;
+}
+
+/* TABUĽKY A VÝBER */
+
+/* ============================================= */
+/* === KOMPLETNÁ ÚPRAVA TABUĽKY (QTableWidget) === */
+/* ============================================= */
+
+QTableWidget {
+    background-color: #ffffff;   /* Hlavné biele pozadie */
+    border: 1px solid #dcdcdc;
+    gridline-color: transparent; 
+    outline: none;               
+    selection-background-color: #e0eef9; /* Svetlomodrý výber */
+}
+
+/* Hlavička tabuľky */
+QHeaderView::section {
+    background-color: #f8f8f8;
+    padding: 6px;
+    border: 1px solid #dcdcdc;
+    font-weight: bold;
+    color: #616161;
+}
+
+/* Štýl pre bunky a riadky */
+QTableWidget::item {
+    padding: 6px;
+    border: none;                
+    background-color: transparent;
+}
+
+/* 1. JEMNÝ HOVER */
+QTableWidget::item:hover {
+    background-color: #f0f0f0;   
+    color: #000000;
+}
+
+/* 2. PODSVIETENIE CELÉHO VYBRANÉHO RIADKA */
+QTableWidget::item:selected {
+    background-color: #005fb8;   /* Štandardná Windows modrá pri výbere */
+    color: #ffffff;
+    border: none !important;     
+    border-left: none !important; 
+}
+
+/* ============================================= */
+/* === OPRAVA TLAČIDIEL (WIDGETOV) V TABUĽKE === */
+/* ============================================= */
+
+QTableWidget QWidget {
+    background-color: transparent;
+}
+
+QTableWidget QPushButton {
+    background-color: #f0f0f0;
+    color: #333333;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    margin: 1px;         
+    padding: 0px;        
+    
+    min-width: 22px;     
+    max-width: 22px;
+    min-height: 22px;    
+    max-height: 22px;
+
+    font-size: 10px;     
+    qproperty-iconSize: 14px 14px; 
+}
+
+QTableWidget QPushButton#btn_play, 
+QTableWidget QPushButton#btn_stop {
+    font-size: 10px !important;
+}
+
+QTableWidget::item {
+    padding: 2px; 
+}
+
+QTableWidget QPushButton:hover {
+    background-color: #e5e5e5;
+    border: 1px solid #005fb8;
+    color: #000000;
+}
+
+/* FIX FARIEB PRE PLAY / STOP IKONY */
+QTableWidget QPushButton#btn_play {
+    color: #28a745 !important;   /* Tmavšia zelená pre čitateľnosť na bielom */
+}
+
+QTableWidget QPushButton#btn_stop {
+    color: #d73a49 !important;   /* Výrazná červená */
+}
+
+QTableWidget QPushButton#btn_mgr, 
+QTableWidget QPushButton#btn_refresh {
+    color: #005fb8 !important;   /* Modrá ikona */
+}
+
+QTableWidget QHeaderView::corner-button {
+    background-color: #f8f8f8;
+    border: none;
+}
+
+QTextEdit {
+    background-color: #ffffff;
+    color: #252525;
+    border: 1px solid #dcdcdc;
+}
+
+/* ============================================= */
+/* === OHRANIČENIE FRAMELESS OKIEN (POP-UPS) === */
+/* ============================================= */
+#VSCodeUserWindow, #LocalPackagesWindow, #PipManagerWindow, #PipEWindow, #AboutDialog, #ProgressDialog, #MasterManager, #BuildLogDialog, #CustomMessageBox {
+    background-color: #ffffff;
+    border: 1px solid #005fb8; /* Modrý okraj pre čistý akcent */
+}
+
+#ProjectMiniBar {
+    background-color: #ffffff;
+    border: none; 
+}
+
+#QuickSettings {
+    background-color: #ffffff;
+    border: none; 
+}
+
+QPushButton#btn_about {
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/about_black.svg);
+    qproperty-iconSize: 18px 18px;
+    background-color: transparent;
+    border: none;
+}
+
+QPushButton#btn_about:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+QPushButton#btn_toggle_mode {
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/icon_mode_widget_black.svg);
+    qproperty-iconSize: 20px 20px;
+    background-color: transparent;
+    border: none;
+}
+
+QPushButton#btn_toggle_mode:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+QPushButton#btn_vscode {
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/vscode/vscode5.svg);
+    qproperty-iconSize: 18px 18px;
+    background-color: transparent;
+    border: none;
+}
+
+QPushButton#btn_vscode:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+/* Widget hover efekt */
+
+#ProjectMiniBar #btn_play, 
+#ProjectMiniBar #btn_stop, 
+#ProjectMiniBar #btn_open_mgr, 
+#ProjectMiniBar #btn_mgr,      
+#ProjectMiniBar #btn_refresh,
+#ProjectMiniBar #btn_pin,
+#ProjectMiniBar #btn_settings {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+}
+
+#ProjectMiniBar #btn_play:hover, 
+#ProjectMiniBar #btn_stop:hover, 
+#ProjectMiniBar #btn_open_mgr:hover, 
+#ProjectMiniBar #btn_mgr:hover, 
+#ProjectMiniBar #btn_refresh:hover,
+#ProjectMiniBar #btn_pin:hover,
+#ProjectMiniBar #btn_settings:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* STAV, KEĎ JE PRIPÍNAČKA AKTÍVNA (ZAPNUTÁ) */
+#ProjectMiniBar #btn_pin:checked {
+    background-color: #005fb8; 
+    border: 1px solid #004a8f;
+}
+
+#ProjectMiniBar #btn_pin:checked:hover {
+    background-color: #0078d4; 
+}

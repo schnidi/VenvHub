@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pip Manažér - VenvHub Pro Manuál</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ĽAVÉ MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>Užívateľský Manuál v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Prehľad Vlastností</a>
+            <a href="index.html">📥 1. Inštalácia a prvé spustenie</a>
+            <a href="minibar.html">🚀 2. Mini-Bar a Quick Settings</a>
+            <a href="manager.html">📁 3. Správca Prostredí</a>
+
+            <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
+            <a href="pip.html" class="active">📦 4. Pip Manažér balíčkov</a>
+
+            <!-- PODKAPITOLY PRE PIP MANAŽÉR -->
+            <div class="sub-menu">
+                <a href="#architektura">4.1 Architektúra a Načítanie</a>
+                <a href="#single-manage">4.2 Správa jedného balíčka</a>
+                <a href="#downgrade">4.3 Downgrade (Návrat k staršej verzii)</a>
+                <a href="#update-all">4.4 Hromadná aktualizácia (Pip vs UV)</a>
+                <a href="#freeze">4.5 Freeze a Logovanie</a>
+            </div>
+
+            <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
+            <a href="builder.html">🛠 6. Tvorba .EXE (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Nastavenia a Vzhľad</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Kontajner a Autostart</a>
+            <a href="local_packages.html">🔗 10. Lokálne balíčky (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editovateľné balíčky (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profily</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integrácia</a>
+            <a href="samoreplikacia_venvhub.html">14. Architektúra a Kompilácia</a>
+        </div>
+    </div>
+
+    <!-- OBSAH -->
+    <div class="content">
+
+        <!-- PODKAPITOLA 4.1 -->
+        <div id="architektura" class="section-box">
+            <h1>4.1 Architektúra a Načítanie (Dual-Scan)</h1>
+            <p>Pip Manažér je samostatné okno, ktoré sa otvorí po dvojkliku alebo pravom kliku na prostredie v hlavnom Správcovi. Využíva pokročilý <strong>Dual-Scan algoritmus</strong>. Aby ste mali dokonalý prehľad, aplikácia na pozadí vykonáva dva paralelné procesy:</p>
+            <ol>
+                <li><strong>Lokálny Scan:</strong> Zistí, čo máte nainštalované na disku (<code>pip list --format=json</code>).</li>
+                <li><strong>Cloud Scan:</strong> Pripojí sa na servery PyPI a zistí najnovšie verzie (<code>pip list --outdated --format=json</code>).</li>
+            </ol>
+            <p>Výsledky sa spoja do jednej tabuľky. Ak je číslo verzie <span style="color:green; font-weight:bold;">ZELENÉ</span>, máte najnovšiu verziu. Ak je <span style="color:red; font-weight:bold;">ČERVENÉ</span>, existuje novšia aktualizácia.</p>
+            
+            <div class="tip">
+                <strong>Inteligentný Fallback:</strong> Z dôvodu absolútnej stability (a zabezpečenia 100% kompatibility s prichádzajúcim Pythonom 3.14) prebieha samotné <em>skenovanie</em> zoznamu balíčkov <strong>vždy cez štandardný modul Pip</strong>. Aj keď máte v nastaveniach zapnutý inštalátor UV, aplikácia si pri listovaní potichu prepne dopytovací engine na Pip. Rýchly inštalátor UV sa využije výhradne až na samotnú ťažkú prácu – inštaláciu a mazanie.
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 4.2 -->
+        <div id="single-manage" class="section-box">
+            <h1>4.2 Správa jedného balíčka (Interaktívny panel)</h1>
+            <p>Pravý panel je <strong>kontextovo senzitívny</strong>. Aktivuje sa až po kliknutí na konkrétny riadok v tabuľke (napr. balíček <code>requests</code>).</p>
+
+            <h3>Inteligentné tlačidlo "Update"</h3>
+            <ul>
+                <li><strong>Je čo aktualizovať:</strong> Ak sa verzie líšia, tlačidlo bude aktívne s textom: <strong>"⬆️ Aktualizovať na [verzia]"</strong>.</li>
+                <li><strong>Aktuálne:</strong> Ak máte najnovšiu verziu, tlačidlo sa <strong>zablokuje</strong> a zobrazí: <strong>"✅ Verzia je aktuálna"</strong>.</li>
+            </ul>
+
+            <h3>Bezpečnostná poistka pri Odinštalácii</h3>
+            <p>Tlačidlo <strong>❌ Odinštalovať</strong> spustí deštruktívny proces. Aplikácia vás preto vždy zastaví potvrdzovacím dialógom (Yes/No), aby ste omylom nezmazali dôležitú knižnicu.</p>
+
+            <h3>Živá aktualizácia Rodného listu</h3>
+            <p>Systém za vás myslí na všetko. Pri každej úspešnej inštalácii, aktualizácii alebo odinštalácii balíčka (či už po jednom alebo hromadne) aplikácia na pozadí okamžite spustí proces <code>BirthCertificateGenerator</code>. Ten automaticky prepíše váš súbor <code>venv_birth_certificate.json</code>. Rodný list vášho prostredia tak vždy na 100 % odráža realitu bez toho, aby ste museli čokoľvek manuálne potvrdzovať.</p>
+        </div>
+
+        <!-- PODKAPITOLA 4.3 -->
+        <div id="downgrade" class="section-box">
+            <h1>4.3 Downgrade (Návrat k staršej verzii)</h1>
+            <p>Niekedy najnovšia verzia balíčka obsahuje chyby alebo nie je kompatibilná s vaším kódom. Vtedy potrebujete urobiť tzv. <strong>Downgrade</strong>.</p>
+
+            <p>V pravom paneli v sekcii <em>"Nainštalovať inú verziu"</em>:</p>
+            
+            <ol>
+                <li>Pozrite sa na stĺpec <em>"Nainštalovaná verzia"</em> (napríklad <code>2.5.0</code>).</li>
+                <li>Do textového poľa napíšte <strong>nižšie číslo</strong> verzie, ktorú potrebujete (napríklad <code>2.4.0</code>).</li>
+                <li>Kliknite na tlačidlo <strong>Nainštalovať verziu</strong>.</li>
+            </ol>
+            
+            <p>Aplikácia na pozadí spustí príkaz na inštaláciu presnej verzie (napr. <code>pip install balicek==2.4.0</code>). Inštalátor automaticky zistí, že máte novšiu verziu, najprv ju odstráni a následne nainštaluje vami požadovanú staršiu verziu.</p>
+        </div>
+
+        <!-- PODKAPITOLA 4.4 -->
+        <div id="update-all" class="section-box">
+            <h1>4.4 Hromadná aktualizácia a Riešenie konfliktov</h1>
+            <p>Tlačidlo <strong>⬆️ Aktualizovať všetky zastarané</strong> spustí dávkový proces, ktorý sa snaží povýšiť všetky červené balíčky na najnovšiu verziu naraz. Správanie tohto procesu sa však <strong>zásadne líši</strong> podľa toho, akého správcu balíčkov máte nastaveného v Nastaveniach aplikácie.</p>
+
+            <h3>Základný správca (Klasický Pip)</h3>
+            <p>Klasický <code>pip</code> sa snaží vyriešiť závislosti počas inštalácie. Ak však po aktualizácii jedného balíčka (napr. <code>lib_A</code> na verziu 2.0) iný balíček (<code>lib_B</code>) vyžaduje staršiu verziu (<code>lib_A==1.0</code>), nastáva konflikt známy ako "Dependency Hell".</p>
+            <div class="alert">
+                <strong>Čo robiť pri chybe s Pipom: Manuálna oprava</strong><br>
+                Štandardný <code>pip</code> neobsahuje zabudovaný príkaz na rýchlu a spoľahlivú spätnú kontrolu celého prostredia. Ak proces zlyhá alebo máte podozrenie na konflikt:
+                <ol>
+                    <li><strong>Prečítajte si výpis v okne Logu.</strong> Hľadajte chybové hlášky ako <code>ResolutionImpossible</code> alebo texty typu <code>"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed."</code></li>
+                    <li><strong>Identifikujte problematické balíčky.</strong> V logu bude často uvedené, ktorý balíček vyžaduje akú verziu.</li>
+                    <li><strong>Vykonajte manuálny downgrade.</strong> V pravom paneli Pip Manažéra nájdite balíček, ktorý je potrebné vrátiť na staršiu verziu, zadajte presné číslo verzie a kliknite na "Nainštalovať verziu".</li>
+                </ol>
+            </div>
+
+            <h3>Ultra-rýchly správca (UV - Astral) ✨ Autopilot</h3>
+            <p>Ak v Nastaveniach používate moderný správca <code>uv</code>, VenvHub Pro po každej hromadnej aktualizácii spustí inteligentného <strong>Autopilota na kontrolu a opravu závislostí</strong>:</p>
+            
+            <ol>
+                <li><strong>Aktualizácia:</strong> Najprv sa extrémne rýchlo stiahnu a nainštalujú najnovšie verzie všetkých zastaraných balíčkov.</li>
+                <li><strong>Hĺbková kontrola (<code>uv pip check</code>):</strong> Okamžite po inštalácii aplikácia na pozadí overí integritu celého prostredia.</li>
+                <li><strong>Automatická oprava (Auto-Fix):</strong> Ak niektorý zaktualizovaný balíček rozbil závislosti iného (napr. <em>"The package X requires Y==1.5, but 2.0 is installed"</em>), aplikácia túto chybu z logu automaticky prečíta, <strong>sama vynúti inštaláciu (downgrade) presne požadovanej verzie</strong> a následne vykoná kontrolu znova.</li>
+            </ol>
+
+            <div class="tip">
+                <strong>Výsledok:</strong> Pri použití <code>uv</code> získate maximálne aktuálne, ale zároveň 100% stabilné a bezchybné prostredie bez toho, aby ste museli ručne lúštiť červené logy a hľadať správne verzie. Celý proces beží na autopilota.
+            </div>
+
+            <h3>Je možné miešať Pip a UV?</h3>
+            <p><strong>Áno, je to bezpečné.</strong></p>
+            <p>Oba nástroje, <code>pip</code> aj <code>uv</code>, pracujú s rovnakým štandardným formátom balíčkov a ukladajú ich na rovnaké miesto vo vnútri virtuálneho prostredia (do zložky <code>Lib/site-packages</code>). Sú navzájom plne kompatibilné.</p>
+            <p>Môžete napríklad:</p>
+            <ul>
+                <li>Nainštalovať balíček pomocou <code>pip</code>.</li>
+                <li>Následne spustiť hromadnú aktualizáciu pomocou <code>uv</code>.</li>
+                <li>UV bez problémov rozpozná balíčky nainštalované pipom, skontroluje ich a v prípade potreby ich zaktualizuje alebo opraví ich závislosti.</li>
+            </ul>
+            <p>Vďaka tejto kompatibilite môžete medzi správcami balíčkov v Nastaveniach ľubovoľne prepínať podľa toho, ktorý vám v danej situácii viac vyhovuje (napríklad UV pre rýchlosť a opravy, Pip pre maximálnu istotu a dlhoročnú stabilitu).</p>
+        </div>
+
+        <!-- PODKAPITOLA 4.5 -->
+        <div id="freeze" class="section-box">
+            <h1>4.5 Freeze a Logovanie</h1>
+            <p>Tlačidlo <strong>📜 Freeze</strong> vygeneruje súbor <code>requirements.txt</code> s presnými verziami všetkých balíčkov priamo do koreňa vášho projektu.</p>
+
+            <h3>Logovanie a Bezpečnostný zámok (Safety Lock)</h3>
+            <p>Všetky operácie (Install, Update, Uninstall) bežia vo vlastnom vlákne (asynchrónne) a ich kompletný výstup sa v reálnom čase zobrazuje v spodnom okne <strong>Log</strong>. Počas akejkoľvek prebiehajúcej operácie aplikácia <strong>deaktivuje (zašedí) všetky tlačidlá</strong>. Je to dôležitá ochrana proti spusteniu dvoch inštalácií naraz, čo by mohlo poškodiť virtuálne prostredie.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

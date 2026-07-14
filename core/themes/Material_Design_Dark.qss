@@ -1,0 +1,360 @@
+/*
+ * Theme Name: Material Design Dark
+ * Version: 2.2
+ * Author: Viliam Schneider
+ */
+
+/* HLAVNÉ NASTAVENIA */
+QWidget {
+    background-color: #121212;
+    color: #e1e1e1;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+}
+
+/* ============================================= */
+/* === CHECKBOXY A RADIO BUTTONY (KRÚŽKY) === */
+/* ============================================= */
+
+/* Štýl pre krúžky (Radio Buttons) */
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 9px;
+    border: 2px solid #555555; /* Viditeľnejší šedý okraj */
+    background-color: #1e1e1e;
+}
+
+QRadioButton::indicator:hover {
+    border-color: #03dac6; /* Material Teal hover */
+}
+
+QRadioButton::indicator:checked {
+    background-color: #03dac6; /* Výrazná tyrkysová výplň */
+    border: 2px solid #ffffff;  /* Biely okraj pre maximálny kontrast */
+}
+
+/* Štýl pre štvorčeky (Checkboxes) */
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #555555;
+    background-color: #1e1e1e;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #03dac6;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #03dac6;
+    border-color: #03dac6;
+    image: url(check_icon.png); /* Ak máš ikonu, ak nie, ostane tyrkysový */
+}
+
+/* Ak nemáš obrázok fajky, toto vytvorí aspoň vizuálnu zmenu */
+QCheckBox::indicator:checked {
+    background-color: #03dac6;
+    border: 2px solid #ffffff;
+}
+
+/* ============================================= */
+/* === TLAČIDLÁ (BUTTONS) === */
+/* ============================================= */
+
+QPushButton {
+    background-color: #1e1e1e;
+    color: #e1e1e1;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    padding: 5px 15px;
+}
+
+QPushButton:hover {
+    background-color: #2c2c2c;
+    border-color: #03dac6;
+}
+
+QPushButton:pressed {
+    background-color: #383838;
+    color: white;
+}
+
+/* STAV OZNAČENÉHO TLAČIDLA (KEĎ JE AKTÍVNE) */
+QPushButton:checked {
+    background-color: #03dac6 !important;
+    color: #000000 !important;
+    border: 1px solid #ffffff;
+    font-weight: bold;
+}
+
+/* Špecifické tlačidlá na lište */
+#ProjectMiniBar QPushButton {
+    background-color: transparent;
+    border: 1px solid transparent;
+}
+
+#ProjectMiniBar QPushButton:checked {
+    background-color: rgba(3, 218, 198, 0.15);
+    border: 1px solid #03dac6;
+}
+
+/* ============================================= */
+/* === ZÁLOŽKY (TABS) === */
+/* ============================================= */
+QTabWidget::pane {
+    border: 1px solid #2c2c2c;
+}
+
+QTabBar::tab {
+    background-color: #1e1e1e;
+    color: #a0a0a0;
+    padding: 8px 15px;
+    border: 1px solid #2c2c2c;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: #121212;
+    color: #03dac6; /* Tyrkysová pre text */
+    border-bottom: 2px solid #03dac6;
+    font-weight: normal;
+}
+
+/* ============================================= */
+/* === VSTUPNÉ POLIA (INPUTS) === */
+/* ============================================= */
+QLineEdit, QComboBox {
+    background-color: #1e1e1e;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    padding: 4px;
+    color: #ffffff;
+}
+
+QLineEdit:focus, QComboBox:focus {
+    border: 1px solid #03dac6;
+    background-color: #121212;
+}
+
+/* TABUĽKY A VÝBER */
+
+/* ============================================= */
+/* === KOMPLETNÁ ÚPRAVA TABUĽKY (QTableWidget) === */
+/* ============================================= */
+
+QTableWidget {
+    background-color: #121212;   /* Hlavné pozadie tabuľky */
+    border: 1px solid #2c2c2c;
+    gridline-color: transparent; /* Skryje mriežku pre čistý efekt riadkov */
+    outline: none;               /* Odstráni bodkovaný rámik pri kliknutí */
+    selection-background-color: rgba(3, 218, 198, 0.2); /* Farba výberu (fallback) */
+}
+
+/* Hlavička tabuľky (Názov venv, Verzia, Stav...) */
+QHeaderView::section {
+    background-color: #1e1e1e;
+    padding: 6px;
+    border: 1px solid #121212;
+    font-weight: bold;
+    color: #a0a0a0;
+}
+
+/* Štýl pre bunky a riadky */
+QTableWidget::item {
+    padding: 6px;
+    border: none;                /* Žiadne orámovanie buniek */
+    
+    background-color: transparent;
+}
+
+/* 1. JEMNÝ MODRÝ HOVER (KEĎ NA RIADOK NAMIERIŠ) */
+QTableWidget::item:hover {
+    background-color: #1f1f1f;   /* Jemne svetlejšia sivá */
+    color: #ffffff;
+}
+
+/* 2. PODSVIETENIE CELÉHO VYBRANÉHO RIADKA */
+QTableWidget::item:selected {
+    background-color: #03dac6;   /* Material tyrkysová */
+    color: #000000;
+    border: none !important;     /* Odstráni všetky čiary/obdĺžniky */
+    border-left: none !important; /* Explicitne zruší tú modrú čiaru (paličku) */
+}
+
+/* ============================================= */
+/* === OPRAVA TLAČIDIEL (WIDGETOV) V TABUĽKE === */
+/* ============================================= */
+
+/* Zabezpečí, že podklad pod tlačidlami v tabuľke bude priehľadný */
+QTableWidget QWidget {
+    background-color: transparent;
+}
+
+/* Špecifický štýl pre tlačidlá v stĺpci AKCIE */
+QTableWidget QPushButton {
+    background-color: #2c2c2c;
+    color: #e1e1e1;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    margin: 1px;         /* Zmenšený okraj, aby sa zmestili */
+    padding: 0px;        /* Žiadny vnútorný okraj */
+    
+    /* Zmenšenie samotného štvorca tlačidla */
+    min-width: 22px;     
+    max-width: 22px;
+    min-height: 22px;    
+    max-height: 22px;
+
+    /* ZMENŠENIE IKONY/TEXTU - toto je kľúčové */
+    font-size: 10px;     /* Ak sú ikony textové (napr. Unicode symboly), toto ich zmenší */
+    qproperty-iconSize: 14px 14px; /* Ak sú ikony obrázkové (QIcon), toto ich zmenší */
+}
+
+/* Špecifické nastavenie pre Play/Stop, ak sú stále veľké */
+QTableWidget QPushButton#btn_play, 
+QTableWidget QPushButton#btn_stop {
+    font-size: 10px !important;
+}
+
+/* Aby tlačidlá v stĺpci "Akcie" boli pekne v strede */
+QTableWidget::item {
+    padding: 2px; /* Zmenšený padding bunky, aby tlačidlá mali miesto */
+}
+
+/* Hover efekt pre tlačidlá v tabuľke */
+QTableWidget QPushButton:hover {
+    background-color: #383838;
+    border: 1px solid #03dac6;
+    color: #ffffff;
+}
+
+/* FIX FARIEB PRE PLAY / STOP IKONY (VYNÚTENÉ) */
+QTableWidget QPushButton#btn_play {
+    color: #81c784 !important;   /* Material svetlozelená */
+}
+
+QTableWidget QPushButton#btn_stop {
+    color: #e57373 !important;   /* Material svetločervená */
+}
+
+/* Ak máš tlačidlo refresh alebo iné */
+QTableWidget QPushButton#btn_mgr, 
+QTableWidget QPushButton#btn_refresh {
+    color: #03dac6 !important;   /* Tyrkysová ikona */
+}
+
+/* Roh tabuľky (vpravo hore/dole) */
+QTableWidget QHeaderView::corner-button {
+    background-color: #1e1e1e;
+    border: none;
+}
+
+/* Zvyšok tvojho pôvodného kódu pre logy a lišty ponechaný... */
+QTextEdit {
+    background-color: #121212;
+    color: #e1e1e1;
+    border: 1px solid #2c2c2c;
+}
+
+/* ============================================= */
+/* === OHRANIČENIE FRAMELESS OKIEN (POP-UPS) === */
+/* ============================================= */
+#VSCodeUserWindow, #LocalPackagesWindow, #PipManagerWindow, #PipEWindow, #AboutDialog, #ProgressDialog, #MasterManager, #BuildLogDialog, #CustomMessageBox {
+    background-color: #121212;
+    border: 1px solid #03dac6; /* Material tyrkysový okraj okna */
+}
+
+/* Samostatné pravidlo pre MiniBar na vypnutie rámčeka */
+#ProjectMiniBar {
+    background-color: #121212;
+    border: none; /* Úplne vypne ohraničenie okna */
+}
+
+/* Samostatné pravidlo pre Rýchle nastavenia (QuickSettings) */
+#QuickSettings {
+    background-color: #121212;
+    
+    /* Zatiaľ bez rámčeka (plynulý prechod z MiniBaru). 
+       Ak ho v budúcnosti budete chcieť zapnúť, zmeňte tento riadok na:
+       border: 1px solid #03dac6; 
+    */
+    border: none; 
+}
+
+
+QPushButton#btn_about {
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/about_white.svg);
+    qproperty-iconSize: 18px 18px;
+    background-color: transparent;
+    border: none;
+}
+
+QPushButton#btn_about:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+
+QPushButton#btn_toggle_mode {
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/icon_mode_widget.svg);
+    qproperty-iconSize: 20px 20px;
+    background-color: transparent;
+    border: none;
+}
+
+QPushButton#btn_toggle_mode:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+
+
+QPushButton#btn_vscode {
+    qproperty-icon: url({{CORE_THEMES_DIR}}/icon/vscode/vscode5.svg);
+    qproperty-iconSize: 18px 18px;
+    background-color: transparent;
+    border: none;
+}
+
+QPushButton#btn_vscode:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+
+/* Widget hoower efekt */
+
+#ProjectMiniBar #btn_play, 
+#ProjectMiniBar #btn_stop, 
+#ProjectMiniBar #btn_open_mgr, 
+#ProjectMiniBar #btn_mgr,      /* PRIDANÉ: pre prípad, že sa volá takto */
+#ProjectMiniBar #btn_refresh,
+#ProjectMiniBar #btn_pin,
+#ProjectMiniBar #btn_settings {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+}
+
+#ProjectMiniBar #btn_play:hover, 
+#ProjectMiniBar #btn_stop:hover, 
+#ProjectMiniBar #btn_open_mgr:hover, 
+#ProjectMiniBar #btn_mgr:hover, /* PRIDANÉ: aby fungoval hover aj tu */
+#ProjectMiniBar #btn_refresh:hover,
+#ProjectMiniBar #btn_pin:hover,
+#ProjectMiniBar #btn_settings:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* STAV, KEĎ JE PRIPÍNAČKA AKTÍVNA (ZAPNUTÁ) */
+#ProjectMiniBar #btn_pin:checked {
+    background-color: #03dac6; /* Material tyrkysová */
+    border: 1px solid #ffffff;
+}
+
+/* HOVER EFEKT, AJ KEĎ JE ZAPNUTÁ (aby to nebolo mŕtve) */
+#ProjectMiniBar #btn_pin:checked:hover {
+    background-color: #01bfa5; /* Mierne tmavšia tyrkysová pri hoveri */
+}

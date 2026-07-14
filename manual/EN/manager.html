@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Manager - VenvHub Pro Manual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- LEFT MENU -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>VenvHub Pro</h2>
+            <span>User Manual v2.5.14</span>
+        </div>
+        <div class="nav-links">
+            <a href="features.html">✨ Features Overview</a>
+            <a href="index.html">📥 1. Installation and First Run</a>
+            <a href="minibar.html">🚀 2. Mini-Bar and Quick Settings</a>
+
+            <!-- ACTIVE MAIN CHAPTER -->
+            <a href="manager.html" class="active">📁 3. Environment Manager</a>
+
+            <!-- SUB-CHAPTERS FOR ENVIRONMENT MANAGER -->
+            <div class="sub-menu">
+                <a href="#architektura">3.1 Architecture: Hub vs. Project</a>
+                <a href="#vytvaranie">3.2 Creation and Naming</a>
+                <a href="#row-actions">3.3 Actions and Process Management</a>
+                <a href="#linking">3.4 Logical Linking and Scripts</a>
+                <a href="#cloning">3.5 Cloning (Reconstruction)</a>
+                <a href="#validator">3.6 Venv Validator (Diagnostics)</a>
+                <a href="#birth-certificate">3.7 Environment Birth Certificate</a>
+                <a href="#vscode">3.8 VS Code Integration</a>
+                <a href="#vscode-meta">3.9 Advanced Tools (Meta-Sync)</a>
+            </div>
+
+            <a href="pip.html">📦 4. Pip Package Manager</a>
+            <a href="multirun.html">🔄 5. Batch Run</a>
+            <a href="builder.html">🛠 6. EXE Creation (PyInstaller)</a>
+            <a href="settings.html">⚙️ 7. Settings and Appearance</a>
+            <a href="local_python.html">🐍 8. Local Python (Runtime)</a>
+            <a href="autostart.html">🔄 9. Container and Autostart</a>
+            <a href="local_packages.html">🔗 10. Local Packages (Linker)</a>
+            <a href="pip_editable.html">✏️ 11. Editable Packages (pip -e)</a>
+            <a href="vscode_user.html">💻 12. VS Code Profiles</a>
+            <a href="vscode_integration.html">🔌 13. VS Code Integration</a>
+            <a href="samoreplikacia_venvhub.html">14. Architecture and Compilation</a>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- SUB-CHAPTER 3.1 -->
+        <div id="architektura" class="section-box">
+            <h1>3.1 Architecture: Hub vs. Project</h1>
+            <p>VenvHub Pro uses an architecture that strictly separates your source code from virtual environments. It is important to understand how this works in the background:</p>
+            <ul>
+                <li><strong>Projects:</strong> The application only "reads" folder names in your <code>Projects Root</code>. It never writes anything to these folders (except for <code>requirements.txt</code> upon request or <code>.vscode/settings.json</code> for integration).</li>
+                <li><strong>Venv Hub:</strong> All virtual environments are physically stored in a central folder called <code>Venv Hub</code>.</li>
+            </ul>
+            <div class="tip">
+                <strong>Advantage:</strong> If you accidentally delete the entire virtual environment, your source code (project) remains completely untouched. These two things are physically separated on the disk.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 3.2 -->
+        <div id="vytvaranie" class="section-box">
+            <h1>3.2 Creation and Naming</h1>
+            <p>When creating a new environment, the application uses a strict naming convention and intelligently selects the technology based on the Python source.</p>
+            
+            <h3>Creation and Naming Process:</h3>
+            <ol>
+                <li>You select a project (e.g., <code>MyEshop</code>) and a Python version (e.g., <code>[Local] 3.12</code>).</li>
+                <li>You enter an environment name, e.g., <code>My new version!</code>.</li>
+                <li>Your entered name passes through an internal <strong>sanitize_venv_name</strong> filter. Result: <code>My_new_version!</code>.</li>
+                <li>The application creates a folder in the Hub directory named: <br><code>MyEshop_My_new_version!</code>.</li>
+            </ol>
+            
+            <div class="tip">
+                <strong>What does <code>sanitize_venv_name</code> do?</strong><br>
+                This filter prepares a safe name for a Windows folder. It replaces spaces with underscores and removes prohibited characters (<code>&lt; &gt; : " / \ | ? *</code>), but intentionally <strong>leaves diacritics, exclamation marks</strong>, and characters from other languages (e.g., Cyrillic) to ensure global usability.
+            </div>
+
+            <h3>Backend Technologies (System vs. Local)</h3>
+            <p>Depending on the selected Python type, a different technology is used:</p>
+            <ul>
+                <li><strong>System Python:</strong> Uses the built-in <code>venv</code> module. It is a standard and reliable method that creates a lightweight environment. However, this environment is <strong>hard-linked to the main Python installation</strong> on your PC, making it non-portable.</li>
+                <br>
+                <li><strong>Local Python (Embeddable):</strong> Uses the more advanced <code>virtualenv</code> library. It is specifically designed to work with portable versions and can create a <strong>fully self-sufficient and isolated environment</strong>. This is the ideal choice for portability.</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Threading:</strong> The entire creation process runs in a separate thread (QThread). This means that even if environment creation takes 10 seconds, the application won't "freeze," and you can continue working.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 3.3 -->
+        <div id="row-actions" class="section-box">
+            <h1>3.3 Row Actions and Process Management</h1>
+            <p>Each row in the table represents one physical environment. The buttons in the "Actions" column have direct access to system processes.</p>
+
+            <h3>▶ Play (Secure Launch via temporary .BAT)</h3>
+            <p>When you click Play in a row, the application does not rely on long and fragile <code>cmd.exe</code> commands chained with <code>&&</code>, which would fail with spaces in folder names. Instead, it generates a <strong>temporary batch file (.bat)</strong> in the background:</p>
+            <ol>
+                <li>A secure file is created in the Temp folder (e.g., <code>venvhub_run_123.bat</code>).</li>
+                <li>Instructions are written on separate lines: directory change to the project, venv activation, and execution of your script.</li>
+                <li>This file is launched via <code>cmd.exe /k</code>. The window remains open after the script ends so you can see any errors.</li>
+            </ol>
+
+            <h3>■ Stop (Process Registry & Watchdog)</h3>
+            <p>VenvHub Pro includes an internal <strong>Process Registry</strong> system. When you launch a script, the application remembers its <strong>PID</strong> (Process ID) and pairs it with the venv path. Simultaneously, a <strong>"Watchdog"</strong> connects to this process.</p>
+            <p>When you press Stop:</p>
+            <ol>
+                <li>The application looks in the registry to see which PIDs are running under this venv.</li>
+                <li>It finds not only the main process (cmd.exe) but also all its "children" (python.exe, subprocesses).</li>
+                <li>It performs a <strong>Kill Tree</strong> - forcibly terminating the entire process tree so nothing remains hanging in memory (via the <code>psutil</code> module).</li>
+            </ol>
+            <div class="tip">
+                <strong>What does the Watchdog do?</strong><br>
+                This background process constantly monitors the running script. If the script crashes on its own (e.g., due to a code error), the Watchdog detects it and reports an "Error!" status to the main application, even if you haven't pressed the Stop button.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 3.4 -->
+        <div id="linking" class="section-box">
+            <h1>3.4 Logical Linking and Scripts</h1>
+            
+            <h3>Default Venv (star ★)</h3>
+            <p>A project can have multiple environments, but only one is "primary." Clicking <em>"Default"</em> writes this information to the <code>venv_hub_pro_config.json</code> file. This setting is permanent and is used by tools like the Mini-Bar or VS Code integration.</p>
+
+            <h3>Entry Script Selection (Validation)</h3>
+            <p>The application includes a safety check when choosing a <code>.py</code> file. It uses the <code>os.path.relpath</code> function to verify the path.</p>
+            <div class="alert">
+                <strong>Rule:</strong> You can only select a script that is physically located <strong>inside</strong> the project folder. If you try to select a file from another drive, the application will reject it to maintain project portability on USB drives.
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 3.5 -->
+        <div id="cloning" class="section-box">
+            <h1>3.5 Cloning (Intelligent Reconstruction)</h1>
+            <p>The "Clone" function (right-click on a row) <strong>is not</strong> a simple folder copy. It performs an intelligent reconstruction in the background, compatible even with the fast UV installer:</p>
+            <ol>
+                <li><strong>Freeze:</strong> Retrieves the package list from the old environment.</li>
+                <li><strong>Create:</strong> Creates a brand new, clean environment.</li>
+                <li><strong>Install:</strong> Installs all packages from the list into the new environment in isolated mode (<code>--no-build-isolation</code> for stability).</li>
+            </ol>
+            
+            <h3>Cloning Strategy by Venv Type</h3>
+            <p>The application automatically chooses the best strategy during cloning:</p>
+            
+            <h4>Scenario 1: Cloning a System Venv</h4>
+            <p>The application uses the same system Python that created the original (e.g., <code>C:\Python311\python.exe</code>) to create the new environment. The clone will also be system-based and non-portable.</p>
+            
+            <h4>Scenario 2: Cloning a Local/Embed Venv (Plan A - Fast)</h4>
+            <p>If the original "parent" folder with the portable Python (Local) still exists, the application reads the path from the "Birth Certificate" and uses this parent Python to directly and very quickly create the clone via <code>virtualenv</code>. This is the fastest and most reliable method.</p>
+            
+            <h4>Scenario 3: Cloning a Local/Embed Venv (Plan B - Backup)</h4>
+            <p>If you have deleted the parent Python folder in the meantime, the application has a backup plan:
+                <ol>
+                    <li>It temporarily installs the <code>virtualenv</code> library directly into the environment you want to clone.</li>
+                    <li>It uses the <code>python.exe</code> from inside that environment to run <code>virtualenv</code> and create the new clone.</li>
+                </ol>
+                This method ensures that <strong>cloning always succeeds</strong>, even if the original source no longer exists.
+            </p>
+        </div>
+        
+        <!-- SUB-CHAPTER 3.6 -->
+        <div id="validator" class="section-box">
+            <h1>3.6 Venv Validator (Diagnostics and Repair)</h1>
+            <p>VenvHub Pro includes an intelligent background system that protects your environments from errors after movement or disk changes.</p>
+
+            <div class="alert">
+                <strong>Why are system venvs unstable?</strong><br>
+                The answer lies in the <code>pyvenv.cfg</code> file inside the environment. For a system venv, it contains a <strong>fixed, absolute path</strong> to the main Python installation, e.g., <code>home = C:\Python311</code>. If you move this environment to another PC, the link becomes invalid.
+            </div>
+
+            <h3>How does the Validator work?</h3>
+            <p>Every time the table is displayed, the application compares the path in <code>pyvenv.cfg</code> with reality. Based on the diagnostics, it assigns a status:</p>
+            <ul>
+                <li><strong style="color:green">VALID:</strong> Everything is in order.</li>
+                <li><strong style="color:orange">BROKEN - FIXABLE:</strong> The path is wrong, but a compatible Python version exists on the PC (it can handle downgrades or upgrades of the third patch number). An automatic environment repair is offered without deleting packages.</li>
+                <li><strong style="color:red">BROKEN - INCOMPATIBLE:</strong> The required Python version (same major/minor branch) is missing from the PC. Reconstruction using a different version is offered.</li>
+            </ul>
+        </div>
+        
+        <!-- SUB-CHAPTER 3.7 -->
+        <div id="birth-certificate" class="section-box">
+            <h1>3.7 Environment Birth Certificate (venv_birth_certificate.json)</h1>
+            <p>Every environment created via VenvHub Pro contains a <code>venv_birth_certificate.json</code> file. This file is the brain behind the application's advanced features.</p>
+            
+            <h3>What information does it contain?</h3>
+            <ul>
+                <li><strong>Project Name:</strong> Which project the environment logically belongs to.</li>
+                <li><strong>Python Version:</strong> The exact version used during creation (e.g., <code>3.12.4</code>).</li>
+                <li><strong>Parent Python Path:</strong> Path to the <code>python.exe</code> from which the environment was created. <strong>This is crucial for fast Plan A cloning.</strong></li>
+                <li><strong>Package List:</strong> A complete list of installed packages in JSON format, which updates automatically with every change in the Pip Manager.</li>
+                <li><strong>Creation and Modification Dates:</strong> For better organization.</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Important:</strong> Thanks to this file, VenvHub Pro does not need to run slow commands (like <code>pip freeze</code>) during operations like Cloning or EXE generation. It can load all information instantly. <strong>Never delete this file.</strong>
+            </div>
+        </div>
+
+        <!-- SUB-CHAPTER 3.8 -->
+        <div id="vscode" class="section-box">
+            <h1>3.8 VS Code Integration (Automatic Sync)</h1>
+            <p>One of the most common developer problems is creating a virtual environment but having the code editor (Visual Studio Code) unaware of it, highlighting imports in red, and failing to provide code completion (Linter/IntelliSense not working).</p>
+            
+            <p>VenvHub Pro solves this problem <strong>completely automatically</strong> through silent integration. It communicates directly with the hidden <code>.vscode/settings.json</code> folder inside your project.</p>
+
+            <h3>1. Creating a New Environment (Safe Write)</h3>
+            <p>When you click <strong>+ CREATE</strong> in VenvHub Pro, the application checks your project after successful creation. If it finds that VS Code hasn't been assigned an environment yet, it <strong>automatically assigns it</strong>. If you already have an environment set manually in VS Code, VenvHub Pro <em>will not overwrite it</em> out of respect.</p>
+
+            <h3>2. Changing the Default Environment (★ Button)</h3>
+            <p>If you click the <strong>"Default"</strong> button (star) in the VenvHub Pro table, you tell the application: <em>"This is now the primary environment for this project."</em></p>
+            <p>VenvHub Pro immediately sends this information to VS Code and <strong>forcibly overwrites</strong> the path in <code>settings.json</code> (key <code>python.defaultInterpreterPath</code>). Once you open VS Code, it will immediately start using this new environment for code completion.</p>
+
+            <div class="tip">
+                <strong>Intelligent Local Package Sync:</strong> Another crucial thing happens in the background. When you change the default Venv, the application "scans" it. If it finds that this new Venv contains linked Local Packages, it instantly pushes them to VS Code as well (<code>python.analysis.extraPaths</code>). If it doesn't, it clears VS Code of any old local packages from the previous Venv to avoid chaos and "fake" suggestions in your editor.
+            </div>
+
+            <h3>3. Deletion and Cleanup</h3>
+            <p>If you <strong>❌ Delete</strong> an environment through VenvHub Pro that was also the default for VS Code, the application not only deletes files from the disk but also <strong>cleans up after itself in the editor</strong>. It opens <code>settings.json</code>, removes invalid paths, and if nothing else remains in the file, it deletes the entire file and the <code>.vscode</code> folder to keep your project tidy.</p>
+
+            <div class="tip">
+                <strong>Portable Mode and Path Repair:</strong><br>
+                The highlight of the integration comes in <strong>Portable</strong> mode. If you have a project and environment on a USB drive and move it to another computer, the drive letter changes (e.g., from <code>E:</code> to <code>F:</code>). 
+                <br><br>
+                VS Code would normally get confused because it would still look for the environment on drive <code>E:</code>. <strong>In portable mode, VenvHub Pro silently opens VS Code settings after running the repair and overwrites the old drive letter with the new one (via the <code>PortablePathLogic</code> module).</strong> You just open the editor, and everything works perfectly!
+            </div>
+
+            <h3>4. Secure Merging and Error Handling</h3>
+            <p>The application accesses the <code>.vscode/settings.json</code> file in a non-destructive manner. This means it never overwrites the entire file with its own version but performs intelligent merging at the key level.</p>
+
+            <ul>
+                <li><strong>Preservation of User Settings:</strong> When modifying settings, the existing file is first loaded and parsed. The application only modifies or adds the keys it manages. Other settings (such as formatting, tabs, or other extensions' configurations) remain untouched.</li>
+                <li><strong>Managed Interpreter Keys:</strong> 
+                    <ul>
+                        <li>The <code>python.defaultInterpreterPath</code> key is set to the selected venv, and <code>python.terminal.activateEnvironment</code> is set to <code>true</code>.</li>
+                        <li>Simultaneously, redundant keys <code>python.venvPath</code> and <code>python.envFile</code> are removed to clean up old configurations.</li>
+                    </ul>
+                </li>
+                <li><strong>Selective Path Analysis Management:</strong> When writing local packages to the <code>python.analysis.extraPaths</code> key, the application does not remove your own custom paths. It filters the list, removing only paths that belong under the managed <code>venv_hub_root</code> folder, and then appends the new links.</li>
+                <li><strong>Handling Corrupted Files (Fail-safe):</strong> 
+                    <ul>
+                        <li>If <code>settings.json</code> is syntactically corrupted (e.g., a missing brace) and reading fails (<code>json.JSONDecodeError</code>), the application doesn't fail; instead, it creates a new correct structure to write the required parameters.</li>
+                        <li>Any disk restrictions or missing access rights are handled at the system exception level (<code>OSError</code>), ensuring the entire interface doesn't crash.</li>
+                    </ul>
+                </li>
+            </ul>
+            
+        </div>
+        
+        <!-- SUB-CHAPTER 3.9 -->
+        <div id="vscode-meta" class="section-box">
+            <h1>3.9 Advanced Tools: VS Code Meta-Sync</h1>
+            <p>VenvHub Pro allows you to create custom <strong>"project modules"</strong> (Local Packages / Linker) that automatically inject not only Python code but also predefined <strong>Tasks</strong> and <strong>Keybindings</strong> into Visual Studio Code.</p>
+            
+            <h3>How does it work?</h3>
+            <p>If you create a package in the <code>Local Packages</code> folder containing a <code>local_meta.json</code> file, VenvHub Pro checks its content every time it is linked to a Venv (Apply Changes). If it finds a <code>vscode_integration</code> section, it writes these settings directly into your project (<code>tasks.json</code> and <code>keybindings.json</code> files).</p>
+
+            <div class="tip">
+                <strong>Advantage:</strong> You don't have to manually configure <code>tasks.json</code> in every new project. Just link your local tool to the environment, and VenvHub Pro will do it for you.
+            </div>
+
+            <h3>Example: AI Sync Tool</h3>
+            <p>Imagine a package used for comparing code changes using AI. In <code>local_meta.json</code>, you define:</p>
+    
+            <div class="code-container">
+            <pre><code>{
+    "name": "AI VS Code Sync",
+    "vscode_integration": {
+        "tasks": [
+            {
+                "label": "AI: Open Diff Editor",
+                "type": "shell",
+                "command": "${command:python.interpreterPath}",
+                "args": ["-m", "ai_sync", "prepare", "${file}"]
+            }
+        ],
+        "keybindings": [
+            {
+                "key": "ctrl+k d",
+                "command": "workbench.action.tasks.runTask",
+                "args": "AI: Open Diff Editor"
+            }
+        ]
+    }
+}</code></pre>
+            </div>
+
+            <h3>Security and Intelligent Synchronization</h3>
+            <ul>
+                <li><strong>No duplicate settings:</strong> The validator checks if a Task or Shortcut already exists in the project before writing. If so, it skips them to avoid breaking your custom modifications.</li>
+                <li><strong>Uses correct Python:</strong> Tasks are automatically bound to <code>${command:python.interpreterPath}</code>, ensuring they run inside the currently active virtual environment (which you set as default in VenvHub).</li>
+                <li><strong>Detailed logging:</strong> You can monitor the entire synchronization process in the log window when saving changes (you see exactly which task was added and which was skipped).</li>
+            </ul>
+
+            <div class="alert">
+                <strong>Note for Developers:</strong> This feature turns your local packages into true editor plugins. If your Python module needs specific control within VS Code, <code>local_meta.json</code> is the way to deliver it to the end user without any manual setup.
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

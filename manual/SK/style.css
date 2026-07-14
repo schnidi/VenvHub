@@ -1,0 +1,198 @@
+/* =========================================
+   Company: Seal and Lube, spol. s r.o.
+   Author: Ing. Viliam Schneider
+========================================= */
+
+
+/* =========================================
+   ZÁKLADNÉ NASTAVENIA A PREMENNÉ
+========================================= */
+:root {
+    --primary-color: #007acc; /* Hlavná modrá farba (z VS Code) */
+    --sidebar-bg: #1e2024;    /* Farba pozadia ľavého menu */
+    --sidebar-hover: #2a2d32; /* Farba po nabehnutí myšou v menu */
+    --text-main: #333333;     /* Hlavná farba textu v dokumentácii */
+    --bg-main: #f5f7f9;       /* Svetlosivé pozadie pre hlavný obsah */
+}
+
+html {
+    scroll-behavior: smooth; /* Plynulé rolovanie po kliknutí na kotvu (#) */
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg-main);
+    display: flex;
+}
+
+/* =========================================
+   ĽAVÉ PEVNÉ MENU (SIDEBAR)
+========================================= */
+.sidebar {
+    width: 280px;
+    background-color: var(--sidebar-bg);
+    color: white;
+    height: 100vh; /* Roztiahnutie na celú výšku okna */
+    position: fixed; /* Uzamknutie na mieste (neposúva sa) */
+    top: 0;
+    left: 0;
+    overflow-y: auto; /* Ak bude veľa položiek, dá sa rolovať */
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar-header {
+    padding: 25px 20px;
+    background-color: #15171a; /* Ešte tmavšie pozadie pre hlavičku */
+    border-bottom: 1px solid #333;
+    text-align: center;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #fff;
+}
+
+.sidebar-header span {
+    font-size: 12px;
+    color: #888;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    padding: 15px 0;
+}
+
+.nav-links > a {
+    display: block; /* Zabezpečí, že odkazy sú pod sebou */
+    color: #cccccc;
+    text-decoration: none;
+    padding: 12px 25px;
+    font-size: 15px;
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.nav-links > a:hover {
+    background-color: var(--sidebar-hover);
+    color: white;
+}
+
+/* Aktívna hlavná kapitola */
+.nav-links > a.active {
+    background-color: var(--sidebar-hover);
+    color: white;
+    border-left: 4px solid var(--primary-color);
+    font-weight: bold;
+}
+
+/* =========================================
+   PODMENU (PRE PODKAPITOLY AKO 3.1, 3.2...)
+========================================= */
+.sub-menu {
+    display: block;
+    background-color: #16181b; 
+    border-left: 2px solid #333;
+    margin-left: 25px; 
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
+.sub-menu a {
+    display: block; /* TOTO OPRAVUJE ZLIEVANIE TEXTU! */
+    padding: 10px 15px;
+    font-size: 13.5px;
+    color: #999999;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+}
+
+.sub-menu a:hover {
+    color: #ffffff;
+    border-left: 2px solid var(--primary-color);
+    background-color: var(--sidebar-hover);
+}
+
+
+/* =========================================
+   PRAVÁ STRANA (HLAVNÝ OBSAH)
+========================================= */
+.content {
+    margin-left: 280px; /* Posunuté o šírku ľavého menu */
+    padding: 40px;
+    width: 100%;
+    max-width: 900px;
+}
+
+/* Dizajn jednotlivých "krabíc" (sekcií) */
+.section-box {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid #eaeaea;
+    scroll-margin-top: 40px; /* Aby po odscrollovaní nebol nadpis natlačený na horný okraj obrazovky */
+}
+
+/* Formátovanie nadpisov */
+.section-box h1 {
+    color: var(--primary-color);
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.section-box h2 {
+    color: #444;
+    margin-top: 30px;
+}
+
+/* Formátovanie bežného textu a zoznamov */
+.section-box p, 
+.section-box ul, 
+.section-box ol {
+    line-height: 1.7;
+    font-size: 15px;
+}
+
+.section-box code {
+    background-color: #f1f1f1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: Consolas, monospace;
+    font-size: 14px;
+    color: #e83e8c; /* Tmavoružová pre odlíšenie kódu/ciest */
+}
+
+
+/* =========================================
+   Zvýraznenia v texte (Tipy a Upozornenia)
+========================================= */
+.alert {
+    background-color: #fff3cd;
+    border-left: 5px solid #ffc107;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.tip {
+    background-color: #e8f4fd;
+    border-left: 5px solid var(--primary-color);
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+
+
+/* Prídavok pre vizuálne odlíšenie kontajnerových boxov */
+.container-card {
+    border-top: 5px solid #28a745; /* Zelený horný okraj pre Kontajner */
+}
