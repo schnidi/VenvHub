@@ -115,4 +115,4 @@ VenvHub Pro can compile itself using its own PyInstaller Builder [cite: 12]. Thi
 
 ### 📬 Contact / Kontakt
 *   **Bug Reports & Feature Requests:** Please open an Issue right here on GitHub.
-*   **Business Inquiries & Collaboration:** Please visit my [GitHub Profile](https://github.com/tvoje-meno) where you can find my verified contact details.
+*   **Business Inquiries & Collaboration:** Please visit my [GitHub Profile](https://github.com/schnidi) where you can find my verified contact details.
