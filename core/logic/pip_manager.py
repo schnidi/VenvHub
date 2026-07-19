@@ -19,10 +19,11 @@ class PipSignalEmitter(QObject):
     finished = pyqtSignal()
 
 class PipWorker:
-    def __init__(self, cmd, start_msg, venv_path=None):
+    def __init__(self, cmd, start_msg, venv_path=None, manager_type="pip"):
         self.cmd = cmd
         self.start_msg = start_msg
         self.venv_path = venv_path
+        self.manager_type = manager_type
         self.signals = PipSignalEmitter()
         
     def run(self):
@@ -35,6 +36,49 @@ class PipWorker:
             process.wait()
             
             if process.returncode == 0 and self.venv_path:
+                # --- KONTROLA ZÁVISLOSTÍ PRE UV VETVU ---
+                if self.manager_type == "uv":
+                    self.signals.log_message.emit(LanguageManager.get("uv_checking_deps", "--- Vykonávam UV kontrolu závislostí... ---"))
+                    dispatcher = PackageManagerFactory.get_dispatcher("uv", self.venv_path)
+                    cmd_check = dispatcher.get("check")
+                    check_proc = subprocess.run(cmd_check, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW)
+                    
+                    if check_proc.returncode != 0:
+                        output_text = check_proc.stdout + "\n" + check_proc.stderr
+                        conflicts = list(set(re.findall(r"requires\s+`([^`]+)`", output_text)))
+                        
+                        if conflicts:
+                            self.signals.log_message.emit(LanguageManager.get("uv_found_conflicts", "Zistené konflikty: {0}").format(', '.join(conflicts)))
+                            self.signals.log_message.emit(LanguageManager.get("uv_fixing_downgrade", "Pokúšam sa o automatickú opravu (downgrade/inštaláciu presných verzií)..."))
+                            
+                            cmd_fix = dispatcher.get("install_multiple_exact", packages=conflicts)
+                            fix_proc = subprocess.Popen(
+                                cmd_fix, 
+                                stdout=subprocess.PIPE, 
+                                stderr=subprocess.STDOUT, 
+                                text=True, 
+                                encoding='utf-8',
+                                bufsize=1,
+                                creationflags=CREATE_NO_WINDOW
+                            )
+                            for line in fix_proc.stdout:
+                                self.signals.log_message.emit(line.strip())
+                            fix_proc.wait()
+                            
+                            if fix_proc.returncode == 0:
+                                self.signals.log_message.emit(LanguageManager.get("uv_verifying", "Overujem stav po oprave..."))
+                                check2_proc = subprocess.run(cmd_check, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW)
+                                if check2_proc.returncode == 0 or "All installed packages are compatible" in check2_proc.stdout:
+                                    self.signals.log_message.emit(LanguageManager.get("uv_fix_ok", "✅ Všetky konflikty boli úspešne vyriešené."))
+                                else:
+                                    self.signals.log_message.emit(LanguageManager.get("uv_fix_fail_check_log", "⚠️ Nepodarilo sa vyriešiť všetky konflikty. Skontrolujte log."))
+                            else:
+                                self.signals.log_message.emit(LanguageManager.get("uv_fix_error_manual", "⚠️ Automatická oprava zlyhala. Opravte závislosti manuálne."))
+                        else:
+                            self.signals.log_message.emit(LanguageManager.get("uv_parse_error_worker", "⚠️ Boli nájdené problémy so závislostí, ale aplikácia ich nedokázala automaticky vyparsovať."))
+                    else:
+                        self.signals.log_message.emit(LanguageManager.get("uv_compatible", "✅ Všetky závislosti sú kompatibilné."))
+
                 BirthCertificateGenerator.update_venv_certificate(self.venv_path)
 
             msg_done = LanguageManager.get("msg_done", "--- HOTOVO ---")
@@ -193,7 +237,7 @@ class PipManager:
             return
             
         start_msg = LanguageManager.get("msg_installing", "Inštalujem {0}...").format(package_name)
-        worker = PipWorker(cmd, start_msg, venv_path)
+        worker = PipWorker(cmd, start_msg, venv_path, manager_type)
         PipManager._run_pip_task(worker, log_widget)
         
     @staticmethod
@@ -206,7 +250,7 @@ class PipManager:
             return
             
         start_msg = LanguageManager.get("msg_uninstalling", "Odinštalujem {0}...").format(package_name)
-        worker = PipWorker(cmd, start_msg, venv_path)
+        worker = PipWorker(cmd, start_msg, venv_path, manager_type)
         PipManager._run_pip_task(worker, log_widget)
 
     @staticmethod
@@ -225,7 +269,7 @@ class PipManager:
             return
             
         start_msg = LanguageManager.get("msg_installing_req", "Inštalujem z requirements.txt...")
-        worker = PipWorker(cmd, start_msg, venv_path)
+        worker = PipWorker(cmd, start_msg, venv_path, manager_type)
         PipManager._run_pip_task(worker, log_widget)
         
     @staticmethod

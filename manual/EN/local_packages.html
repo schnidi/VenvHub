@@ -152,15 +152,27 @@
             </div>
         </div>
 
-        <!-- SUB-CHAPTER 10.5 -->
+        <!-- SUBSECTION 10.5 (UPDATED WITH HYBRID BRUTAL CHECK AND TRACKER) -->
         <div id="vscode" class="section-box">
-            <h2>10.5 VS Code Integration</h2>
-            <p>One of the greatest advantages of VenvHub Pro is automatic synchronization with the VS Code development environment. When you make a change in local packages:</p>
+            <h2>10.5 Integration with VS Code</h2>
+            <p>One of the primary advantages of VenvHub Pro is coordinated synchronization with the VS Code development environment. When you make a change to the local package settings or switch the active virtual environment, the system performs the following operations:</p>
             <ul>
-                <li>VenvHub Pro reads your <code>venvhub.json</code> and extracts the absolute source paths of the packages.</li>
-                <li>It sends these paths to the <code>python.analysis.extraPaths</code> field in the <code>settings.json</code> file of your VS Code project. <strong>Result:</strong> Pylance immediately recognizes your imports, code completion (IntelliSense) works flawlessly, and imports don't show red errors.</li>
-                <li>Simultaneously, your custom tasks (<code>tasks.json</code>) and shortcuts (<code>keybindings.json</code>) from the metadata are securely connected to the project.</li>
+                <li>VenvHub Pro reads the <code>venvhub.json</code> file in the given environment and extracts the absolute paths of the linked local libraries.</li>
+                <li>It sends these paths to the <code>python.analysis.extraPaths</code> configuration array in your VS Code project's <code>settings.json</code> file. Consequently, Pylance and IntelliSense recognize your imports, preventing false error highlights.</li>
+                <li>Custom tasks (<code>tasks.json</code>) and keybindings (<code>keybindings.json</code>) are attached to the project based on the metadata configuration.</li>
             </ul>
+
+            <div class="tip" style="border-left-color: #007acc; background-color: #f0f7ff; margin-top: 20px; padding: 15px; border-radius: 5px;">
+                <strong style="color: #007acc;">🛡️ Hybrid Mechanism (Brutal Check) and the venvhub_tracker.json File:</strong>
+                <p style="margin-top: 10px;">To prevent VenvHub Pro from unintentionally modifying tasks and keybindings that you created manually in VS Code, the system utilizes a combined verification mechanism during package removal:</p>
+                <ol style="margin-top: 10px; margin-bottom: 10px; padding-left: 20px;">
+                    <li style="margin-bottom: 8px;"><strong>Write Registry (Receipt):</strong> During each integration of tasks or keybindings, the application records the exact list of performed modifications in a helper file named <code>.vscode/venvhub_tracker.json</code>.</li>
+                    <li style="margin-bottom: 8px;"><strong>Prioritized Disk Read:</strong> When unchecking (deactivating) a package, the system attempts to read the list of tasks to be deleted directly from its <code>local_meta.json</code> on the disk and correctly removes them from the VS Code files.</li>
+                    <li style="margin-bottom: 8px;"><strong>Emergency Brake (Deletion via File Explorer):</strong> If you previously deleted the package folder manually via File Explorer (meaning its <code>local_meta.json</code> no longer exists), VenvHub Pro automatically falls back to the data in the <code>venvhub_tracker.json</code> file, identifies the orphaned entries, and safely removes them from the VS Code configuration.</li>
+                    <li style="margin-bottom: 8px;"><strong>Alignment During Venv Switching:</strong> If you switch the active environment within a single project (e.g., from Venv A with local packages to Venv B without packages), the background synchronizer automatically removes the tasks belonging to the old environment from the editor and prepares a clean interface for the new environment based on its configuration.</li>
+                    <li style="margin-bottom: 0;"><strong>Automatic Cleanup of Empty Configurations:</strong> If no active tasks or keybindings remain in VS Code after uninstalling a package or switching the Venv, VenvHub Pro physically deletes the <code>tasks.json</code>, <code>keybindings.json</code>, and the <code>venvhub_tracker.json</code> files, preventing the accumulation of empty configuration files in the project folder.</li>
+                </ol>
+            </div>
         </div>
 
         <!-- SUB-CHAPTER 10.6 -->

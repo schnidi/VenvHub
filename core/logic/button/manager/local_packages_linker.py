@@ -49,9 +49,8 @@ class LocalPackagesLinker:
             target_paths = [pkg_data['path'] for pkg_data in all_packages_to_link.values()]
             
             try:
-                # Odovzdávame target_paths. Filter je self.core.local_packages_root, aby VS Code premazal staré cesty
                 VSCodeIntegration.sync_local_packages(project_path, target_paths, self.core.local_packages_root)
-                VSCodeIntegration.sync_vscode_tasks_and_keybindings(project_path, self.core.local_packages_root, self.log_callback)
+                VSCodeIntegration.sync_vscode_tasks_and_keybindings(project_path, target_paths, self.core.local_packages_root, self.log_callback)
             except Exception as e:
                 self.log_callback(LanguageManager.get("msg_vscode_err", "Chyba VS Code: {0}").format(e))
 

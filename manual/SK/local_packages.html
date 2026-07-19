@@ -152,15 +152,27 @@
             </div>
         </div>
 
-        <!-- PODKAPITOLA 10.5 -->
+        <!-- PODKAPITOLA 10.5 (AKTUALIZOVANÁ O HYBRIDNÝ BRUTAL CHECK A TRACKER) -->
         <div id="vscode" class="section-box">
             <h2>10.5 Integrácia s VS Code</h2>
-            <p>Jednou z najväčších výhod VenvHub Pro je automatická synchronizácia s vývojovým prostredím VS Code. Keď urobíte zmenu v lokálnych balíčkoch:</p>
+            <p>Jednou z hlavných výhod VenvHub Pro je koordinovaná synchronizácia s vývojovým prostredím VS Code. Keď urobíte zmenu v nastavení lokálnych balíčkov alebo prepnete aktívne virtuálne prostredie, systém vykoná nasledujúce operácie:</p>
             <ul>
-                <li>VenvHub Pro prečíta váš <code>venvhub.json</code> a extrahuje absolútne zdrojové cesty balíčkov.</li>
-                <li>Tieto cesty odošle do poľa <code>python.analysis.extraPaths</code> v súbore <code>settings.json</code> vášho VS Code projektu. <strong>Výsledok:</strong> Pylance okamžite rozpozná vaše importy, "našepkávanie" kódu (IntelliSense) funguje bezchybne a importy nesvietia na červeno.</li>
-                <li>Zároveň sa do projektu bezpečne pripoja aj vaše vlastné úlohy (<code>tasks.json</code>) a skratky (<code>keybindings.json</code>) z metadát.</li>
+                <li>VenvHub Pro prečíta súbor <code>venvhub.json</code> v danom prostredí a extrahuje z neho absolútne cesty pripojených lokálnych knižníc.</li>
+                <li>Tieto cesty odošle do konfiguračného poľa <code>python.analysis.extraPaths</code> v súbore <code>settings.json</code> vášho VS Code projektu. Pylance a IntelliSense vďaka tomu okamžite rozpoznajú vaše importy a kód nebude vykazovať falošné chybové hlásenia.</li>
+                <li>Do projektu sa podľa konfigurácie v metadátach pripoja vlastné úlohy (<code>tasks.json</code>) a klávesové skratky (<code>keybindings.json</code>).</li>
             </ul>
+
+            <div class="tip" style="border-left-color: #007acc; background-color: #f0f7ff; margin-top: 20px; padding: 15px; border-radius: 5px;">
+                <strong style="color: #007acc;">🛡️ Hybridný mechanizmus (Brutal Check) a súbor venvhub_tracker.json:</strong>
+                <p style="margin-top: 10px;">Aby VenvHub Pro pri odstraňovaní balíčkov omylom nezasiahol do úloh a skratiek, ktoré ste si vo VS Code vytvorili vy sami ručne, využíva kombinovaný overovací mechanizmus:</p>
+                <ol style="margin-top: 10px; margin-bottom: 10px; padding-left: 20px;">
+                    <li style="margin-bottom: 8px;"><strong>Záznam o zápise (Účtenka):</strong> Pri každej integrácii úloh alebo skratiek si aplikácia zapíše presný zoznam vykonaných zmien do pomocného súboru <code>.vscode/venvhub_tracker.json</code>.</li>
+                    <li style="margin-bottom: 8px;"><strong>Prioritné čítanie z disku:</strong> Pri odškrtnutí (deaktivácii) balíčka sa systém pokúsi prečítať zoznam úloh na vymazanie priamo z jeho <code>local_meta.json</code> na disku a korektne ich odstráni zo súborov VS Code.</li>
+                    <li style="margin-bottom: 8px;"><strong>Záchranná brzda (Smazanie cez Prieskumník):</strong> Ak zistíte, že ste priečinok s balíčkom predtým zmazali ručne cez Windows Prieskumník (čiže jeho <code>local_meta.json</code> už neexistuje), VenvHub Pro automaticky použije dáta zo súboru <code>venvhub_tracker.json</code>, vyhľadá osirelé záznamy a bezpečne ich z konfigurácie VS Code vymaže.</li>
+                    <li style="margin-bottom: 8px;"><strong>Zosúladenie pri prepínaní Venvov:</strong> Ak v rámci jedného projektu prepnete aktívne prostredie (napr. z Venvu A s lokálnymi balíčkami na Venv B bez balíčkov), synchronizátor na pozadí automaticky odstráni z editora úlohy patriace starému prostrediu a pripraví čisté rozhranie pre nové prostredie podľa jeho konfigurácie.</li>
+                    <li style="margin-bottom: 0;"><strong>Automatické upratovanie prázdnych konfigurácií:</strong> Ak po odinštalovaní balíčka alebo prepnutí Venvu nezostanú vo VS Code žiadne ďalšie aktívne úlohy či skratky, VenvHub Pro fyzicky odstráni súbory <code>tasks.json</code>, <code>keybindings.json</code> aj samotný <code>venvhub_tracker.json</code>, čím zabraňuje hromadeniu prázdneho balastu v priečinku projektu.</li>
+                </ol>
+            </div>
         </div>
 
         <!-- PODKAPITOLA 10.6 -->

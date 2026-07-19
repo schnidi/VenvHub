@@ -197,126 +197,171 @@ class VSCodeIntegration:
     # ==========================================================
 
     @staticmethod
-    def sync_vscode_tasks_and_keybindings(project_path: str, local_packages_root: str, log_callback=None):
+    def sync_vscode_tasks_and_keybindings(project_path: str, selected_paths: list[str], local_packages_root: str, log_callback=None):
         def log(msg):
-            if log_callback:
-                log_callback(msg)
-            else:
-                print(msg)
+            if log_callback: log_callback(msg)
+            else: print(msg)
 
-        log(LanguageManager.get("vscode_sync_start", "\n[VSCODE TASKS SYNC] Spúšťam synchronizáciu..."))
-        log(f"  project_path = {project_path}")
-        log(f"  local_packages_root = {local_packages_root}")
+        log(LanguageManager.get("vscode_sync_start", "\n[VSCODE TASKS SYNC] Spúšťam synchronizáciu (Brutal Check)..."))
 
-        if not project_path:
-            log(LanguageManager.get("vscode_sync_err_no_project", "❌ CHYBA: project_path je prázdny"))
-            return
-        if not os.path.exists(project_path):
-            log(LanguageManager.get("vscode_sync_err_project_missing", "❌ CHYBA: project_path neexistuje: {path}").format(path=project_path))
-            return
-        if not local_packages_root:
-            log(LanguageManager.get("vscode_sync_err_no_local_root", "❌ CHYBA: local_packages_root je prázdny"))
-            return
-        if not os.path.exists(local_packages_root):
-            log(LanguageManager.get("vscode_sync_err_local_root_missing", "❌ CHYBA: local_packages_root neexistuje: {path}").format(path=local_packages_root))
+        if not project_path or not os.path.exists(project_path):
+            log(LanguageManager.get("vscode_sync_err_no_project", "❌ CHYBA: project_path neexistuje."))
             return
 
         vscode_dir = os.path.join(project_path, ".vscode")
         os.makedirs(vscode_dir, exist_ok=True)
-        log(LanguageManager.get("vscode_sync_dir_ok", "✅ .vscode priečinok: {dir}").format(dir=vscode_dir))
 
+        # 1. Definícia ciest k súborom vo VS Code
         tasks_file = os.path.join(vscode_dir, "tasks.json")
         keybindings_file = os.path.join(vscode_dir, "keybindings.json")
+        tracker_file = os.path.join(vscode_dir, "venvhub_tracker.json") # Naša "účtenka"
 
-        existing_tasks = VSCodeIntegration._load_json(tasks_file)
-        existing_keybindings = VSCodeIntegration._load_json(keybindings_file)
+        # 2. Načítanie aktuálneho stavu (alebo vytvorenie prázdnych štruktúr)
+        existing_tasks = VSCodeIntegration._load_json(tasks_file) or {"version": "2.0.0", "tasks": []}
+        existing_keybindings = VSCodeIntegration._load_json(keybindings_file) or []
+        tracker = VSCodeIntegration._load_json(tracker_file) or {}
 
-        if existing_tasks is None:
-            existing_tasks = {"version": "2.0.0", "tasks": []}
-            log(LanguageManager.get("vscode_sync_tasks_new", "ℹ️ tasks.json neexistuje, vytvorím nový."))
-        else:
-            log(LanguageManager.get("vscode_sync_tasks_exist", "ℹ️ tasks.json už existuje, obsahuje {count} úloh.").format(count=len(existing_tasks.get('tasks', []))))
-        if existing_keybindings is None:
-            existing_keybindings = []
-            log(LanguageManager.get("vscode_sync_keys_new", "ℹ️ keybindings.json neexistuje, vytvorím nový."))
-        else:
-            log(LanguageManager.get("vscode_sync_keys_exist", "ℹ️ keybindings.json už existuje, obsahuje {count} skratiek.").format(count=len(existing_keybindings)))
+        # 3. IDENTIFIKÁCIA ZMIEN (Staré vs. Nové)
+        new_package_names = [os.path.basename(p) for p in selected_paths]
+        old_package_names = list(tracker.keys())
 
-        all_new_tasks = []
-        all_new_keybindings = []
+        # Čo bolo v účtenke, ale už nie je zaškrtnuté (alebo sme prepli Venv)
+        packages_to_remove = [pkg for pkg in old_package_names if pkg not in new_package_names]
+        
+        modified_tasks = False
+        modified_keys = False
 
-        try:
-            items = os.listdir(local_packages_root)
-            log(LanguageManager.get("vscode_sync_scanning", "📂 Skenujem {count} položiek v local_packages_root...").format(count=len(items)))
-            for pkg_name in items:
-                pkg_dir = os.path.join(local_packages_root, pkg_name)
-                if not os.path.isdir(pkg_dir):
-                    log(LanguageManager.get("vscode_sync_skip_not_dir", "  ⏭️ Preskakujem {name} (nie je priečinok)").format(name=pkg_name))
-                    continue
-                meta_path = os.path.join(pkg_dir, "local_meta.json")
-                if not os.path.exists(meta_path):
-                    log(LanguageManager.get("vscode_sync_skip_no_meta", "  ⏭️ Preskakujem {name} (chýba local_meta.json)").format(name=pkg_name))
-                    continue
+        # =====================================================================
+        # FÁZA 1: MAZANIE (Upratovanie odškrtnutých / zmazaných)
+        # =====================================================================
+        if packages_to_remove:
+            log(LanguageManager.get("vscode_sync_removing", "🧹 Odstraňujem integráciu pre {0} deaktivovaných balíčkov...").format(len(packages_to_remove)))
 
-                log(LanguageManager.get("vscode_sync_processing", "  📄 Spracúvam {name} -> {path}").format(name=pkg_name, path=meta_path))
+        for pkg_name in packages_to_remove:
+            tasks_to_remove = []
+            keys_to_remove = []
+
+            pkg_dir = os.path.join(local_packages_root, pkg_name)
+            meta_path = os.path.join(pkg_dir, "local_meta.json")
+            read_from_disk = False
+
+            if os.path.exists(meta_path):
                 try:
                     with open(meta_path, "r", encoding="utf-8") as f:
                         meta = json.load(f)
-                    vscode_int = meta.get("vscode_integration", {})
-                    tasks = vscode_int.get("tasks", [])
-                    keybindings = vscode_int.get("keybindings", [])
+                        vscode_int = meta.get("vscode_integration", {})
+                        tasks_to_remove = [t.get("label") for t in vscode_int.get("tasks", []) if t.get("label")]
+                        keys_to_remove = [{"key": k.get("key"), "command": k.get("command")} for k in vscode_int.get("keybindings", []) if k.get("key") and k.get("command")]
+                        read_from_disk = True
+                        log(LanguageManager.get("vscode_sync_read_disk", "  🗑️ Balíček '{0}' prečítaný. Mažem jeho úlohy z editora.").format(pkg_name))
+                except Exception: pass
 
-                    log(LanguageManager.get("vscode_sync_found_items", "     Nájdených {tasks} úloh a {keys} skratiek.").format(tasks=len(tasks), keys=len(keybindings)))
+            # Záchranná brzda - Účtenka
+            if not read_from_disk:
+                log(LanguageManager.get("vscode_sync_use_tracker", "  ⚠️ Balíček '{0}' zmazaný z disku! Používam záchrannú účtenku.").format(pkg_name))
+                tracker_data = tracker.get(pkg_name, {})
+                tasks_to_remove = tracker_data.get("tasks", [])
+                keys_to_remove = tracker_data.get("keybindings", [])
 
-                    for task in tasks:
-                        label = task.get("label")
-                        if label and not any(t.get("label") == label for t in existing_tasks.get("tasks", [])):
-                            all_new_tasks.append(task)
-                            log(LanguageManager.get("vscode_sync_new_task", "       ✅ Nová úloha: {label}").format(label=label))
-                        else:
-                            log(LanguageManager.get("vscode_sync_skip_task", "       ⏭️ Úloha {label} už existuje, preskakujem.").format(label=label))
+            # Výkonná moc mazania
+            if tasks_to_remove:
+                original_len = len(existing_tasks.get("tasks", []))
+                existing_tasks["tasks"] = [t for t in existing_tasks.get("tasks", []) if t.get("label") not in tasks_to_remove]
+                if len(existing_tasks["tasks"]) != original_len:
+                    modified_tasks = True
 
-                    for kb in keybindings:
-                        key = kb.get("key")
-                        command = kb.get("command")
-                        if key and command and not any(
-                            k.get("key") == key and k.get("command") == command
-                            for k in existing_keybindings
-                        ):
-                            all_new_keybindings.append(kb)
-                            log(LanguageManager.get("vscode_sync_new_key", "       ✅ Nová skratka: {key} -> {command}").format(key=key, command=command))
-                        else:
-                            log(LanguageManager.get("vscode_sync_skip_key", "       ⏭️ Skratka {key} ({command}) už existuje, preskakujem.").format(key=key, command=command))
+            if keys_to_remove:
+                original_len = len(existing_keybindings)
+                existing_keybindings = [
+                    k for k in existing_keybindings 
+                    if not any(rem.get("key") == k.get("key") and rem.get("command") == k.get("command") for rem in keys_to_remove)
+                ]
+                if len(existing_keybindings) != original_len:
+                    modified_keys = True
 
-                except Exception as e:
-                    log(LanguageManager.get("vscode_sync_err_read", "       ❌ Chyba pri čítaní {path}: {error}").format(path=meta_path, error=e))
+            # Vyškrtnutie z účtenky
+            del tracker[pkg_name]
 
-            modified = False
-            if all_new_tasks:
-                existing_tasks.setdefault("tasks", []).extend(all_new_tasks)
-                modified = True
-                log(LanguageManager.get("vscode_sync_added_tasks", "📝 Pridaných {count} nových úloh do tasks.json").format(count=len(all_new_tasks)))
-            if all_new_keybindings:
-                existing_keybindings.extend(all_new_keybindings)
-                modified = True
-                log(LanguageManager.get("vscode_sync_added_keys", "📝 Pridaných {count} nových skratiek do keybindings.json").format(count=len(all_new_keybindings)))
 
-            if modified:
-                success_tasks = VSCodeIntegration._save_json(tasks_file, existing_tasks)
-                success_keys = VSCodeIntegration._save_json(keybindings_file, existing_keybindings)
-                if success_tasks:
-                    log(LanguageManager.get("vscode_sync_save_tasks_ok", "✅ tasks.json uložený: {file}").format(file=tasks_file))
-                else:
-                    log(LanguageManager.get("vscode_sync_save_tasks_err", "❌ CHYBA pri ukladaní tasks.json"))
-                if success_keys:
-                    log(LanguageManager.get("vscode_sync_save_keys_ok", "✅ keybindings.json uložený: {file}").format(file=keybindings_file))
-                else:
-                    log(LanguageManager.get("vscode_sync_save_keys_err", "❌ CHYBA pri ukladaní keybindings.json"))
-            else:
-                log(LanguageManager.get("vscode_sync_no_changes", "ℹ️ Žiadne nové položky na pridanie, súbory zostávajú nezmenené."))
+        # =====================================================================
+        # FÁZA 2: INJEKCIA (Pridávanie nových / aktívnych)
+        # =====================================================================
+        for pkg_dir in selected_paths:
+            pkg_name = os.path.basename(pkg_dir)
+            meta_path = os.path.join(pkg_dir, "local_meta.json")
+            
+            if not os.path.exists(meta_path): continue
 
-        except Exception as e:
-            log(LanguageManager.get("vscode_sync_err_critical", "❌ KRITICKÁ CHYBA: {error}").format(error=e))
+            try:
+                with open(meta_path, "r", encoding="utf-8") as f:
+                    meta = json.load(f)
+                    
+                vscode_int = meta.get("vscode_integration", {})
+                tasks = vscode_int.get("tasks", [])
+                keybindings = vscode_int.get("keybindings", [])
+
+                injected_tasks = []
+                injected_keys = []
+
+                for task in tasks:
+                    label = task.get("label")
+                    if label and not any(t.get("label") == label for t in existing_tasks.get("tasks", [])):
+                        existing_tasks.setdefault("tasks", []).append(task)
+                        modified_tasks = True
+                        injected_tasks.append(label)
+
+                for kb in keybindings:
+                    key = kb.get("key")
+                    command = kb.get("command")
+                    if key and command and not any(k.get("key") == key and k.get("command") == command for k in existing_keybindings):
+                        existing_keybindings.append(kb)
+                        modified_keys = True
+                        injected_keys.append({"key": key, "command": command})
+
+                # Zápis do účtenky
+                if injected_tasks or injected_keys or pkg_name in tracker:
+                    tracker[pkg_name] = {
+                        "tasks": injected_tasks,
+                        "keybindings": injected_keys
+                    }
+
+            except Exception as e:
+                log(LanguageManager.get("vscode_sync_err_read", "       ❌ Chyba pri čítaní {0}: {1}").format(meta_path, e))
+
+
+        # =====================================================================
+        # FÁZA 3: UKLADANIE A UPRATOVANIE PRÁZDNYCH SÚBOROV Z DISKU
+        # =====================================================================
+        
+        # 3.1: Tasks.json
+        if not existing_tasks.get("tasks"): 
+            if os.path.exists(tasks_file):
+                os.remove(tasks_file)
+                log(LanguageManager.get("vscode_sync_del_tasks", "🗑️ tasks.json zostal prázdny, zmazal som ho z disku."))
+        elif modified_tasks:
+            VSCodeIntegration._save_json(tasks_file, existing_tasks)
+            log(LanguageManager.get("vscode_sync_save_tasks_ok", "✅ tasks.json úspešne uložený."))
+
+        # 3.2: Keybindings.json
+        if not existing_keybindings:
+            if os.path.exists(keybindings_file):
+                os.remove(keybindings_file)
+                log(LanguageManager.get("vscode_sync_del_keys", "🗑️ keybindings.json zostal prázdny, zmazal som ho z disku."))
+        elif modified_keys:
+            VSCodeIntegration._save_json(keybindings_file, existing_keybindings)
+            log(LanguageManager.get("vscode_sync_save_keys_ok", "✅ keybindings.json úspešne uložený."))
+
+        # 3.3: Tracker (Účtenka)
+        if not tracker:
+            if os.path.exists(tracker_file):
+                os.remove(tracker_file)
+        else:
+            VSCodeIntegration._save_json(tracker_file, tracker)
+
+        if not modified_tasks and not modified_keys and not packages_to_remove:
+            log(LanguageManager.get("vscode_sync_no_changes", "ℹ️ VS Code je už synchronizovaný, neboli potrebné žiadne zmeny."))
+
+        log(LanguageManager.get("vscode_sync_end", "--- Synchronizácia ukončená ---"))
 
     @staticmethod
     def _load_json(file_path):

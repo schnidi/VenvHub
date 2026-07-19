@@ -754,6 +754,13 @@
     "msg_install_pyinstaller_failed_simple": "Installation of the PyInstaller package failed. Please check your internet connection and the output log.",
     "title_installing_uv": "Installing UV",
     "msg_installing_uv": "Downloading and installing UV installer (Astral) into the environment...",
-    "msg_download_uv_failed_simple": "Failed to download UV to the Venv. Please check your internet connection and the output log."
+    "msg_download_uv_failed_simple": "Failed to download UV to the Venv. Please check your internet connection and the output log.",
+
+    "vscode_sync_removing": "🧹 Removing integration for {0} deactivated packages...",
+    "vscode_sync_read_disk": "  🗑️ Package '{0}' read from disk. Removing its tasks from the editor.",
+    "vscode_sync_use_tracker": "  ⚠️ Package '{0}' deleted from disk! Using rescue tracking receipt.",
+    "vscode_sync_del_tasks": "🗑️ tasks.json is empty, file has been deleted from disk.",
+    "vscode_sync_del_keys": "🗑️ keybindings.json is empty, file has been deleted from disk.",
+    "vscode_sync_end": "--- Synchronization finished ---"
 
 }

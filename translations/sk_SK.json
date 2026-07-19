@@ -752,6 +752,13 @@
     "msg_install_pyinstaller_failed_simple": "Inštalácia balíčka PyInstaller zlyhala. Skontrolujte pripojenie k internetu a výstupný log.",
     "title_installing_uv": "Inštalácia UV",
     "msg_installing_uv": "Sťahujem a inštalujem inštalátor UV (Astral) do prostredia...",
-    "msg_download_uv_failed_simple": "Nepodarilo sa stiahnuť UV do Venvu. Skontrolujte pripojenie k internetu a výstupný log."
+    "msg_download_uv_failed_simple": "Nepodarilo sa stiahnuť UV do Venvu. Skontrolujte pripojenie k internetu a výstupný log.",
+
+    "vscode_sync_removing": "🧹 Odstraňujem integráciu pre {0} deaktivovaných balíčkov...",
+    "vscode_sync_read_disk": "  🗑️ Balíček '{0}' prečítaný. Mažem jeho úlohy z editora.",
+    "vscode_sync_use_tracker": "  ⚠️ Balíček '{0}' zmazaný z disku! Používam záchrannú účtenku.",
+    "vscode_sync_del_tasks": "🗑️ tasks.json zostal prázdny, zmazal som ho z disku.",
+    "vscode_sync_del_keys": "🗑️ keybindings.json zostal prázdny, zmazal som ho z disku.",
+    "vscode_sync_end": "--- Synchronizácia ukončená ---"
 
 }

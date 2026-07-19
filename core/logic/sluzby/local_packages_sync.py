@@ -42,12 +42,22 @@ class LocalPackagesSyncService:
         local_root = getattr(core, 'local_packages_root', '')
 
         # 4. Synchronizácia s VS Code
-        # Ak target_paths je prázdny [], VS Code integration staré cesty jednoducho vymaže.
         try:
+            # Synchronizácia Python ciest (settings.json)
             VSCodeIntegration.sync_local_packages(
                 project_path=project_path,
                 selected_paths=target_paths,
                 local_packages_root=local_root
             )
+            
+            # --- OPRAVA: TOTO SME ZABUDLI ZAVOLAŤ PRI PREPÍNANÍ VENVU! ---
+            # Synchronizácia úloh a skratiek (tasks.json a keybindings.json) cez Brutal Check
+            VSCodeIntegration.sync_vscode_tasks_and_keybindings(
+                project_path=project_path,
+                selected_paths=target_paths,
+                local_packages_root=local_root,
+                log_callback=print # Vypíše logy do systémovej konzoly
+            )
+            
         except Exception as e:
             print(f"[LocalPackagesSync] Chyba pri synchronizácii s VS Code: {e}")
