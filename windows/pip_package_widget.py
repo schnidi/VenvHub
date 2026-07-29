@@ -106,7 +106,7 @@ class PipPackageWidget(QWidget):
         self.set_buttons_enabled(False)
 
         self.thread = QThread()
-        self.worker = PipCommandWorker(self.venv_path, full_command)
+        self.worker = PipCommandWorker(self.venv_path, full_command, self._get_manager_type())
         self.worker.moveToThread(self.thread)
 
         self.worker.output_line.connect(self.log) 

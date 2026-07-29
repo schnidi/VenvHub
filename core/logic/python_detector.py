@@ -13,6 +13,37 @@ from core.logic.sluzby.reload import DirectoryReloader
 
 class PythonDetector:
     _cached_pythons = None  # --- PAMÄŤ NA ULOŽENIE ZOZNAMU PYTHONOV ---
+    _active_python_path = None
+
+    @staticmethod
+    def set_active_python_path(python_path: str):
+        """Nastaví aktuálne aktívny systémový Python."""
+        if python_path:
+            PythonDetector._active_python_path = os.path.normpath(python_path)
+
+    @staticmethod
+    def get_active_python_path() -> str:
+        """Vráti aktívny Python, alebo ako zálohu spustený Python aplikácie."""
+        return PythonDetector._active_python_path or os.path.normpath(sys.executable)
+
+    @staticmethod
+    def resolve_parent_python(venv_path: str) -> str:
+        """Vyparsuje zo súboru pyvenv.cfg cestu k materskému Pythonu."""
+        if not venv_path or not os.path.exists(venv_path):
+            return os.path.normpath(sys.executable)
+
+        cfg_path = os.path.join(venv_path, "pyvenv.cfg")
+        if os.path.exists(cfg_path):
+            try:
+                with open(cfg_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        if line.startswith("home ="):
+                            home_dir = line.split("=")[1].strip()
+                            exe_name = "python.exe" if os.name == 'nt' else "python"
+                            return os.path.normpath(os.path.join(home_dir, exe_name))
+            except Exception:
+                pass
+        return os.path.normpath(sys.executable)
 
     @staticmethod
     def get_installed_pythons(force_refresh=False):

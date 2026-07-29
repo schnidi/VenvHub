@@ -71,6 +71,14 @@ class PipCommandDispatcher:
             
             "check": lambda **kwargs: 
                 [self.python_exe, "-m", "pip", "check"],
+
+            # --- NOVÉ PRÍKAZY PRE APT LOGIKU ---
+
+            "show_multiple": lambda **kwargs: 
+                [self.python_exe, "-m", "pip", "show"] + kwargs['packages'],
+
+            "uninstall_multiple": lambda **kwargs: 
+                [self.python_exe, "-m", "pip", "uninstall", "-y"] + kwargs['packages'],
         }
 
     def get(self, command_key: str, **kwargs: Any) -> list[str]:

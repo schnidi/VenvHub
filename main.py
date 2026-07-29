@@ -88,7 +88,14 @@ def main():
     
     # Pokračujeme v štarte aplikácie, lebo sme prví
     core = ProjectCore()
+
+    # =================================================================
+    # --- ŠTART NEVIDITEĽNÉHO MOSTA PRE APT AUTOREMOVE (CHYTRÉ MAZANIE) ---
+    # =================================================================
+    from core.logic.sluzby.apt_listener import AptListener
+    AptListener.start_listening(core)
     
+    # Aplikovanie témy
     if core.active_theme and core.active_theme != "default":
         SkinManager.apply_skin(core.active_theme)
         

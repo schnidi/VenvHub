@@ -59,16 +59,16 @@ class UvCommandDispatcher:
                 self.uv_base + ["freeze"] + self.python_arg,
 
             "list": lambda **kwargs: 
-                self.base_pip + ["list"],
+                self.uv_base + ["list"] + self.python_arg,
 
             "list_json": lambda **kwargs: 
-                self.base_pip + ["list", "--format=json"],
+                self.uv_base + ["list", "--format=json"] + self.python_arg,
 
             "list_outdated": lambda **kwargs: 
-                self.base_pip + ["list", "--outdated"],
+                self.uv_base + ["list", "--outdated"] + self.python_arg,
 
             "list_outdated_json": lambda **kwargs: 
-                self.base_pip + ["list", "--outdated", "--format=json"],
+                self.uv_base + ["list", "--outdated", "--format=json"] + self.python_arg,
                 
             "show": lambda **kwargs: 
                 self.uv_base + ["show"] + [kwargs['package_name']] + self.python_arg,
@@ -78,6 +78,14 @@ class UvCommandDispatcher:
             
             "check": lambda **kwargs: 
                 self.uv_base + ["check"] + self.python_arg,
+
+            # --- NOVÉ PRÍKAZY PRE APT LOGIKU ---
+
+            "show_multiple": lambda **kwargs: 
+                self.uv_base + ["show"] + kwargs['packages'] + self.python_arg,
+
+            "uninstall_multiple": lambda **kwargs: 
+                self.uv_base + ["uninstall"] + kwargs['packages'] + self.python_arg,
         }
 
     def get(self, command_key: str, **kwargs: Any) -> list[str]:

@@ -744,21 +744,39 @@ class MasterManager(QWidget):
         
         selected_manager = self.combo_pkg_manager.itemData(index)
         
-        if selected_manager == "uv" and not UVDetector.is_uv_installed():
-            title = LanguageManager.get("title_uv_missing", "UV nie je nainštalované")
-            msg = LanguageManager.get(
-                "msg_uv_missing", 
-                "Nástroj 'uv' nebol vo vašom systéme nájdený.\n\n"
-                "Nainštalujte ho globálne pomocou príkazu:\n"
-                "pip install uv\n\n"
-                "Aplikácia teraz prepne späť na klasický Pip."
-            )
-            QMessageBox.warning(self, title, msg)
+        if selected_manager == "uv":
+            # --- AKTUALIZÁCIA AKTÍVNEHO PYTHONU PRE UV PRED KONTROLOU ---
+            active_venv = self.core.active_venv_path
+            if active_venv:
+                parent_py = PythonDetector.resolve_parent_python(active_venv)
+                PythonDetector.set_active_python_path(parent_py)
+            else:
+                PythonDetector.set_active_python_path(None)
+                
+            # Resetujeme cache pre zaručenie čerstvého overenia
+            UVDetector.reset_cache()
             
-            self.combo_pkg_manager.blockSignals(True)
-            self.combo_pkg_manager.setCurrentIndex(self.combo_pkg_manager.findData("pip"))
-            self.combo_pkg_manager.blockSignals(False)
-            return
+            if not UVDetector.is_uv_installed():
+                title = LanguageManager.get("title_uv_missing", "UV nie je nainštalované")
+                
+                # Zistíme zobrazenie názvu aktívneho Pythonu pre lepšiu lokalizáciu chyby
+                active_py_name = os.path.basename(PythonDetector.get_active_python_path())
+                
+                # Zostavíme detailnú správu pre používateľa
+                msg = LanguageManager.get(
+                    "msg_uv_missing_for_active", 
+                    "Nástroj 'uv' nebol pre aktívny Python ({0}) nájdený.\n\n"
+                    "Ak chcete využívať inštalátor UV, nainštalujte ho najprv do vášho aktívneho prostredia,\n"
+                    "alebo preň v systéme Windows nakonfigurujte premennú PATH."
+                ).format(active_py_name)
+                
+                QMessageBox.warning(self, title, msg)
+                
+                # Vrátenie výberu v ComboBoxe späť na predvolený Pip
+                self.combo_pkg_manager.blockSignals(True)
+                self.combo_pkg_manager.setCurrentIndex(self.combo_pkg_manager.findData("pip"))
+                self.combo_pkg_manager.blockSignals(False)
+                return
 
         self.core.package_manager = selected_manager
         self.core.save_config()

@@ -10,7 +10,6 @@ from PyQt6.QtCore import QObject, pyqtSignal
 
 from core.logic.language_manager import LanguageManager
 from core._path import Paths
-# --- IMPORT FACTORY NAMIESTO PRIAMEHO DISPEČERA ---
 from core.logic.commands.command_factory import PackageManagerFactory
 from core.logic.birth_certificate import BirthCertificateGenerator
 
@@ -25,9 +24,11 @@ class PipWorker:
         self.venv_path = venv_path
         self.manager_type = manager_type
         self.signals = PipSignalEmitter()
+        self.success = False  # Predvolený stav
         
     def run(self):
         self.signals.log_message.emit(f"\n--- {self.start_msg} ---")
+        self.success = False
         try:
             CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
             process = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, creationflags=CREATE_NO_WINDOW)
@@ -35,7 +36,10 @@ class PipWorker:
                 self.signals.log_message.emit(line.strip())
             process.wait()
             
-            if process.returncode == 0 and self.venv_path:
+            # --- ZÁZNAM O ÚSPECHU ---
+            self.success = (process.returncode == 0)
+            
+            if self.success and self.venv_path:
                 # --- KONTROLA ZÁVISLOSTÍ PRE UV VETVU ---
                 if self.manager_type == "uv":
                     self.signals.log_message.emit(LanguageManager.get("uv_checking_deps", "--- Vykonávam UV kontrolu závislostí... ---"))
@@ -75,7 +79,7 @@ class PipWorker:
                             else:
                                 self.signals.log_message.emit(LanguageManager.get("uv_fix_error_manual", "⚠️ Automatická oprava zlyhala. Opravte závislosti manuálne."))
                         else:
-                            self.signals.log_message.emit(LanguageManager.get("uv_parse_error_worker", "⚠️ Boli nájdené problémy so závislostí, ale aplikácia ich nedokázala automaticky vyparsovať."))
+                            self.signals.log_message.emit(LanguageManager.get("uv_parse_error_worker", "⚠️ Boli nájdené problémy so závislosťami, ale aplikácia ich nedokázala automaticky vyparsovať."))
                     else:
                         self.signals.log_message.emit(LanguageManager.get("uv_compatible", "✅ Všetky závislosti sú kompatibilné."))
 
@@ -87,9 +91,11 @@ class PipWorker:
         except FileNotFoundError: 
             msg = LanguageManager.get("err_cmd_not_found", "KRITICKÁ CHYBA: Príkaz nebol nájdený: {0}").format(' '.join(self.cmd))
             self.signals.log_message.emit(msg)
+            self.success = False
         except Exception as e: 
             msg = LanguageManager.get("err_critical", "KRITICKÁ CHYBA: {0}").format(str(e))
             self.signals.log_message.emit(msg)
+            self.success = False
         finally: 
             self.signals.finished.emit()
 
@@ -98,11 +104,12 @@ class UpdateAllWorker:
         self.venv_path = venv_path
         self.manager_type = manager_type
         self.signals = PipSignalEmitter()
+        self.success = False  # Predvolený stav
 
     def run(self):
         CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
+        self.success = False
         try:
-            # POUŽITIE FACTORY!
             dispatcher = PackageManagerFactory.get_dispatcher(self.manager_type, self.venv_path)
             
             msg_step1 = LanguageManager.get("msg_step1_pip", "\n--- Krok 1: Kontrolujem a aktualizujem inštalátor... ---")
@@ -128,6 +135,7 @@ class UpdateAllWorker:
                 msg_err = LanguageManager.get("err_list_failed", "CHYBA: Nepodarilo sa získať zoznam balíčkov.")
                 self.signals.log_message.emit(msg_err)
                 self.signals.log_message.emit(list_process.stderr)
+                self.success = False
                 return
 
             lines = list_process.stdout.strip().split('\n')[2:]
@@ -138,6 +146,7 @@ class UpdateAllWorker:
                 msg_done = LanguageManager.get("msg_done", "--- HOTOVO ---")
                 self.signals.log_message.emit(msg_all_ok)
                 self.signals.log_message.emit(msg_done)
+                self.success = True  # Všetko bolo OK, nemali sme čo robiť
                 return
 
             msg_found = LanguageManager.get("msg_found_outdated", "Nájdené zastarané balíčky: {0}").format(', '.join(outdated_packages))
@@ -152,8 +161,10 @@ class UpdateAllWorker:
             for line in upgrade_process.stdout: self.signals.log_message.emit(line.strip())
             upgrade_process.wait()
 
-            if upgrade_process.returncode == 0:
-                
+            # --- ZÁZNAM O ÚSPECHU ---
+            self.success = (upgrade_process.returncode == 0)
+
+            if self.success:
                 # --- KROK 4: KONTROLA A OPRAVA UV ZÁVISLOSTÍ ---
                 if self.manager_type == "uv":
                     self.signals.log_message.emit("\n--- Krok 4: Kontrola a oprava závislostí (UV Check) ---")
@@ -163,7 +174,6 @@ class UpdateAllWorker:
                     if check_proc.returncode != 0:
                         output_text = check_proc.stdout + "\n" + check_proc.stderr
                         
-                        # Vytiahne z logu: requires `google-ai-generativelanguage==0.6.15`
                         conflicts = list(set(re.findall(r"requires\s+`([^`]+)`", output_text)))
                         
                         if conflicts:
@@ -208,6 +218,7 @@ class UpdateAllWorker:
         except Exception as e:
             msg_crit = LanguageManager.get("err_critical", "KRITICKÁ CHYBA: {0}").format(str(e))
             self.signals.log_message.emit(msg_crit)
+            self.success = False
         finally:
             self.signals.finished.emit()
 
