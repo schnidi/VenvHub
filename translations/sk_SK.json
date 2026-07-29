@@ -759,6 +759,18 @@
     "vscode_sync_use_tracker": "  ⚠️ Balíček '{0}' zmazaný z disku! Používam záchrannú účtenku.",
     "vscode_sync_del_tasks": "🗑️ tasks.json zostal prázdny, zmazal som ho z disku.",
     "vscode_sync_del_keys": "🗑️ keybindings.json zostal prázdny, zmazal som ho z disku.",
-    "vscode_sync_end": "--- Synchronizácia ukončená ---"
+    "vscode_sync_end": "--- Synchronizácia ukončená ---",
+
+    "apt_timeout": "❌ [APT] Odinštalácia trvala príliš dlho a bola ukončená (Timeout 60s).",
+    "apt_analyzing": "\n🔍 [APT] Analyzujem strom závislostí pre autoremove...",
+    "apt_clean": "✅ [APT] Systém je čistý. Žiadne osirelé balíčky.",
+    "apt_removing": "🗑️ [APT] Autoremove: Odstraňujem osirelé závislosti: {0}",
+    "apt_err": "❌ [APT] Chyba pri odinštalovaní: {0}",
+
+
+    "apt_err_cannot_uninstall": "❌ Nemožno odinštalovať '{0}', pretože ho vyžadujú: {1}",
+    "apt_checking_missing": "\n📦 [APT] Kontrolujem chýbajúce balíčky podľa requirements...",
+    "apt_all_installed": "✅ [APT] Všetky požadované balíčky sú prítomné.",
+    "apt_installing_missing": "🚀 [APT] Doinštalovávam chýbajúce balíčky: {0}"
 
 }

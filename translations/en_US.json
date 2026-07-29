@@ -761,6 +761,23 @@
     "vscode_sync_use_tracker": "  ⚠️ Package '{0}' deleted from disk! Using rescue tracking receipt.",
     "vscode_sync_del_tasks": "🗑️ tasks.json is empty, file has been deleted from disk.",
     "vscode_sync_del_keys": "🗑️ keybindings.json is empty, file has been deleted from disk.",
-    "vscode_sync_end": "--- Synchronization finished ---"
+    "vscode_sync_end": "--- Synchronization finished ---",
+
+    "apt_timeout": "❌ [APT] Uninstall took too long and was terminated (60s timeout).",
+    "apt_analyzing": "\n🔍 [APT] Analyzing dependency tree for autoremove...",
+    "apt_clean": "✅ [APT] System is clean. No orphaned packages.",
+    "apt_removing": "🗑️ [APT] Autoremove: Removing orphaned dependencies: {0}",
+    "apt_err": "❌ [APT] Error during uninstall: {0}",
+
+
+    "apt_err_cannot_uninstall": "❌ Cannot uninstall '{0}' because it is required by: {1}",
+    "apt_checking_missing": "\n📦 [APT] Checking for missing packages based on requirements...",
+    "apt_all_installed": "✅ [APT] All required packages are present.",
+    "apt_installing_missing": "🚀 [APT] Installing missing packages: {0}",
+    "apt_timeout": "❌ [APT] Uninstallation took too long and was aborted (Timeout 60s).",
+    "apt_analyzing": "\n🔍 [APT] Analyzing dependency tree for autoremove...",
+    "apt_clean": "✅ [APT] System is clean. No orphan packages found.",
+    "apt_removing": "🗑️ [APT] Autoremove: Removing orphan dependencies: {0}",
+    "apt_err": "❌ [APT] Error during uninstallation: {0}"
 
 }
