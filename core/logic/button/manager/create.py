@@ -1,5 +1,5 @@
 # ----------------------------------------
-# Súbor: core/logic/button/manager/create.py (OPRAVENÁ VERZIA)
+# Súbor: core/logic/button/manager/create.py
 # ----------------------------------------
 
 import os
@@ -17,19 +17,11 @@ from core.logic.vs_code_json import VSCodeIntegration
 from core.logic.birth_certificate import BirthCertificateGenerator
 from core.logic.sluzby.sanitize_venv_name import sanitize_venv_name
 
+from core.logic.sluzby.log_print_desktop import DesktopLogger
+from core.logic.sluzby.embed_python_created import EmbedPythonCreated
+
 LOGGING_ENABLED = False
-
-
-def write_to_debug_file(message):
-    if not LOGGING_ENABLED:
-        return
-    try:
-        desktop = os.path.join(os.path.expanduser("~"), "Desktop")
-        log_file = os.path.join(desktop, "VENV_DEBUG_LOG.txt")
-        with open(log_file, "a", encoding="utf-8") as f:
-            f.write(f"[{datetime.now().strftime('%H:%M:%S.%f')}] {message}\n")
-    except Exception:
-        pass
+create_logger = DesktopLogger(is_enabled=LOGGING_ENABLED, filename="VENV_CREATE_LOG.txt")
 
 
 class VenvCreatorWorker(QObject):
@@ -55,62 +47,10 @@ class VenvCreatorWorker(QObject):
         self.parent_py_path = parent_py_path
         self.is_running = True
 
-    def _get_python_version_short(self):
-        try:
-            res = subprocess.run(
-                [self.python_exe, "--version"],
-                capture_output=True,
-                text=True,
-                creationflags=0x08000000,
-            )
-            version_str = res.stdout.strip() or res.stderr.strip()
-            match = re.search(r"Python (\d+)\.(\d+)", version_str)
-            if match:
-                return f"{match.group(1)}{match.group(2)}"
-        except Exception as e:
-            write_to_debug_file(f"Nepodarilo sa zistiť verziu Pythonu: {e}")
-        return "312"
-
-    def _fix_pth_file(self):
-        ver_short = self._get_python_version_short()
-        pth_filename = f"python{ver_short}._pth"
-        scripts_dir = os.path.join(self.venv_path, "Scripts")
-        pth_path = os.path.join(scripts_dir, pth_filename)
-
-        if not os.path.exists(pth_path):
-            try:
-                content = (
-                    f"python{ver_short}.zip\n.\n..\n..\\Lib\\site-packages\nimport"
-                    " site\n"
-                )
-                with open(pth_path, "w", encoding="utf-8") as f:
-                    f.write(content)
-            except Exception as e:
-                write_to_debug_file(f"CHYBA pri vytváraní ._pth: {e}")
-
-    def _verify_pip_functional(self):
-        pip_exe = os.path.join(self.venv_path, "Scripts", "pip.exe")
-        if not os.path.exists(pip_exe):
-            return False
-        try:
-            res = subprocess.run(
-                [pip_exe, "--version"],
-                capture_output=True,
-                text=True,
-                creationflags=0x08000000,
-            )
-            return res.returncode == 0
-        except Exception:
-            return False
-
     def run(self):
         CREATE_NO_WINDOW = 0x08000000
-        write_to_debug_file(
-            f"\nŠTART PROCESU: {self.python_exe} -> {self.venv_path}"
-        )
+        create_logger.write(f"\nŠTART PROCESU: {self.python_exe} -> {self.venv_path}")
 
-        # OPRAVA č.2: Namiesto sterilného slovníka zoberieme kópiu systému
-        # a iba prebijeme premenné, ktoré by mohli venvu podstrčiť cudzí PYTHONPATH
         clean_env = os.environ.copy()
         clean_env.pop("PYTHONPATH", None)
         clean_env.pop("PYTHONHOME", None)
@@ -161,7 +101,7 @@ class VenvCreatorWorker(QObject):
                         "Krok 2: Opravujem konfiguráciu (._pth)...",
                     )
                 )
-                self._fix_pth_file()
+                EmbedPythonCreated.fix_pth_file(self.venv_path, self.python_exe)
 
                 self.progress_log.emit(
                     LanguageManager.get(
@@ -169,7 +109,7 @@ class VenvCreatorWorker(QObject):
                         "Krok 3: Overujem funkčnosť PIP...",
                     )
                 )
-                if not self._verify_pip_functional():
+                if not EmbedPythonCreated.verify_pip_functional(self.venv_path):
                     raise RuntimeError(
                         "PIP bol vytvorený, ale nefunguje (Access Violation)."
                     )
@@ -182,7 +122,6 @@ class VenvCreatorWorker(QObject):
                 )
                 command = [self.python_exe, "-m", "venv", self.venv_path]
 
-                # OPRAVA č.1: Pridané capture_output=True proti zamrznutiu v --noconsole
                 res = subprocess.run(
                     command,
                     capture_output=True,
@@ -195,8 +134,23 @@ class VenvCreatorWorker(QObject):
                         f"venv zlyhal s kódom {res.returncode}:\n{res.stderr}"
                     )
 
-            # OPRAVA č.4: Rodný list generujeme priamo tu na pozadí!
-            # Keď Windows Defender zasekne pip list na 5 sekúnd, GUI zostane plynulé.
+            # --- DOINŠTALOVANIE SETUOTOOLS A WHEEL PRIAMO TU V CREATE.PY ---
+            pip_exe = os.path.join(self.venv_path, "Scripts", "pip.exe")
+            if os.path.exists(pip_exe):
+                self.progress_log.emit(
+                    LanguageManager.get(
+                        "msg_create_install_tools",
+                        "4. Inštalujem základné nástroje (setuptools, wheel)...",
+                    )
+                )
+                subprocess.run(
+                    [pip_exe, "install", "setuptools", "wheel"],
+                    capture_output=True,
+                    text=True,
+                    creationflags=CREATE_NO_WINDOW
+                )
+
+            # Rodný list generujeme priamo tu na pozadí!
             self.progress_log.emit(
                 LanguageManager.get(
                     "msg_create_cert", "Zapisujem rodný list prostredia..."
@@ -222,7 +176,7 @@ class VenvCreatorWorker(QObject):
             self.finished.emit()
 
         except Exception as e:
-            write_to_debug_file(f"KRITICKÁ CHYBA: {str(e)}")
+            create_logger.write(f"KRITICKÁ CHYBA: {str(e)}")
             self.error.emit(str(e))
         finally:
             self.is_running = False
@@ -309,7 +263,6 @@ class CreateVenvHandler:
             progress_dialog.add_log_message
         )
 
-        # OPRAVA č.3: Korektné upratanie vlákna pri úspechu AJ pri chybe
         CreateVenvHandler._worker.finished.connect(
             CreateVenvHandler._thread.quit
         )

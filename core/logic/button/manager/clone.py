@@ -20,20 +20,13 @@ from core.logic.sluzby.sanitize_venv_name import sanitize_venv_name
 # Využívame centrálneho dispečera namiesto manuálneho skladania príkazov
 from core.logic.commands.command_factory import PackageManagerFactory
 
-# --- PREPÍNACIA PREMENNÁ PRE LOGOVANIE NA PLOCHU ---
-LOGGING_ENABLED = False
+# --- NAŠE NOVÉ SLUŽBY ---
+from core.logic.sluzby.log_print_desktop import DesktopLogger
+from core.logic.sluzby.embed_python_created import EmbedPythonCreated
 
-def write_to_debug_file(message):
-    """Logovanie každého kroku na plochu pre clone.py."""
-    if not LOGGING_ENABLED:
-        return 
-    try:
-        desktop = os.path.join(os.path.expanduser("~"), "Desktop")
-        log_file = os.path.join(desktop, "VENV_CLONE_LOG.txt")
-        with open(log_file, "a", encoding="utf-8") as f:
-            f.write(f"[{datetime.datetime.now().strftime('%H:%M:%S.%f')}] {message}\n")
-    except Exception:
-        pass
+# --- NEZÁVISLÝ PREPÍNAČ PRE LOGOVANIE (Iba pre clone.py) ---
+LOGGING_ENABLED = False
+clone_logger = DesktopLogger(is_enabled=LOGGING_ENABLED, filename="VENV_CLONE_LOG.txt")
 
 
 class CloneWorker(QObject):
@@ -51,51 +44,10 @@ class CloneWorker(QObject):
         self.manager_type = manager_type
         self.local_packages_root = local_packages_root
 
-    def _get_python_version_short(self, python_exe):
-        try:
-            res = subprocess.run([python_exe, "--version"], capture_output=True, text=True, creationflags=0x08000000)
-            version_str = res.stdout.strip() or res.stderr.strip()
-            match = re.search(r"Python (\d+)\.(\d+)", version_str)
-            if match:
-                return f"{match.group(1)}{match.group(2)}"
-        except Exception:
-            pass
-        return "312"
-
-    def _fix_pth_file(self, venv_path, python_exe):
-        ver_short = self._get_python_version_short(python_exe)
-        pth_filename = f"python{ver_short}._pth"
-        scripts_dir = os.path.join(venv_path, "Scripts")
-        pth_path = os.path.join(scripts_dir, pth_filename)
-
-        if not os.path.exists(pth_path):
-            try:
-                content = (
-                    f"python{ver_short}.zip\n"
-                    ".\n"
-                    "..\n"
-                    "..\\Lib\\site-packages\n"
-                    "import site\n"
-                )
-                with open(pth_path, "w", encoding="utf-8") as f:
-                    f.write(content)
-            except Exception as e:
-                raise IOError(f"Nepodarilo sa vytvoriť ._pth súbor: {e}")
-
-    def _verify_pip_functional(self, venv_path):
-        pip_exe = os.path.join(venv_path, "Scripts", "pip.exe")
-        if not os.path.exists(pip_exe):
-            return False
-        try:
-            res = subprocess.run([pip_exe, "--version"], capture_output=True, text=True, creationflags=0x08000000)
-            return res.returncode == 0
-        except Exception:
-            return False
-
     def _stream_subprocess(self, cmd, task_name):
         """Spustí proces a číta jeho výstup riadok po riadku bez sekania GUI."""
-        write_to_debug_file(f"\n--- ŠTART: {task_name} ---")
-        write_to_debug_file(f"Príkaz: {' '.join(cmd)}")
+        clone_logger.write(f"\n--- ŠTART: {task_name} ---")
+        clone_logger.write(f"Príkaz: {' '.join(cmd)}")
         
         env = os.environ.copy()
         env["PIP_PROGRESS_BAR"] = "off"
@@ -114,25 +66,25 @@ class CloneWorker(QObject):
             )
         except FileNotFoundError:
             err_msg = f"Kritická chyba: Spúšťací súbor alebo inštalátor neexistuje -> {cmd[0]}"
-            write_to_debug_file(err_msg)
+            clone_logger.write(err_msg)
             return 1, err_msg
         except Exception as e:
             err_msg = f"Neznáma chyba pri štarte procesu: {e}"
-            write_to_debug_file(err_msg)
+            clone_logger.write(err_msg)
             return 1, err_msg
             
         output_history = []
         for line in iter(process.stdout.readline, ''):
             clean_line = line.strip()
             if clean_line:
-                write_to_debug_file(f"[{task_name}] {clean_line}")
+                clone_logger.write(f"[{task_name}] {clean_line}")
                 self.progress_msg.emit(clean_line)
                 output_history.append(clean_line)
                 
         process.stdout.close()
         process.wait()
         
-        write_to_debug_file(f"--- KONIEC: {task_name} (Návratový kód: {process.returncode}) ---")
+        clone_logger.write(f"--- KONIEC: {task_name} (Návratový kód: {process.returncode}) ---")
         return process.returncode, "\n".join(output_history)
         
     def _clone_local_packages(self):
@@ -154,7 +106,7 @@ class CloneWorker(QObject):
                     shutil.copy2(src_f, dst_f)
                     has_local = True
                 except Exception as e:
-                    write_to_debug_file(f"Nepodarilo sa skopírovať {file_name}: {e}")
+                    clone_logger.write(f"Nepodarilo sa skopírovať {file_name}: {e}")
                     
         if has_local:
             self.progress_msg.emit("🔗 Lokálne balíčky (VenvHub Hook) boli úspešne prenesené.")
@@ -162,9 +114,9 @@ class CloneWorker(QObject):
     def run(self):
         try:
             CREATE_NO_WINDOW = 0x08000000
-            write_to_debug_file("\n" + "="*80)
-            write_to_debug_file(f"ZACIATOK KLONOVANIA: {self.source_venv_path} -> {self.target_venv_path}")
-            write_to_debug_file(f"Režim Embed: {self.is_embed}")
+            clone_logger.write("\n" + "="*80)
+            clone_logger.write(f"ZACIATOK KLONOVANIA: {self.source_venv_path} -> {self.target_venv_path}")
+            clone_logger.write(f"Režim Embed: {self.is_embed}")
 
             source_python = Paths.get_venv_python_exe_path(self.source_venv_path)
 
@@ -186,21 +138,21 @@ class CloneWorker(QObject):
                 raise Exception(err_msg)
 
             filtered_reqs = []
-            editable_reqs = [] # Zoznam pre pip -e balíčky
+            editable_reqs = []
             
             for line in freeze_proc.stdout.splitlines():
                 clean_line = line.strip()
                 if not clean_line: continue
                 
                 if clean_line.startswith("-e "):
-                    path_part = clean_line[3:].strip() # Odstránime "-e "
+                    path_part = clean_line[3:].strip()
                     editable_reqs.append(path_part)
-                    write_to_debug_file(f"Extrahujem editable balíček pre bezpečnú inštaláciu: {path_part}")
+                    clone_logger.write(f"Extrahujem editable balíček pre bezpečnú inštaláciu: {path_part}")
                 else:
                     filtered_reqs.append(clean_line)
                     
             requirements_data = "\n".join(filtered_reqs)
-            write_to_debug_file(f"Filtrované balíčky pre inštaláciu:\n{requirements_data}")
+            clone_logger.write(f"Filtrované balíčky pre inštaláciu:\n{requirements_data}")
 
             fmt_creating = LanguageManager.get("clone_creating_venv", "Vytváram nové prostredie: {0}...")
             self.progress_msg.emit(fmt_creating.format(os.path.basename(self.target_venv_path)))
@@ -225,10 +177,12 @@ class CloneWorker(QObject):
                     raise Exception(LanguageManager.get("clone_err_create_embed", "Chyba pri vytváraní venv (virtualenv):\n{0}").format(err_txt))
 
                 self.progress_msg.emit(LanguageManager.get("clone_fixing_pth", "Opravujem konfiguráciu (._pth)..."))
-                self._fix_pth_file(self.target_venv_path, source_python)
+                # OPRAVA: Použitie spoločnej služby pre opravu cesty
+                EmbedPythonCreated.fix_pth_file(self.target_venv_path, source_python)
                 
                 self.progress_msg.emit(LanguageManager.get("clone_verifying_pip", "Overujem funkčnosť PIP..."))
-                if not self._verify_pip_functional(self.target_venv_path):
+                # OPRAVA: Použitie spoločnej služby pre verifikáciu
+                if not EmbedPythonCreated.verify_pip_functional(self.target_venv_path):
                      raise Exception(LanguageManager.get("clone_err_pip_verify", "PIP v novom prostredí nefunguje!"))
 
             else:
@@ -240,8 +194,6 @@ class CloneWorker(QObject):
 
             # 3. Inštalácia ŠTANDARDNÝCH balíčkov do nového prostredia
             target_python = Paths.get_venv_python_exe_path(self.target_venv_path)
-            
-            # === OPRAVA 1: Zavedenie Dispatchera pre CIELOVÉ prostredie ===
             target_dispatcher = PackageManagerFactory.get_dispatcher(self.manager_type, self.target_venv_path)
             
             if requirements_data.strip():
@@ -253,12 +205,9 @@ class CloneWorker(QObject):
 
                 if self.is_embed:
                     self.progress_msg.emit("🛠 Zabezpečujem build nástroje (setuptools, wheel)...")
-                    
-                    # === OPRAVA 2: Build tools sa inštalujú dynamicky podľa toho či máš UV alebo PIP ===
                     build_tools_cmd = target_dispatcher.get("install_multiple_exact", packages=["setuptools", "wheel"])
                     ret_code, err_txt = self._stream_subprocess(build_tools_cmd, "INSTALL_BUILD_TOOLS")
 
-                # === OPRAVA 3: Hlavná inštalácia z TXT (Odstránený hardcoded if/else a odstránené no-build-isolation ktoré mrazilo UV) ===
                 install_cmd = target_dispatcher.get("install_req_file", file_path=temp_req_path)
                 ret_code, err_txt = self._stream_subprocess(install_cmd, "INSTALL_REQUIREMENTS")
 
@@ -274,10 +223,7 @@ class CloneWorker(QObject):
             if editable_reqs:
                 self.progress_msg.emit("Inštalujem editovateľné balíčky (pip -e)...")
                 for req_path in editable_reqs:
-                    
-                    # === OPRAVA 4: Editovateľné balíčky idú tiež cez Dispatcher ===
                     cmd_e = target_dispatcher.get("install_editable", path=req_path)
-                    
                     ret_code, err_txt = self._stream_subprocess(cmd_e, f"INSTALL_EDITABLE: {req_path}")
                     if ret_code != 0:
                         self.progress_msg.emit(f"⚠️ Upozornenie: Nepodarilo sa prelinkovať {req_path}")
@@ -309,11 +255,11 @@ class CloneWorker(QObject):
             BirthCertificateGenerator.update_venv_certificate(self.target_venv_path)
 
             self.progress_msg.emit("✅ Klonovanie úspešne dokončené!")
-            write_to_debug_file("--- KLONOVANIE ÚSPEŠNE DOKONČENÉ ---")
+            clone_logger.write("--- KLONOVANIE ÚSPEŠNE DOKONČENÉ ---")
             self.finished.emit()
 
         except Exception as e:
-            write_to_debug_file(f"KRITICKÁ CHYBA: {str(e)}")
+            clone_logger.write(f"KRITICKÁ CHYBA: {str(e)}")
             self.error.emit(str(e))
 
 

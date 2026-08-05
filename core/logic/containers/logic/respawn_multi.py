@@ -15,6 +15,10 @@ from core.logic.process_registry import process_registry
 from core.logic.containers.logic.check_multi_venv import MultiVenvChecker
 from core.logic.language_manager import LanguageManager
 
+# Sme zachránení pred cyklom - normálne naimportujeme HookManager hore
+from core.logic.containers.logic.hook import HookManager
+
+
 class RespawnWorker(QThread):
     """
     Vlákno, ktoré bez sekania GUI počká 2 sekundy,
@@ -55,7 +59,6 @@ class RespawnWorker(QThread):
         # Preserve the hook environment variable if we are running with an active hook
         run_env = os.environ.copy()
         try:
-            from core.logic.containers.logic.hook import HookManager
             hook_path = HookManager.get_active_hook(self.venv_path)
             if hook_path:
                 run_env[HookManager.ENV_VAR_NAME] = hook_path
@@ -137,3 +140,8 @@ class RespawnManager:
         for path in venv_paths:
             if path in RespawnManager._crash_counts:
                 del RespawnManager._crash_counts[path]
+
+
+# ZÁZRAK: Inverzia závislostí. HookManagerovi tu len pošleme funkciu.
+# Tým pádom HookManager vôbec nepotrebuje importovať RespawnManager!
+HookManager.register_respawn_checker(RespawnManager.is_respawn_blocked)

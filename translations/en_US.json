@@ -778,6 +778,8 @@
     "apt_analyzing": "\n🔍 [APT] Analyzing dependency tree for autoremove...",
     "apt_clean": "✅ [APT] System is clean. No orphan packages found.",
     "apt_removing": "🗑️ [APT] Autoremove: Removing orphan dependencies: {0}",
-    "apt_err": "❌ [APT] Error during uninstallation: {0}"
+    "apt_err": "❌ [APT] Error during uninstallation: {0}",
+
+    "msg_create_install_tools": "Step 4: Installing basic tools (setuptools, wheel)..."
 
 }

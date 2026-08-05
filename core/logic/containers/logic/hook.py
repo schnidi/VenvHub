@@ -15,6 +15,14 @@ class HookManager:
     
     ENV_VAR_NAME = "VENVHUB_KOTVA"
     _active_hooks = {}
+    
+    # Premenná pre Dependency Injection (zlomenie cyklickej závislosti)
+    _is_respawn_blocked_func = None
+
+    @classmethod
+    def register_respawn_checker(cls, func):
+        """Umožňuje zvonka zaregistrovať funkciu na kontrolu pádov (využíva RespawnManager)."""
+        cls._is_respawn_blocked_func = func
 
     @staticmethod
     def prepare_hook_env(venv_path: str) -> tuple[dict, str]:
@@ -76,8 +84,9 @@ class HookManager:
                         log_callback(LanguageManager.get("hook_log_wait_restart", "⚠️ Proces nie je spustený, čakám na prípadný reštart..."))
                 
                 if respawn_enabled:
-                    from core.logic.containers.logic.respawn_multi import RespawnManager
-                    if RespawnManager.is_respawn_blocked(venv_path):
+                    # Dynamicky skontrolujeme stavy pádov pomocou zaregistrovanej funkcie
+                    blocked = HookManager._is_respawn_blocked_func(venv_path) if HookManager._is_respawn_blocked_func else False
+                    if blocked:
                         if log_callback:
                             log_callback(LanguageManager.get("hook_err_fatal_respawn", "🛑 FATAL ERROR: Proces definitívne zlyhal po 3 pokusoch o reštart!"))
                         return False

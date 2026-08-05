@@ -9,6 +9,7 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QTextEdit
 from PyQt6.QtCore import Qt
 from core._path import Paths
 from core.logic.language_manager import LanguageManager
+from windows.custom_title_bar import CustomTitleBar
 
 
 class AboutDialog(QDialog):
@@ -32,7 +33,6 @@ class AboutDialog(QDialog):
 
         # 3. Vložíme našu Custom Title Bar a skryjeme zbytočné tlačidlá
         # Lokálny import zamedzuje cyklickému importovaniu medzi panelom a dialógom
-        from windows.custom_title_bar import CustomTitleBar
         self.title_bar = CustomTitleBar(self)
         self.title_bar.btn_minimize.hide()
         self.title_bar.btn_maximize.hide()

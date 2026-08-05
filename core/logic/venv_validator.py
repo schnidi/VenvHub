@@ -15,45 +15,71 @@ class VenvValidator:
         self.venv_path = venv_path
         self.status = None
         self.original_version = None 
+        self.original_home = None
         self.local_found_version = None # Verzia, ktorú sme našli na tomto PC
-        self.target_python_path = None # Cesta k tomu Pythonu, ktorým to opravíme
+        self.target_python_path = None  # Cesta k tomu Pythonu, ktorým to opravíme
 
     def validate(self, available_pythons: list[dict]):
-        # 1. Načítame pyvenv.cfg
-        if not self._parse_pyvenv_cfg(): return
+        # 1. Načítame pyvenv.cfg (ak zlyhá, nastavia sa stavy v pomocnej metóde)
+        if not self._parse_pyvenv_cfg():
+            self.status = VenvStatus.MISSING_CONFIG
+            return
 
-        # 2. Ak pôvodná cesta existuje, neriešime
-        if os.path.exists(self.original_home):
+        # 2. Ak pôvodná cesta existuje, venv je plne validný
+        if self.original_home and os.path.exists(self.original_home):
             self.status = VenvStatus.VALID
             return
 
-        # 3. Pôvodná cesta neexistuje - porovnávame verzie do hĺbky
-        orig_v_str = self.original_version # napr. "3.11.3"
-        orig_parts = [int(x) for x in orig_v_str.split('.')] # [3, 11, 3]
+        if not self.original_version:
+            self.status = VenvStatus.BROKEN_INCOMPATIBLE
+            return
 
-        best_py = None
-        current_status = VenvStatus.BROKEN_INCOMPATIBLE
+        # 3. Pôvodná cesta neexistuje - hľadáme NAJBLIŽŠIEHO kandidáta
+        orig_parts = [int(x) for x in self.original_version.split('.')] # [3, 11, 3]
+
+        best_candidate = None
+        min_distance = float('inf')
 
         for py in available_pythons:
-            # Vytiahneme verziu z display name "Python 3.11.6"
+            # Vytiahneme verziu z display name (napr. "Python 3.11.6")
             v_match = re.search(r'(\d+\.\d+\.\d+)', py.get("display", ""))
-            if not v_match: continue
+            if not v_match:
+                continue
             
             found_v_str = v_match.group(1) # "3.11.6"
             found_parts = [int(x) for x in found_v_str.split('.')] # [3, 11, 6]
 
-            # KONTROLA VETVY (Major.Minor musí sedieť)
+            # KONTROLA VETVY (Major.Minor musí presne sedieť, napr. 3.11)
             if found_parts[0] == orig_parts[0] and found_parts[1] == orig_parts[1]:
-                # Sme v správnej vetve (3.11), teraz pozrieme na ten "Drift" (tretie číslo)
-                self.local_found_version = found_v_str
-                self.target_python_path = py['path']
+                # Vypočítame absolútny rozdiel v patch verzii
+                distance = abs(found_parts[2] - orig_parts[2])
 
-                if found_parts[2] == orig_parts[2]:
-                    current_status = VenvStatus.BROKEN_FIXABLE_PERFECT
-                    break # Našli sme 100% zhodu, končíme hľadanie
-                elif found_parts[2] > orig_parts[2]:
-                    current_status = VenvStatus.BROKEN_FIXABLE_UPGRADE
-                else:
-                    current_status = VenvStatus.BROKEN_FIXABLE_DOWNGRADE
-        
-        self.status = current_status
+                # AK JE TO PRESNÁ ZHODA (3.11.3 == 3.11.3) -> Okamžite končíme hľadanie
+                if distance == 0:
+                    best_candidate = {
+                        "version": found_v_str,
+                        "path": py['path'],
+                        "status": VenvStatus.BROKEN_FIXABLE_PERFECT
+                    }
+                    break
+
+                # AK HĽADÁME NAJBLIŽŠIU VERZIU (menšia vzdialenosť vyhráva)
+                if distance < min_distance:
+                    min_distance = distance
+                    status = (VenvStatus.BROKEN_FIXABLE_UPGRADE 
+                              if found_parts[2] > orig_parts[2] 
+                              else VenvStatus.BROKEN_FIXABLE_DOWNGRADE)
+                    
+                    best_candidate = {
+                        "version": found_v_str,
+                        "path": py['path'],
+                        "status": status
+                    }
+
+        # 4. Zapíšeme najlepší nájdený výsledok
+        if best_candidate:
+            self.local_found_version = best_candidate["version"]
+            self.target_python_path = best_candidate["path"]
+            self.status = best_candidate["status"]
+        else:
+            self.status = VenvStatus.BROKEN_INCOMPATIBLE

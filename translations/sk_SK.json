@@ -680,7 +680,7 @@
     "msg_uac_done": "✅ Operácia na systémovom disku dokončená.",
     "msg_pip_installing_base": "Inštalujem základný balíček PIP...",
     "msg_pip_fixing_pth": "Aktivujem prístup k balíčkom (site-packages)...",
-    "msg_pip_installing_venv_admin": "Inštalujem modul 'virtualenv'...",
+    "msg_pip_installing_venv_admin": "Inštalujem moduly 'virtualenv', 'setuptools', 'wheel",
     "msg_pip_done": "✅ Oprava administrátorom úspešne dokončená.",
     "msg_pip_error_admin": "❌ Proces zlyhal počas vykonávania administrátorských opráv.",
 
@@ -771,6 +771,9 @@
     "apt_err_cannot_uninstall": "❌ Nemožno odinštalovať '{0}', pretože ho vyžadujú: {1}",
     "apt_checking_missing": "\n📦 [APT] Kontrolujem chýbajúce balíčky podľa requirements...",
     "apt_all_installed": "✅ [APT] Všetky požadované balíčky sú prítomné.",
-    "apt_installing_missing": "🚀 [APT] Doinštalovávam chýbajúce balíčky: {0}"
+    "apt_installing_missing": "🚀 [APT] Doinštalovávam chýbajúce balíčky: {0}",
+
+    "msg_create_install_tools": "Step 4: Inštalujem základné nástroje (setuptools, wheel)..."
+    
 
 }

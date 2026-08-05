@@ -12,6 +12,8 @@ from core.logic.language_manager import LanguageManager
 from core._path import Paths
 from core.logic.commands.command_factory import PackageManagerFactory
 from core.logic.birth_certificate import BirthCertificateGenerator
+from core.logic.sluzby.path_normalizer import PathNormalizer
+from core.logic.sluzby.requirements_parser import RequirementsParser
 
 class PipSignalEmitter(QObject):
     log_message = pyqtSignal(str)
@@ -265,13 +267,51 @@ class PipManager:
         PipManager._run_pip_task(worker, log_widget)
 
     @staticmethod
+    def _get_all_requirement_files(file_path, visited=None):
+        """
+        Rekurzívne nájde hlavný súbor requirements.txt aj všetky vnorené súbory (-r / --requirement).
+        """
+        if visited is None:
+            visited = set()
+
+        file_path = os.path.abspath(file_path)
+        if not os.path.exists(file_path) or file_path in visited:
+            return visited
+
+        visited.add(file_path)
+        base_dir = os.path.dirname(file_path)
+
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("-r ") or line.startswith("--requirement "):
+                        parts = line.split(maxsplit=1)
+                        if len(parts) > 1:
+                            nested_ref = parts[1].strip().strip("'\"")
+                            nested_path = os.path.normpath(os.path.join(base_dir, nested_ref))
+                            PipManager._get_all_requirement_files(nested_path, visited)
+        except Exception:
+            pass
+
+        return visited
+
+    @staticmethod
     def install_requirements(venv_path, project_root, log_widget, manager_type="pip"):
         req_path = Paths.get_requirements_txt_path(project_root)
         if not os.path.exists(req_path):
             msg = LanguageManager.get("err_req_not_found", "CHYBA: Súbor 'requirements.txt' nebol nájdený.")
             log_widget.append(msg)
             return
-        
+
+        # 1. Nájdi hlavný aj VŠETKY vnorené requirements súbory
+        all_req_files = PipManager._get_all_requirement_files(req_path)
+
+        # 2. Normalizuj lomítka vo všetkých nájdených súboroch na disku
+        for file_path in all_req_files:
+            PathNormalizer.sanitize_requirements_file(file_path)
+
+        # 3. Získaj a spusti štandardný príkaz pre pip / uv (pip install -r ...)
         try:
             dispatcher = PackageManagerFactory.get_dispatcher(manager_type, venv_path)
             cmd = dispatcher.get("install_requirements", project_root=project_root)
@@ -282,7 +322,7 @@ class PipManager:
         start_msg = LanguageManager.get("msg_installing_req", "Inštalujem z requirements.txt...")
         worker = PipWorker(cmd, start_msg, venv_path, manager_type)
         PipManager._run_pip_task(worker, log_widget)
-        
+
     @staticmethod
     def update_all_packages(venv_path, log_widget, manager_type="pip"):
         worker = UpdateAllWorker(venv_path, manager_type)

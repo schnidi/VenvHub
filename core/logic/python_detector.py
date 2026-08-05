@@ -6,6 +6,7 @@ import subprocess
 import re
 import sys
 import os
+import time
 
 from core.logic.language_manager import LanguageManager
 from core._path import Paths
@@ -28,22 +29,43 @@ class PythonDetector:
 
     @staticmethod
     def resolve_parent_python(venv_path: str) -> str:
-        """Vyparsuje zo súboru pyvenv.cfg cestu k materskému Pythonu."""
+        """
+        Vyparsuje zo súboru pyvenv.cfg cestu k materskému Pythonu.
+        Číta vždy čerstvé dáta z disku, ošetruje Windows blokovanie súboru a BOM bajty.
+        """
+        fallback_path = os.path.normpath(sys.executable)
+
         if not venv_path or not os.path.exists(venv_path):
-            return os.path.normpath(sys.executable)
+            return fallback_path
 
         cfg_path = os.path.join(venv_path, "pyvenv.cfg")
-        if os.path.exists(cfg_path):
+        if not os.path.exists(cfg_path):
+            return fallback_path
+
+        max_retries = 3
+        retry_delay = 0.1  # 100 ms pauza pri zamknutom súbore
+
+        for attempt in range(max_retries):
             try:
-                with open(cfg_path, 'r', encoding='utf-8') as f:
+                # 'utf-8-sig' automaticky odstrihne skryté BOM bajty na Windows
+                with open(cfg_path, 'r', encoding='utf-8-sig', errors='replace') as f:
                     for line in f:
+                        line = line.strip()
                         if line.startswith("home ="):
-                            home_dir = line.split("=")[1].strip()
-                            exe_name = "python.exe" if os.name == 'nt' else "python"
-                            return os.path.normpath(os.path.join(home_dir, exe_name))
+                            parts = line.split("=", 1)
+                            if len(parts) > 1:
+                                home_dir = parts[1].strip()
+                                if home_dir:
+                                    exe_name = "python.exe" if os.name == 'nt' else "python"
+                                    return os.path.normpath(os.path.join(home_dir, exe_name))
+                break  # Ak prečítal súbor a 'home =' nenašiel, vyskoč z cyklu
+            except (PermissionError, OSError):
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
             except Exception:
-                pass
-        return os.path.normpath(sys.executable)
+                break
+
+        return fallback_path
 
     @staticmethod
     def get_installed_pythons(force_refresh=False):
@@ -99,7 +121,7 @@ class PythonDetector:
         PythonDetector._cached_pythons = pythons
         return pythons
 
-    # --- NOVÉ METÓDY NA ÚPRAVU PAMÄTE BEZ SKENOVANIA DISKU ---
+    # --- METÓDY NA ÚPRAVU PAMÄTE BEZ SKENOVANIA DISKU ---
     
     @staticmethod
     def add_local_python(folder_name, python_path, pip_status="OK"):

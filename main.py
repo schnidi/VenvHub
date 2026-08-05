@@ -1,68 +1,75 @@
-#----------------------------------------
-# Súbor: main.pyw
-#----------------------------------------
+"""
+Súbor: main.pyw
+Hlavný spúšťací modul aplikácie VenvHub Pro.
+"""
 
 import os
 import sys
 
-# =====================================================================
-# --- DOČASNÁ DIAGNOSTIKA ZAMRZNUTIA (odstrániť po vyriešení problému) ---
-# Každých 8 sekúnd vypíše do konzoly presný zásobník (stack trace)
-# VŠETKÝCH bežiacich vlákien - aj keby bolo hlavné vlákno zaseknuté
-# v natívnom (C++/Windows API) volaní, kde Ctrl+C nezaberá.
-# =====================================================================
-#import faulthandler
-#faulthandler.enable()
-#faulthandler.dump_traceback_later(8, repeat=True)
-
-# =====================================================================
-# --- NASTAVENIE SYS.PATH A VYNÚTENIE UTF-8 PRE WINDOWS ---
-# =====================================================================
+"""
+Nastavenie kódovania UTF-8 pre Windows prostredie a pridanie
+priečinka so spusteným skriptom do sys.path pre bezproblémový import modulov.
+"""
 os.environ["PYTHONUTF8"] = "1"
 
-# Zabezpečíme, že priečinok so spusteným skriptom bude v sys.path,
-# čo vyrieši problémy s importovaním modulov (ModuleNotFoundError: No module named 'windows')
-# bez ohľadu na to, z akého pracovného adresára je skript spustený.
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 
-# =====================================================================
-# --- MOST MEDZI PyQt6 A PySide6 (AUTODETEKCIA FRAMEWORKU) ---
-# TOTO ZACHYTÍ VŠETKY IMPORTY A PRELOŽÍ ICH DO PYSIDE6 ZA CHODU
-# =====================================================================
+"""
+Most medzi PyQt6 a PySide6 (autodetekcia frameworku).
+Zachytáva všetky importy Qt modulov a prekladá ich za chodu.
+"""
 from core.logic.pyqt_to_pyside import setup_qt_environment
 setup_qt_environment()
 
 
-# =====================================================================
-# SPUSTENIE NAČÚVACIEHO KÓDU NA OCHRANU SYSTEM VENV V PORTABLE REŽIME
-# =====================================================================
+"""
+Spustenie načúvacieho kódu na ochranu systémového venvu v prenosnom (portable) režime.
+"""
 from core.logic.system_listener import SystemListener
 SystemListener.start_listening()
-# ---------------------
 
 
-# =====================================================================
-# --- ŠTANDARDNÉ IMPORTY APLIKÁCIE ---
-# Tieto už pôjdu cez prekladač, ak si systém vybral PySide6
-# =====================================================================
+"""
+Štandardné importy aplikácie prebiehajúce po inicializácii Qt prostredia.
+"""
 from PyQt6.QtWidgets import QApplication
 
 from windows.widget import ProjectMiniBar
+from windows.about_dialog import AboutDialog
 from core.logic.project_manager import ProjectCore
 from core.logic.skin_manager import SkinManager 
 from core.single_instance import SingleInstance, SingleInstanceError
 from core.logic.containers.logic.autostart_boot import AutostartBooter
+from core.logic.sluzby.about_logic import AboutLogic
+
 
 def main():
+    """
+    Hlavná vstupná funkcia aplikácie VenvHub Pro.
+    Zabezpečuje inicializáciu Qt aplikácie, kontrolu jedinej inštancie (SingleInstance),
+    registráciu okien a služieb, aplikáciu tém a spustenie hlavnej slučky udalosťami.
+    """
     app = QApplication(sys.argv)
 
-    # --- SINGLE INSTANCE LOGIKA (ZAČIATOK) ---
+    """
+    Registrácia triedy AboutDialog do centrálnej služby AboutLogic.
+    Zamedzuje cyklickým závislostiam medzi titulkovou lištou a dialógom O programe.
+    """
+    AboutLogic.register_about_dialog(AboutDialog)
+
+    """
+    Logika jedinej inštancie aplikácie (SingleInstance).
+    Zabraňuje viacnásobnému spusteniu a v prípade potreby prenesie bežiacu aplikáciu do popredia.
+    """
     window_ref = [None]
 
     def bring_to_front():
+        """
+        Callback funkcia na obnovenie a aktiváciu okien pri pokuse o opätovné spustenie.
+        """
         if window_ref[0]:
             win = window_ref[0]
             win.show()
@@ -84,24 +91,29 @@ def main():
         sys.exit(1)
 
     app._single_instance = checker
-    # --- SINGLE INSTANCE LOGIKA (KONIEC) ---
-    
-    # Pokračujeme v štarte aplikácie, lebo sme prví
+
+    """
+    Načítanie jadra správy projektov a spustenie neviditeľných služieb.
+    """
     core = ProjectCore()
 
-    # =================================================================
-    # --- ŠTART NEVIDITEĽNÉHO MOSTA PRE APT AUTOREMOVE (CHYTRÉ MAZANIE) ---
-    # =================================================================
+    """
+    Štart neviditeľného mosta pre chytré mazanie balíčkov (APT autoremove).
+    """
     from core.logic.sluzby.apt_listener import AptListener
     AptListener.start_listening(core)
     
-    # Aplikovanie témy
+    """
+    Aplikovanie aktívnej vizuálnej témy z konfigurácie.
+    """
     if core.active_theme and core.active_theme != "default":
         SkinManager.apply_skin(core.active_theme)
         
     widget = ProjectMiniBar(core)
     
-    # --- DÔLEŽITÉ: Uložíme vytvorené okno do kontajnera pre callback ---
+    """
+    Uloženie vytvoreného okna do kontajnera pre callback SingleInstance.
+    """
     window_ref[0] = widget
     
     if core.last_pos:
@@ -109,9 +121,9 @@ def main():
         
     widget.show()
     
-    # =================================================================
-    # --- SPUSTENIE AUTOSTARTU ---
-    # =================================================================
+    """
+    Spustenie skupín nastavených pre automatický štart (Autostart).
+    """
     AutostartBooter.run_autostart_groups(core)
     
     exit_code = app.exec()
@@ -120,6 +132,7 @@ def main():
     core.save_config()
     
     sys.exit(exit_code)
+
 
 if __name__ == "__main__":
     main()

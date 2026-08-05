@@ -1,7 +1,3 @@
-#----------------------------------------
-# Súbor: core/logic/sluzby/requirements_parser.py
-#----------------------------------------
-
 import os
 import re
 
@@ -141,6 +137,18 @@ class RequirementsParser:
             except Exception:
                 base_dir = os.path.dirname(abs_path)
 
+        # BEZPEČNOSTNÁ KONTROLA: Path Traversal & Symlink Check pre AKÝKOĽVEK spracovávaný súbor
+        try:
+            real_base_dir = os.path.normcase(os.path.realpath(base_dir))
+            real_target_path = os.path.normcase(abs_path)
+            if os.path.commonpath([real_base_dir, real_target_path]) != real_base_dir:
+                print(f"[RequirementsParser] Varovanie: Blokovaný pokus o Path Traversal / Symlink mimo povoleného adresára: '{file_path}'")
+                return packages
+        except ValueError:
+            # Nastane na Windows pri prechode na iný disk (napr. C: -> D:) alebo odlišné UNC cesty
+            print(f"[RequirementsParser] Varovanie: Blokovaný prístup na iný disk alebo neplatnú cestu: '{file_path}'")
+            return packages
+
         if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
             return packages
 
@@ -194,18 +202,6 @@ class RequirementsParser:
 
                             current_dir = os.path.dirname(abs_path)
                             nested_abs_path = os.path.realpath(os.path.join(current_dir, nested_rel_path))
-                            
-                            # OPRAVA: Bezpečnostná kontrola Path Traversal s normalizáciou veľkosti písmen a symlinkov
-                            try:
-                                real_base_dir = os.path.normcase(os.path.realpath(base_dir))
-                                real_nested_path = os.path.normcase(nested_abs_path)
-                                if os.path.commonpath([real_base_dir, real_nested_path]) != real_base_dir:
-                                    print(f"[RequirementsParser] Varovanie: Blokovaný pokus o Path Traversal mimo povoleného adresára: '{nested_rel_path}'")
-                                    continue
-                            except ValueError:
-                                # Nastane na Windows pri pokuse o prechod na iný disk (napr. C: -> D:) alebo odlišné UNC cesty
-                                print(f"[RequirementsParser] Varovanie: Blokovaný prístup na iný disk alebo neplatnú cestu: '{nested_rel_path}'")
-                                continue
 
                             try:
                                 nested_packages = RequirementsParser.parse(nested_abs_path, visited_files, depth + 1, base_dir, pip_e_root)

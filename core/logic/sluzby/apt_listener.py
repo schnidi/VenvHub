@@ -4,11 +4,8 @@
 
 import os
 import json
-import subprocess
-from core._path import Paths
 from core.logic.sluzby.apt_logic import AptLogic
 from core.logic.sluzby.requirements_parser import RequirementsParser
-from core.logic.commands.command_factory import PackageManagerFactory
 from core.logic.language_manager import LanguageManager
 
 class AptListener:
@@ -24,35 +21,6 @@ class AptListener:
         AptListener._patch_pipe_install(core)
         AptListener._patch_pipe_uninstall(core)
         AptListener._patch_local_linker(core)
-
-    @staticmethod
-    def _get_editable_packages(venv_path):
-        """
-        Získa zoznam -e balíčkov vo forme JSON (list slovníkov) priamo z venvu.
-        Vráti napr.: [{"name": "moj-balicek", "version": "0.1.0", "editable_project_location": "C:/Cesta"}]
-        """
-        python_exe = Paths.get_venv_python_exe_path(venv_path)
-        if not os.path.exists(python_exe):
-            return []
-
-        cmd = [python_exe, "-m", "pip", "list", "--editable", "--format=json"]
-        CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
-
-        try:
-            res = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                creationflags=CREATE_NO_WINDOW
-            )
-            if res.returncode == 0 and res.stdout.strip():
-                return json.loads(res.stdout.strip())
-        except Exception:
-            pass
-
-        return []
 
     @staticmethod
     def _extract_packages_from_install_cmd(cmd_list):
@@ -81,71 +49,6 @@ class AptListener:
         return pkgs
 
     @staticmethod
-    def _is_package_required_by_others(venv_path, core, package_name):
-        """
-        Skontroluje, či na danom balíčku závisia iné nainštalované balíčky (reverzné závislosti)
-        A TAKTIEŽ či ho nevyžaduje niektorý z prepojených Linker balíčkov.
-        """
-        pkg_norm = AptLogic._normalize(package_name)
-        dependents = []
-
-        # 1. Kontrola štandardných PIP závislostí
-        graph = AptLogic.get_dependency_graph(venv_path, core)
-        for other_pkg, requirements in graph.items():
-            if other_pkg == pkg_norm:
-                continue
-            if pkg_norm in requirements:
-                dependents.append(other_pkg)
-
-        # 2. Kontrola VenvHub Linker závislostí (venvhub.json -> local_meta.json)
-        site_folder = "Lib" if os.name == 'nt' else "lib"
-        venvhub_json = os.path.join(venv_path, site_folder, "site-packages", "venvhub.json")
-
-        if os.path.exists(venvhub_json):
-            try:
-                with open(venvhub_json, 'r', encoding='utf-8') as f:
-                    linked_map = json.load(f)
-                    
-                for pkg_key, pkg_path in linked_map.items():
-                    meta_path = os.path.join(pkg_path, "local_meta.json")
-                    if os.path.exists(meta_path):
-                        try:
-                            with open(meta_path, 'r', encoding='utf-8') as mf:
-                                meta = json.load(mf)
-                                name = meta.get("name", pkg_key)
-                                reqs = [AptLogic._normalize(r) for r in meta.get("requires_pip", [])]
-                                
-                                if pkg_norm in reqs:
-                                    display_name = f"{name} (Linker)"
-                                    if display_name not in dependents:
-                                        dependents.append(display_name)
-                        except Exception:
-                            pass
-            except Exception:
-                pass
-
-        return dependents
-
-    @staticmethod
-    def _get_requires_for_package(venv_path, pkg_name, manager_type="pip"):
-        reqs = []
-        try:
-            dispatcher = PackageManagerFactory.get_dispatcher(manager_type, venv_path)
-            cmd = dispatcher.get("show", package_name=pkg_name)
-            
-            CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
-            res = subprocess.run(cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW)
-            
-            for line in res.stdout.splitlines():
-                if line.startswith("Requires:"):
-                    val = line.replace("Requires:", "").strip()
-                    if val: 
-                        reqs = [r.strip().lower() for r in val.split(",")]
-        except Exception: 
-            pass
-        return reqs
-
-    @staticmethod
     def _patch_pip_manager(core):
         from core.logic.pip_manager import PipManager
         orig_run_pip_task = PipManager._run_pip_task
@@ -159,7 +62,7 @@ class AptListener:
                 if is_uninstall:
                     pkgs_to_uninstall = AptListener._extract_packages_from_uninstall_cmd(worker.cmd)
                     for pkg in pkgs_to_uninstall:
-                        deps = AptListener._is_package_required_by_others(worker.venv_path, core, pkg)
+                        deps = AptLogic.is_package_required_by_others(worker.venv_path, core, pkg)
                         if deps:
                             msg = LanguageManager.get(
                                 "apt_err_cannot_uninstall",
@@ -186,7 +89,7 @@ class AptListener:
             should_autoremove = is_uninstall or is_upgrade
             released_reqs = []
             for pkg in uninstalled_pkgs:
-                released_reqs.extend(AptListener._get_requires_for_package(worker.venv_path, pkg, core.package_manager))
+                released_reqs.extend(AptLogic.get_requires_for_package(worker.venv_path, pkg, core.package_manager))
 
             def apt_callback():
                 success = getattr(worker, 'success', True)
@@ -219,7 +122,7 @@ class AptListener:
             if is_uninstall:
                 pkgs_to_uninstall = AptListener._extract_packages_from_uninstall_cmd(full_command)
                 for pkg in pkgs_to_uninstall:
-                    deps = AptListener._is_package_required_by_others(self.venv_path, core, pkg)
+                    deps = AptLogic.is_package_required_by_others(self.venv_path, core, pkg)
                     if deps:
                         msg = LanguageManager.get(
                             "apt_err_cannot_uninstall",
@@ -238,7 +141,7 @@ class AptListener:
 
             released_reqs = []
             for pkg in uninstalled_pkgs:
-                released_reqs.extend(AptListener._get_requires_for_package(self.venv_path, pkg, core.package_manager))
+                released_reqs.extend(AptLogic.get_requires_for_package(self.venv_path, pkg, core.package_manager))
 
             orig_run_pip_command(self, full_command, start_message)
 
@@ -283,7 +186,7 @@ class AptListener:
         def patched_init(self, venv_path, package_name):
             orig_init(self, venv_path, package_name)
 
-            released_reqs = AptListener._get_requires_for_package(self.venv_path, self.package_name, core.package_manager)
+            released_reqs = AptLogic.get_requires_for_package(self.venv_path, self.package_name, core.package_manager)
 
             def on_finished_uninstall(success):
                 if success:
@@ -293,7 +196,7 @@ class AptListener:
             self.finished.connect(on_finished_uninstall)
 
         def patched_run(self):
-            deps = AptListener._is_package_required_by_others(self.venv_path, core, self.package_name)
+            deps = AptLogic.is_package_required_by_others(self.venv_path, core, self.package_name)
             if deps:
                 msg = LanguageManager.get(
                     "apt_err_cannot_uninstall",

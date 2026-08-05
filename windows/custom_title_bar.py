@@ -1,36 +1,38 @@
-#----------------------------------------
-# Súbor: windows/custom_title_bar.py
-#----------------------------------------
+"""
+Súbor: windows/custom_title_bar.py
+Univerzálna titulková lišta, ktorú používajú okná v aplikácii.
+"""
 
 import os
-import json
 from PyQt6.QtWidgets import QWidget
 from PyQt6 import uic
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QIcon
 
 from core._path import Paths
-from core.logic.language_manager import LanguageManager
+from core.logic.sluzby.about_logic import AboutLogic
 
 
 class CustomTitleBar(QWidget):
-    """Univerzálna titulková lišta, ktorú teraz používajú všetky okná."""
+    """Univerzálna titulková lišta, ktorú používajú okná v aplikácii."""
+
     def __init__(self, parent):
+        """
+        Inicializácia titulkovej lišty, načítanie UI šablóny a nastavenie ikon.
+        """
         super().__init__(parent)
         self.parent_window = parent
         
-        # 1. Načítame UI
+        """Načítanie grafického rozhrania titulkovej lišty."""
         uic.loadUi(Paths.get_ui_file_path("custom_title_bar.ui"), self)
 
-        # 2. Zakážeme akékoľvek automatické škálovanie QLabelu
+        """Zakázanie automatického škálovania QLabelu ikony."""
         self.lbl_icon.setScaledContents(False)
 
         self.old_pos = None
 
-        # 3. Prepojíme tlačidlá
+        """Prepojenie signálov a nastavenie titulku a ikon."""
         self.connect_signals()
-        
-        # 4. Nastavíme titulok a ikony
         self.setup_from_parent()
 
     def connect_signals(self):
@@ -39,14 +41,14 @@ class CustomTitleBar(QWidget):
         self.btn_maximize.clicked.connect(self.toggle_maximize_restore)
         self.btn_close.clicked.connect(self.parent_window.close)
         
-        # Prepojenie About tlačidla (ak je to hlavné okno)
+        """Prepojenie tlačidla 'O programe' (About)."""
         self.btn_about.clicked.connect(self.show_about_dialog)
 
     def setup_from_parent(self):
-        """Prevezme titulok a ikony pre panel."""
+        """Prevezme titulok a ikony pre panel z rodičovského okna."""
         self.lbl_title.setText(self.parent_window.windowTitle())
         
-        # === Nastavenie hlavnej ikony okna ===
+        """Nastavenie hlavnej ikony okna z app.ico."""
         icon_path = Paths.get_icon_path("app.ico")
         if os.path.exists(icon_path):
             icon = QIcon(icon_path)
@@ -57,48 +59,15 @@ class CustomTitleBar(QWidget):
         else:
             self.lbl_icon.hide()
             
-        # === Nastavenie ikony pre tlačidlo "About" ===
+        """Nastavenie ikony pre tlačidlo 'About' (O programe)."""
         about_icon_path = Paths.get_icon_path("about.svg")
         if os.path.exists(about_icon_path):
             self.btn_about.setIcon(QIcon(about_icon_path))
             self.btn_about.setIconSize(QSize(18, 18))
 
     def show_about_dialog(self):
-        """Načíta JSON a zobrazí HTML v informačnom okne spolu s certifikátom."""
-        json_path = os.path.join(Paths.get_base_path(), Paths.ASSETS_DIR_NAME, "about.json")
-        
-        html_content = LanguageManager.get("about_fallback_html", "<p>O programe</p>")
-        
-        if os.path.exists(json_path):
-            try:
-                with open(json_path, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    
-                    # 1. Zistíme aktuálny kód jazyka (napr. 'fr_FR')
-                    current_lang = LanguageManager._current_lang_code
-                    lang_key = f"about_html_{current_lang}"
-                    
-                    # 2. KASKÁDOVÝ FALLBACK (Ochrana proti chýbajúcemu prekladu)
-                    if lang_key in data:
-                        # Ak preklad existuje (napr. fr_FR), daj ho
-                        html_content = data[lang_key]
-                    elif "about_html_en_US" in data:
-                        # Ak neexistuje, daj ako HLAVNÚ ZÁCHRANU Angličtinu
-                        html_content = data["about_html_en_US"]
-                    elif "about_html_sk_SK" in data:
-                        # Ak nie je ani EN (čo by sa nemalo stať), daj aspoň SK
-                        html_content = data["about_html_sk_SK"]
-                    elif "about_html" in data:
-                        # Spätná kompatibilita pre staré súbory
-                        html_content = data["about_html"]
-
-            except Exception as e:
-                html_content = LanguageManager.get("about_err_load", "<p>Chyba pri načítaní info: {0}</p>").format(e)
-                
-        # Lokálny import zamedzuje cyklickému importovaniu počas načítania modulov
-        from windows.about_dialog import AboutDialog
-        dialog = AboutDialog(self.parent_window, html_content)
-        dialog.exec()
+        """Zobrazí okno 'O programe' pomocou centrálnej služby AboutLogic."""
+        AboutLogic.show_about_dialog(self.parent_window)
 
     def toggle_maximize_restore(self):
         """Pre maximalizáciu a obnovu okna."""
@@ -109,12 +78,13 @@ class CustomTitleBar(QWidget):
             self.parent_window.showMaximized()
             self.btn_maximize.setText("🗗")
 
-    # === LOGIKA PRE PRESÚVANIE OKNA MYŠOU ===
     def mousePressEvent(self, event):
+        """Zachytí stlačenie ľavého tlačidla myši pre začiatok presúvania okna."""
         if event.button() == Qt.MouseButton.LeftButton:
             self.old_pos = event.globalPosition().toPoint()
 
     def mouseMoveEvent(self, event):
+        """Sleduje pohyb myši a posúva rodičovské okno po obrazovke."""
         if self.old_pos and not self.parent_window.isMaximized():
             delta = event.globalPosition().toPoint() - self.old_pos
             self.parent_window.move(
@@ -124,8 +94,10 @@ class CustomTitleBar(QWidget):
             self.old_pos = event.globalPosition().toPoint()
             
     def mouseReleaseEvent(self, event):
+        """Uvoľní pozíciu po pustení tlačidla myši."""
         self.old_pos = None
 
     def mouseDoubleClickEvent(self, event):
+        """Dvojklik na lištu prepína medzi maximalizovaným a normálnym stavom okna."""
         if event.button() == Qt.MouseButton.LeftButton:
             self.toggle_maximize_restore()

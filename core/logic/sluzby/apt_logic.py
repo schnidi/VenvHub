@@ -101,6 +101,106 @@ class AptLogic:
                 explicit.remove(pkg_normalized)
                 AptLogic.save_explicit_list(venv_path, explicit)
 
+    # =========================================================================
+    # --- METÓDY PRE ANALÝZU ZÁVISLOSTÍ (PRESUNUTÉ Z APT LISTENER) ---
+    # =========================================================================
+
+    @staticmethod
+    def get_editable_packages(venv_path):
+        """
+        Získa zoznam -e balíčkov vo forme JSON (list slovníkov) priamo z venvu.
+        Vráti napr.: [{"name": "moj-balicek", "version": "0.1.0", "editable_project_location": "C:/Cesta"}]
+        """
+        python_exe = Paths.get_venv_python_exe_path(venv_path)
+        if not os.path.exists(python_exe):
+            return []
+
+        cmd = [python_exe, "-m", "pip", "list", "--editable", "--format=json"]
+        CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
+
+        try:
+            res = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                creationflags=CREATE_NO_WINDOW
+            )
+            if res.returncode == 0 and res.stdout.strip():
+                return json.loads(res.stdout.strip())
+        except Exception:
+            pass
+
+        return []
+
+    @staticmethod
+    def is_package_required_by_others(venv_path, core, package_name):
+        """
+        Skontroluje, či na danom balíčku závisia iné nainštalované balíčky (reverzné závislosti)
+        A TAKTIEŽ či ho nevyžaduje niektorý z prepojených Linker balíčkov.
+        """
+        pkg_norm = AptLogic._normalize(package_name)
+        dependents = []
+
+        # 1. Kontrola štandardných PIP závislostí
+        graph = AptLogic.get_dependency_graph(venv_path, core)
+        for other_pkg, requirements in graph.items():
+            if other_pkg == pkg_norm:
+                continue
+            if pkg_norm in requirements:
+                dependents.append(other_pkg)
+
+        # 2. Kontrola VenvHub Linker závislostí (venvhub.json -> local_meta.json)
+        site_folder = "Lib" if os.name == 'nt' else "lib"
+        venvhub_json = os.path.join(venv_path, site_folder, "site-packages", "venvhub.json")
+
+        if os.path.exists(venvhub_json):
+            try:
+                with open(venvhub_json, 'r', encoding='utf-8') as f:
+                    linked_map = json.load(f)
+                    
+                for pkg_key, pkg_path in linked_map.items():
+                    meta_path = os.path.join(pkg_path, "local_meta.json")
+                    if os.path.exists(meta_path):
+                        try:
+                            with open(meta_path, 'r', encoding='utf-8') as mf:
+                                meta = json.load(mf)
+                                name = meta.get("name", pkg_key)
+                                reqs = [AptLogic._normalize(r) for r in meta.get("requires_pip", [])]
+                                
+                                if pkg_norm in reqs:
+                                    display_name = f"{name} (Linker)"
+                                    if display_name not in dependents:
+                                        dependents.append(display_name)
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+
+        return dependents
+
+    @staticmethod
+    def get_requires_for_package(venv_path, pkg_name, manager_type="pip"):
+        reqs = []
+        try:
+            dispatcher = PackageManagerFactory.get_dispatcher(manager_type, venv_path)
+            cmd = dispatcher.get("show", package_name=pkg_name)
+            
+            CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
+            res = subprocess.run(cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW)
+            
+            for line in res.stdout.splitlines():
+                if line.startswith("Requires:"):
+                    val = line.replace("Requires:", "").strip()
+                    if val: 
+                        reqs = [r.strip().lower() for r in val.split(",")]
+        except Exception: 
+            pass
+        return reqs
+
+    # =========================================================================
+
     SHOW_MULTIPLE_CHUNK_SIZE = 30
 
     @staticmethod
@@ -148,7 +248,7 @@ class AptLogic:
             return graph
 
     # =========================================================================
-    # --- NOVÁ METÓDA: SYNCHRONIZÁCIA (INSTALL MISSING) ---
+    # --- SYNCHRONIZÁCIA (INSTALL MISSING) ---
     # =========================================================================
     @staticmethod
     def install_sync(core, venv_path: str, log_callback) -> bool:
@@ -208,8 +308,6 @@ class AptLogic:
             state_explicit = AptLogic.load_explicit_list(venv_path)
             explicit_roots = state_explicit.copy()
             
-            # (VYMAZANÁ 1. Poistka: Rodný list — rodný list už neovplyvňuje explicit_roots)
-
             # 1. Poistka: Requirements (Rekurzívne cez Parser + pip-e prepojenie)
             try:
                 project_path = Paths.get_project_path(core.projects_root, core.active_project)
@@ -218,8 +316,7 @@ class AptLogic:
                 explicit_roots.update(parsed_reqs)
 
                 # Overenie: Ak sa nainštalovaný -e balíček nachádza v requirements.txt, stáva sa explicitným
-                from core.logic.sluzby.apt_listener import AptListener
-                editable_pkgs = AptListener._get_editable_packages(venv_path)
+                editable_pkgs = AptLogic.get_editable_packages(venv_path)
                 for e_pkg in editable_pkgs:
                     e_name = AptLogic._normalize(e_pkg.get("name", ""))
                     if e_name and e_name in parsed_reqs:
