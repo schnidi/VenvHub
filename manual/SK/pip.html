@@ -30,6 +30,8 @@
                 <a href="#downgrade">4.3 Downgrade (Návrat k staršej verzii)</a>
                 <a href="#update-all">4.4 Hromadná aktualizácia (Pip vs UV)</a>
                 <a href="#freeze">4.5 Freeze a Logovanie</a>
+                <a href="#apt-system">4.6 APT Systém a Autoremove</a>
+                <a href="#apt-protection">4.7 Ochrana závislostí a Samooprava</a>
             </div>
 
             <a href="multirun.html">🔄 5. Hromadné spúšťanie</a>
@@ -146,6 +148,66 @@
 
             <h3>Logovanie a Bezpečnostný zámok (Safety Lock)</h3>
             <p>Všetky operácie (Install, Update, Uninstall) bežia vo vlastnom vlákne (asynchrónne) a ich kompletný výstup sa v reálnom čase zobrazuje v spodnom okne <strong>Log</strong>. Počas akejkoľvek prebiehajúcej operácie aplikácia <strong>deaktivuje (zašedí) všetky tlačidlá</strong>. Je to dôležitá ochrana proti spusteniu dvoch inštalácií naraz, čo by mohlo poškodiť virtuálne prostredie.</p>
+        </div>
+
+        <!-- PODKAPITOLA 4.6 -->
+        <div id="apt-system" class="section-box">
+            <h1>4.6 APT Systém správy závislostí a Autoremove</h1>
+            <p>VenvHub Pro obsahuje pokročilý systém správy závislostí inšpirovaný Linuxovým správcom <strong>APT (apt-get autoremove)</strong>. Tento systém na pozadí neviditeľne monitoruje všetky operácie s balíčkami (cez <code>AptListener</code>) a zabezpečuje, aby vaše virtuálne prostredie zostalo vždy čisté a bez osirotených knižníc.</p>
+
+            <h3>1. Rozlišovanie balíčkov: Explicitné vs. Automatické</h3>
+            <p>APT systém prísne rozlišuje dva typy balíčkov vo vašom prostredí:</p>
+            <ul>
+                <li><strong>Explicitné (Vlastné) balíčky:</strong> Balíčky, ktoré ste si vyžiadali vy priamo (napr. cez GUI, tlačidlom inštalovať, cez <code>requirements.txt</code>, alebo prelinkované cez Linker). Tieto balíčky sú zapísané v stavovom súbore <code>venvhub_apt_state.json</code> a systém ich <strong>nikdy nevymaže bez vášho výslovného príkazu</strong>.</li>
+                <li><strong>Automatické závislosti:</strong> Balíčky, ktoré sa nainštalovali automaticky len preto, lebo ich vyžadoval niektorý z vašich explicitných balíčkov (napr. `urllib3` pri inštalácií `requests`).</li>
+            </ul>
+
+            <h3>2. Automatické čistenie sirôt (Autoremove)</h3>
+            <p>Keď zmažete hlavný explicitný balíček (napr. <code>requests</code>), v bežnom Pythone by jeho závislosti (`urllib3`, `certifi`, `charset-normalizer`) zostali v prostredí navždy zaberať miesto.</p>
+            <p>VenvHub Pro po odinštalovaní balíčka okamžite spustí proces <code>AptLogic.autoremove()</code>. Prepočíta celý strom závislostí a ak zistí, že osirelé závislosti už <strong>nepotrebuje žiaden iný nainštalovaný balíček ani prepojený Linker projekt</strong>, automaticky ich z prostredia odstráni.</p>
+
+            <h3>3. Prečo systém dovolí ručne odinštalovať aj `pip`, `setuptools` či `uv`?</h3>
+            <p>V zozname balíčkov nájdete aj základné nástroje prostredia (<code>CORE_TOOLS = {"pip", "setuptools", "wheel", "virtualenv", "uv"}</code>). Tu platia dva odlišné režimy:</p>
+            <ul>
+                <li><strong>Ochrana pri Autoremove (Automatické čistenie):</strong> Systém tieto nástroje vnútorne chráni. `autoremove` ich **nikdy sám od seba nezmaže**, aj keď na nich nevisí žiaden iný balíček.</li>
+                <li><strong>Ručné odinštalovanie (Priamy príkaz používateľa):</strong> Ak sa vy sami rozhodnete kliknúť na "Odinštalovať" pri balíčku `pip` alebo `setuptools`, **systém vám v tom NEZABRÁNI**.</li>
+            </ul>
+
+            <div class="alert" style="border-left-color: #f39c12; background-color: #fef9eb;">
+                <strong>Dva dôvody, prečo je ručné zmazanie jadra povolené:</strong>
+                <ol style="margin-top: 10px; margin-bottom: 0;">
+                    <li><strong>Filozofia APT:</strong> V Linuxe môžete takisto spustiť <code>apt remove apt</code> alebo <code>apt remove python3-pip</code>. Ak dá používateľ priamy a výslovný príkaz na zmazanie nástroja, systém mu verí a vykoná ho (žiaden štandardný balíček totiž vo svojich metadátach neodkazuje na `Requires: pip`).</li>
+                    <li><strong>Praktické využitie (Extrémna minimalizácia pre .EXE):</strong> Pri príprave finálneho virtuálneho prostredia pred kompiláciou do `.exe` súboru (PyInstaller/Nuitka) vývojári často zámerne odinštalujú `pip`, `setuptools` aj `wheel`, aby očistili `site-packages` od zbytočných megabajtov inštalačných skriptov.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- PODKAPITOLA 4.7 -->
+        <div id="apt-protection" class="section-box">
+            <h1>4.7 Ochrana reverzných závislostí a Samooprava (Self-Healing)</h1>
+            <p>APT logika slúži aj ako bezpečnostný štít, ktorý bráni náhodnému rozbitiu vášho virtuálneho prostredia pri manuálnych zásahoch.</p>
+
+            <h3>1. Ochrana pred rozbitím (Bezpečnostný zámok)</h3>
+            <p>Ak sa pokúsite ručne odinštalovať balíček, ktorý je kritickou závislosťou pre iný balíček v prostredí (alebo pre lokálny prepojený projekt z Linkeru), <strong>AptListener operáciu okamžite zablokuje</strong>.</p>
+            
+            <p><em>Príklad:</em> Ak máte nainštalovaný <code>pandas</code> (ktorý vyžaduje <code>numpy</code>) a pokúsite sa samostatne odinštalovať <code>numpy</code>, systém vyhodí červenú chybovú hlášku a akciu zruší:</p>
+            
+            <div class="alert" style="border-left-color: #e74c3c; background-color: #fdf2f0;">
+                <code>❌ Nemožno odinštalovať 'numpy', pretože ho vyžadujú: pandas</code>
+            </div>
+
+            <h3>2. Samooprava pre inštalácie mimo aplikácie (Self-Healing)</h3>
+            <p>Čo sa stane, ak otvoríte klasický systémový príkazový riadok (CMD) a nainštalujete balíček ručne cez <code>pip install nieco</code> mimo VenvHubu?</p>
+            
+            <ol>
+                <li>VenvHub pri najbližšej analýze (alebo spustení `autoremove`) zistí, že sa v prostredí nachádza nový balíček, ktorý nie je zapísaný v `requirements.txt` ani v stave.</li>
+                <li>Namiesto toho, aby ho systém považoval za "osirelú závislosť" a zmazal ho, zakročí algoritmus <strong>Samoopravy (Self-Healing)</strong>.</li>
+                <li>Systém pochopí, že išlo o váš ručný zásah, automaticky označí tento balíček ako **explicitný (vlastný)** a uloží ho do `venvhub_apt_state.json`.</li>
+            </ol>
+
+            <div class="tip">
+                <strong>Thread-Safety (Ochrana proti kolíziám):</strong> Celá logika APT systému je zabezpečená pomocou reentrantných zámkov (<code>threading.RLock</code>) samostatne pre každé virtuálne prostredie. Môžete tak bezpečne vykonávať viaceré asynchrónne operácie naraz bez rizika poškodenia stavového súboru.
+            </div>
         </div>
 
     </div>
