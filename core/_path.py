@@ -203,15 +203,34 @@ class Paths:
             return temp_dir
 
     # =========================================================================
-    # --- NOVÉ: CESTA PRE LOGY O PÁDOCH ---
+    # --- OPRAVA: CESTA PRE LOGY O PÁDOCH (BEZPEČNÁ AJ PRE NSIS / PROGRAM FILES) ---
     # =========================================================================
     @staticmethod
     def get_errors_dir() -> str:
-        """Vráti cestu k zložke s chybovými logmi aplikácie (core/errors)."""
-        error_dir = os.path.join(Paths.get_base_path(), "core", Paths.ERRORS_DIR_NAME)
-        if not os.path.exists(error_dir):
-            try: 
-                os.makedirs(error_dir, exist_ok=True)
-            except OSError: 
+        """
+        Vráti cestu k zložke s chybovými logmi aplikácie.
+        V portable/dev režime ukladá vedľa aplikácie (errors/).
+        V inštalovanom režime (Program Files) ukladá do %APPDATA%\\VenvHubPro\\errors,
+        čím predchádza PermissionError pri behu bez administrátora.
+        """
+        exe_dir = Paths.get_app_root_path()
+        portable_marker = os.path.join(exe_dir, Paths.PORTABLE_MARKER_FILENAME)
+        
+        # 1. Portable alebo dev režim -> priamo do koreňa aplikácie
+        if os.path.exists(portable_marker) or not getattr(sys, 'frozen', False):
+            path_to_create = os.path.join(exe_dir, Paths.ERRORS_DIR_NAME)
+        else:
+            # 2. Inštalovaný NSIS režim -> do používateľského AppData
+            try:
+                appdata_path = os.environ.get('APPDATA', os.path.expanduser('~\\AppData\\Roaming'))
+                path_to_create = os.path.join(appdata_path, Paths.APP_DATA_DIR_NAME, Paths.ERRORS_DIR_NAME)
+            except Exception:
+                path_to_create = os.path.join(exe_dir, Paths.ERRORS_DIR_NAME)
+
+        if not os.path.exists(path_to_create):
+            try:
+                os.makedirs(path_to_create, exist_ok=True)
+            except OSError:
                 pass
-        return error_dir
+                
+        return path_to_create
