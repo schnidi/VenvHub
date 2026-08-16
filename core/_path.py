@@ -33,6 +33,7 @@ class Paths:
     ASSETS_DIR_NAME = "assets"
     PYTHON_VERSIONS_JSONL_NAME = "jso_python_ver.jsonl"
     AUTOSTART_DIR_NAME = "autostart_multi" # <--- NOVÉ
+    ERRORS_DIR_NAME = "errors"             # <--- NOVÉ: Priečinok pre pády (crash logy)
 
     @staticmethod
     def get_base_path() -> str:
@@ -200,3 +201,17 @@ class Paths:
             temp_dir = os.path.join(exe_dir, "Downloads")
             os.makedirs(temp_dir, exist_ok=True)
             return temp_dir
+
+    # =========================================================================
+    # --- NOVÉ: CESTA PRE LOGY O PÁDOCH ---
+    # =========================================================================
+    @staticmethod
+    def get_errors_dir() -> str:
+        """Vráti cestu k zložke s chybovými logmi aplikácie (core/errors)."""
+        error_dir = os.path.join(Paths.get_base_path(), "core", Paths.ERRORS_DIR_NAME)
+        if not os.path.exists(error_dir):
+            try: 
+                os.makedirs(error_dir, exist_ok=True)
+            except OSError: 
+                pass
+        return error_dir

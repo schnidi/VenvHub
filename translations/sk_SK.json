@@ -773,7 +773,8 @@
     "apt_all_installed": "✅ [APT] Všetky požadované balíčky sú prítomné.",
     "apt_installing_missing": "🚀 [APT] Doinštalovávam chýbajúce balíčky: {0}",
 
-    "msg_create_install_tools": "Step 4: Inštalujem základné nástroje (setuptools, wheel)..."
+    "msg_create_install_tools": "Step 4: Inštalujem základné nástroje (setuptools, wheel)...",
+    "apt_err_cannot_verify_deps": "❌ Nemožno overiť závislosti pre '{0}' (zlyhalo zistenie stavu prostredia) — odinštalovanie bolo zastavené. Skúste to znova."
     
 
 }
