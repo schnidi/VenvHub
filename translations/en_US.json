@@ -780,7 +780,6 @@
     "apt_removing": "🗑️ [APT] Autoremove: Removing orphan dependencies: {0}",
     "apt_err": "❌ [APT] Error during uninstallation: {0}",
 
-    "msg_create_install_tools": "Step 4: Installing basic tools (setuptools, wheel)...",
-    "apt_err_cannot_verify_deps": "❌ Cannot verify dependencies for '{0}' (failed to determine environment state) — uninstall was stopped. Please try again."
+    "msg_create_install_tools": "Step 4: Installing basic tools (setuptools, wheel)..."
 
 }

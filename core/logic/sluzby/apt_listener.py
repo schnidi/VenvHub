@@ -63,21 +63,6 @@ class AptListener:
                     pkgs_to_uninstall = AptListener._extract_packages_from_uninstall_cmd(worker.cmd)
                     for pkg in pkgs_to_uninstall:
                         deps = AptLogic.is_package_required_by_others(worker.venv_path, core, pkg)
-                        # BUGFIX (fail-safe doplnok k BUG-03): deps == None znamená,
-                        # že sa nepodarilo spoľahlivo zistiť závislosti (zlyhal PIP
-                        # graf), nie že balíček nikto nevyžaduje. Musí sa zablokovať
-                        # rovnako ako pri potvrdených dependentoch, ale s hlásením
-                        # o neistote namiesto zoznamu (ktorý v tomto prípade nemáme).
-                        if deps is None:
-                            msg = LanguageManager.get(
-                                "apt_err_cannot_verify_deps",
-                                "❌ Nemožno overiť závislosti pre '{0}' (zlyhalo zistenie stavu prostredia) — odinštalovanie bolo zastavené. Skúste to znova."
-                            ).format(pkg)
-                            log_widget.append(msg)
-                            worker.success = False
-                            if hasattr(worker, 'signals'):
-                                worker.signals.finished.emit()
-                            return
                         if deps:
                             msg = LanguageManager.get(
                                 "apt_err_cannot_uninstall",
@@ -94,27 +79,16 @@ class AptListener:
                 
                 uninstalled_pkgs = AptListener._extract_packages_from_uninstall_cmd(worker.cmd) if is_uninstall else []
                 installed_pkgs = AptListener._extract_packages_from_install_cmd(worker.cmd) if "install" in cmd_lower else []
-                # BUGFIX (BUG-06): pri upgrade potrebujeme vedieť, ktoré balíčky sa upgradujú,
-                # aby sme (nižšie) pred spustením samotného upgrade príkazu zachytili ich
-                # PÔVODNÉ (staré) Requires:. Bez toho by released_reqs pri upgrade ostal
-                # vždy prázdny a autoremove by uvoľnené staré závislosti mylne self-healol
-                # ako manuálne namiesto ich zmazania.
-                upgraded_pkgs = installed_pkgs if is_upgrade else []
             else:
                 is_uninstall = False
                 is_upgrade = True
                 is_req_install = False
                 uninstalled_pkgs = []
                 installed_pkgs = []
-                upgraded_pkgs = []
 
             should_autoremove = is_uninstall or is_upgrade
             released_reqs = []
-            # BUGFIX (BUG-06): released_reqs sa teraz počíta nielen z odinštalovaných
-            # balíčkov, ale aj z upgradovaných balíčkov - ich Requires: sa musí zistiť
-            # TU, kým je vo venve ešte stará (pred-upgradová) verzia, keďže
-            # orig_run_pip_task nižšie tento príkaz ešte len spustí.
-            for pkg in uninstalled_pkgs + upgraded_pkgs:
+            for pkg in uninstalled_pkgs:
                 released_reqs.extend(AptLogic.get_requires_for_package(worker.venv_path, pkg, core.package_manager))
 
             def apt_callback():
@@ -149,20 +123,6 @@ class AptListener:
                 pkgs_to_uninstall = AptListener._extract_packages_from_uninstall_cmd(full_command)
                 for pkg in pkgs_to_uninstall:
                     deps = AptLogic.is_package_required_by_others(self.venv_path, core, pkg)
-                    # BUGFIX (fail-safe doplnok k BUG-03): deps == None znamená,
-                    # že sa nepodarilo spoľahlivo zistiť závislosti (zlyhal PIP
-                    # graf), nie že balíček nikto nevyžaduje. Musí sa zablokovať
-                    # rovnako ako pri potvrdených dependentoch, ale s hlásením
-                    # o neistote namiesto zoznamu (ktorý v tomto prípade nemáme).
-                    if deps is None:
-                        msg = LanguageManager.get(
-                            "apt_err_cannot_verify_deps",
-                            "❌ Nemožno overiť závislosti pre '{0}' (zlyhalo zistenie stavu prostredia) — odinštalovanie bolo zastavené. Skúste to znova."
-                        ).format(pkg)
-                        self.log(msg)
-                        from PyQt6.QtWidgets import QMessageBox
-                        QMessageBox.warning(self, "Chyba", msg)
-                        return
                     if deps:
                         msg = LanguageManager.get(
                             "apt_err_cannot_uninstall",
@@ -177,26 +137,10 @@ class AptListener:
             should_autoremove = is_uninstall or is_upgrade
 
             uninstalled_pkgs = AptListener._extract_packages_from_uninstall_cmd(full_command) if is_uninstall else []
-            # BUGFIX (BUG-05): predtým sa tu kontrolovalo "install" in full_command
-            # (case-sensitive), zatiaľ čo is_uninstall/is_upgrade vyššie používajú
-            # cmd_lower. Pri inom caseu príkazu (napr. "Install") by installed_pkgs
-            # ostal prázdny, balíček by sa nikdy neoznačil ako explicitný a
-            # (keďže z installed_pkgs sa odvodzuje aj upgraded_pkgs pre BUG-06 fix)
-            # released_reqs pri upgrade by tiež ostal prázdny.
-            installed_pkgs = AptListener._extract_packages_from_install_cmd(full_command) if "install" in cmd_lower else []
-            # BUGFIX (BUG-06): pri upgrade potrebujeme vedieť, ktoré balíčky sa upgradujú,
-            # aby sme (nižšie) pred spustením samotného upgrade príkazu zachytili ich
-            # PÔVODNÉ (staré) Requires:. Bez toho by released_reqs pri upgrade ostal
-            # vždy prázdny a autoremove by uvoľnené staré závislosti mylne self-healol
-            # ako manuálne namiesto ich zmazania.
-            upgraded_pkgs = installed_pkgs if is_upgrade else []
+            installed_pkgs = AptListener._extract_packages_from_install_cmd(full_command) if "install" in full_command else []
 
             released_reqs = []
-            # BUGFIX (BUG-06): released_reqs sa teraz počíta nielen z odinštalovaných
-            # balíčkov, ale aj z upgradovaných balíčkov - ich Requires: sa musí zistiť
-            # TU, kým je vo venve ešte stará (pred-upgradová) verzia, keďže
-            # orig_run_pip_command nižšie tento príkaz ešte len spustí.
-            for pkg in uninstalled_pkgs + upgraded_pkgs:
+            for pkg in uninstalled_pkgs:
                 released_reqs.extend(AptLogic.get_requires_for_package(self.venv_path, pkg, core.package_manager))
 
             orig_run_pip_command(self, full_command, start_message)
@@ -253,19 +197,6 @@ class AptListener:
 
         def patched_run(self):
             deps = AptLogic.is_package_required_by_others(self.venv_path, core, self.package_name)
-            # BUGFIX (fail-safe doplnok k BUG-03): deps == None znamená, že sa
-            # nepodarilo spoľahlivo zistiť závislosti (zlyhal PIP graf), nie že
-            # balíček nikto nevyžaduje. Musí sa zablokovať rovnako ako pri
-            # potvrdených dependentoch, ale s hlásením o neistote namiesto
-            # zoznamu (ktorý v tomto prípade nemáme).
-            if deps is None:
-                msg = LanguageManager.get(
-                    "apt_err_cannot_verify_deps",
-                    "❌ Nemožno overiť závislosti pre '{0}' (zlyhalo zistenie stavu prostredia) — odinštalovanie bolo zastavené. Skúste to znova."
-                ).format(self.package_name)
-                self.log_msg.emit(msg)
-                self.finished.emit(False)
-                return
             if deps:
                 msg = LanguageManager.get(
                     "apt_err_cannot_uninstall",

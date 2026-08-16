@@ -17,17 +17,6 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 
-# =========================================================================
-# NOVÉ: AKTIVÁCIA GLOBÁLNEHO ODCHYTÁVANIA TVRDÝCH PÁDOV (CRASH LOGGER)
-# =========================================================================
-try:
-    from core.errors.crash_logger import CrashLogger
-    CrashLogger.setup()
-except Exception as e:
-    print(f"Nepodarilo sa naštartovať CrashLogger: {e}")
-# =========================================================================
-
-
 """
 Most medzi PyQt6 a PySide6 (autodetekcia frameworku).
 Zachytáva všetky importy Qt modulov a prekladá ich za chodu.
@@ -136,8 +125,7 @@ def main():
     Spustenie skupín nastavených pre automatický štart (Autostart).
     """
     AutostartBooter.run_autostart_groups(core)
-
-       
+    
     exit_code = app.exec()
     
     core.last_pos = widget.get_position()

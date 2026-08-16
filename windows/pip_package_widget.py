@@ -105,30 +105,25 @@ class PipPackageWidget(QWidget):
         self.log(start_message)
         self.set_buttons_enabled(False)
 
-        thread = QThread()
-        worker = PipCommandWorker(self.venv_path, full_command, self._get_manager_type())
-        worker.moveToThread(thread)
+        self.thread = QThread()
+        self.worker = PipCommandWorker(self.venv_path, full_command, self._get_manager_type())
+        self.worker.moveToThread(self.thread)
 
-        self.thread = thread
-        self.worker = worker
+        self.worker.output_line.connect(self.log) 
+        self.worker.finished.connect(self.on_command_finished)
+        self.worker.error.connect(self.on_command_error)
+        self.thread.started.connect(self.worker.run)
 
-        worker.output_line.connect(self.log)
-        worker.finished.connect(lambda exit_code, t=thread: self.on_command_finished(exit_code, t))
-        worker.error.connect(self.on_command_error)
-        thread.started.connect(worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
 
-        worker.finished.connect(thread.quit)
-        worker.finished.connect(worker.deleteLater)
-        thread.finished.connect(thread.deleteLater)
+        self.thread.start()
 
-        thread.start()
-
-    def on_command_finished(self, exit_code, thread=None):
-        
-        target_thread = thread if thread is not None else self.thread
-        if target_thread and target_thread.isRunning():
-            target_thread.quit()
-            target_thread.wait(5000)
+    def on_command_finished(self, exit_code):
+        if self.thread and self.thread.isRunning():
+            self.thread.quit()
+            self.thread.wait(5000)
         
         if exit_code == 0:
             msg_success = LanguageManager.get("msg_op_success", "--- Operácia úspešne dokončená ---")

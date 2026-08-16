@@ -139,15 +139,12 @@ class AptLogic:
         """
         Skontroluje, či na danom balíčku závisia iné nainštalované balíčky (reverzné závislosti)
         A TAKTIEŽ či ho nevyžaduje niektorý z prepojených Linker balíčkov.
-
         """
         pkg_norm = AptLogic._normalize(package_name)
         dependents = []
 
         # 1. Kontrola štandardných PIP závislostí
         graph = AptLogic.get_dependency_graph(venv_path, core)
-        graph_failed = graph is None
-        graph = graph or {}
         for other_pkg, requirements in graph.items():
             if other_pkg == pkg_norm:
                 continue
@@ -181,44 +178,10 @@ class AptLogic:
             except Exception:
                 pass
 
-        # BUGFIX (fail-safe doplnok k BUG-03): ak PIP graf zlyhal a ani
-        # nezávislá Linker kontrola nič nenašla, nemôžeme spoľahlivo tvrdiť
-        # "nikto to nevyžaduje" - vrátime None namiesto [], aby volajúci kód
-        # vedel odinštalovanie zablokovať namiesto tichého povolenia.
-        if graph_failed and not dependents:
-            return None
-
         return dependents
 
     @staticmethod
     def get_requires_for_package(venv_path, pkg_name, manager_type="pip"):
-        """
-        Zistí zoznam priamych závislostí (Requires:) daného balíčka podľa výstupu
-        'pip show' (resp. ekvivalentu iného manažéra cez dispatcher).
-
-        BUGFIX (BUG-01): Návratové názvy balíčkov sa normalizujú cez
-        AptLogic._normalize() (PEP 503 - zjednotenie '-', '_', '.' na '-'),
-        namiesto pôvodného holého .lower(). Vďaka tomu sa výstup tejto metódy
-        vždy zhoduje s kľúčmi/hodnotami produkovanými v get_dependency_graph()
-        a s normalizáciou používanou v mark_as_explicit/unmark_explicit.
-        Predtým názvy ako "zope.interface" alebo "backports.zoneinfo" ostávali
-        s bodkou (napr. "zope.interface"), zatiaľ čo graf závislostí ich mal
-        normalizované na "zope-interface" - výsledný nesúlad spôsoboval, že
-        autoremove().released_tree nikdy nerozpoznal uvoľnenú závislosť ako
-        "released", self-healing ju mylne označil ako manuálnu/explicitnú a
-        autoremove ju tak natrvalo prestal vedieť odstrániť.
-
-        Args:
-            venv_path (str): Cesta k virtuálnemu prostrediu.
-            pkg_name (str): Názov balíčka, ktorého závislosti sa zisťujú.
-            manager_type (str): Typ balíčkovacieho manažéra (napr. "pip", "uv").
-
-        Returns:
-            list[str]: Zoznam priamych závislostí, normalizovaných cez
-            AptLogic._normalize(), zhodných s formátom kľúčov v
-            get_dependency_graph(). Prázdny zoznam pri chybe alebo ak balíček
-            nemá žiadne závislosti.
-        """
         reqs = []
         try:
             dispatcher = PackageManagerFactory.get_dispatcher(manager_type, venv_path)
@@ -231,7 +194,7 @@ class AptLogic:
                 if line.startswith("Requires:"):
                     val = line.replace("Requires:", "").strip()
                     if val: 
-                        reqs = [AptLogic._normalize(r) for r in val.split(",")]
+                        reqs = [r.strip().lower() for r in val.split(",")]
         except Exception: 
             pass
         return reqs
@@ -242,39 +205,7 @@ class AptLogic:
 
     @staticmethod
     def get_dependency_graph(venv_path: str, core) -> dict:
-        """
-        Načíta strom závislostí s ochranou proti kolízii procesov.
-
-        BUGFIX (BUG-03): Predtým táto metóda pri skutočnom zlyhaní (napr.
-        'pip list' vráti nenulový returncode, alebo nastane výnimka pri
-        volaní/parsovaní) vracala rovnaké {} ako pri legitímne prázdnom
-        venve. Volajúci kód (autoremove/install_sync) tak nevedel odlíšiť
-        "vo venve naozaj nič nie je" od "zisťovanie zlyhalo", a chybu ticho
-        interpretoval ako "systém je čistý" bez akéhokoľvek upozornenia.
-
-        Teraz metóda vracia:
-          - {} (prázdny dict) LEN vtedy, keď je zoznam nainštalovaných
-            balíčkov skutočne prázdny (legitímny, čistý venv),
-          - None, ak 'pip list' zlyhá (nenulový returncode) alebo nastane
-            výnimka pri získavaní/parsovaní zoznamu balíčkov - t.j. pri
-            skutočnej chybe, ktorú si volajúci kód musí vedieť rozlíšiť
-            od prázdneho výsledku a nahlásiť ju používateľovi.
-
-        BUGFIX (BUG-04): rovnako None vracia aj vtedy, keď zlyhá čo i len
-        JEDEN chunk pri volaní 'pip show' pre viac balíčkov naraz (výnimka
-        alebo nenulový returncode). Predtým sa takýto chunk tichým
-        "continue" preskočil a balíčky z neho úplne vypadli z grafu, čím
-        vznikol neúplný/nekonzistentný graf - to mohlo viesť k tomu, že
-        autoremove() na základe chýbajúcich väzieb omylom zmazal balíček,
-        ktorý bol v skutočnosti stále potrebný. Keďže čiastočný graf je pre
-        rozhodovanie o mazaní nebezpečný, zlyhanie čo i len jedného chunku
-        teraz zneplatní celý výsledok.
-
-        Returns:
-            dict | None: Graf závislostí (kľúč = normalizovaný názov
-            balíčka, hodnota = zoznam normalizovaných priamych závislostí),
-            {} pri legitímne prázdnom venve, alebo None pri zlyhaní.
-        """
+        """Načíta strom závislostí s ochranou proti kolízii procesov."""
         with AptLogic._get_venv_lock(venv_path):
             dispatcher = PackageManagerFactory.get_dispatcher(core.package_manager, venv_path)
             CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
@@ -283,10 +214,7 @@ class AptLogic:
             try:
                 list_cmd = dispatcher.get("list_json")
                 res_list = subprocess.run(list_cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW, timeout=30)
-                if res_list.returncode != 0:
-                    # BUGFIX (BUG-03): skutočné zlyhanie 'pip list' -> None, nie {}
-                    print(f"[AptLogic] 'pip list' zlyhal (kód {res_list.returncode}): {res_list.stderr.strip()}")
-                    return None
+                if res_list.returncode != 0: return {}
 
                 installed_pkgs = [item["name"] for item in json.loads(res_list.stdout)]
                 if not installed_pkgs: return {}
@@ -298,15 +226,8 @@ class AptLogic:
                     try:
                         show_cmd = dispatcher.get("show_multiple", packages=chunk)
                         res_show = subprocess.run(show_cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW, timeout=30)
-                    except Exception as chunk_err:
-                        
-                        print(f"[AptLogic] Chunk {i // chunk_size + 1} zlyhal (výnimka): {chunk_err}")
-                        return None
-
-                    if res_show.returncode != 0:
-                        
-                        print(f"[AptLogic] Chunk {i // chunk_size + 1} zlyhal (kód {res_show.returncode}): {res_show.stderr.strip()}")
-                        return None
+                    except Exception:
+                        continue
 
                     current_pkg = None
                     for line in res_show.stdout.splitlines():
@@ -322,9 +243,7 @@ class AptLogic:
                                 ]
                                 
             except Exception as e:
-                
                 print(f"[AptLogic] Chyba pri tvorbe grafu závislostí: {e}")
-                return None
 
             return graph
 
@@ -348,13 +267,6 @@ class AptLogic:
 
                 # Zistíme, čo reálne vo venv je
                 graph = AptLogic.get_dependency_graph(venv_path, core)
-                
-                if graph is None:
-                    log_callback(LanguageManager.get(
-                        "apt_err_graph_failed",
-                        "❌ [APT] Nepodarilo sa zistiť stav nainštalovaných balíčkov (zlyhalo 'pip list'). Synchronizácia bola preskočená."
-                    ))
-                    return False
                 installed_packages = set(graph.keys())
 
                 # Výpočet: čo mi chýba?
@@ -390,13 +302,6 @@ class AptLogic:
             log_callback(LanguageManager.get("apt_analyzing", "\n🔍 [APT] Analyzujem strom závislostí pre autoremove..."))
 
             graph = AptLogic.get_dependency_graph(venv_path, core)
-            
-            if graph is None:
-                log_callback(LanguageManager.get(
-                    "apt_err_graph_failed",
-                    "❌ [APT] Nepodarilo sa zistiť stav nainštalovaných balíčkov (zlyhalo 'pip list'). Autoremove bol preskočený."
-                ))
-                return False
             if not graph: return True
 
             all_installed = set(graph.keys())

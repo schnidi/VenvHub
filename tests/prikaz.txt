@@ -1,0 +1,7 @@
+pytest tests/test_requirements_parser.py
+pytest -s tests/test_pip_e_flow.py
+pytest -s tests/test_detectors_flow.py
+pytest -s tests/test_uninstall_guard_flow.py
+python -m pytest tests/test_system_listener.py -v
+python -m pytest tests/test_apt_listener.py -v
+python -m pytest tests/pip_requirements_install.py -v -s
