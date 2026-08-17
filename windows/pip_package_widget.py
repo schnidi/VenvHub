@@ -102,6 +102,10 @@ class PipPackageWidget(QWidget):
 
     # --- ZMENA: command je teraz už hotové pole [uv, pip, install...] ---
     def run_pip_command(self, full_command, start_message):
+        # POISTKA (BUG-08): Ak už nejaké vlákno beží, ignoruj nové volanie
+        if self.thread and self.thread.isRunning():
+            return
+
         self.log(start_message)
         self.set_buttons_enabled(False)
 
@@ -124,6 +128,10 @@ class PipPackageWidget(QWidget):
         if self.thread and self.thread.isRunning():
             self.thread.quit()
             self.thread.wait(5000)
+        
+        # Upratanie referencií (BUG-08)
+        self.thread = None
+        self.worker = None
         
         if exit_code == 0:
             msg_success = LanguageManager.get("msg_op_success", "--- Operácia úspešne dokončená ---")

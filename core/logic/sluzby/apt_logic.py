@@ -194,7 +194,7 @@ class AptLogic:
                 if line.startswith("Requires:"):
                     val = line.replace("Requires:", "").strip()
                     if val: 
-                        reqs = [r.strip().lower() for r in val.split(",")]
+                        reqs = [AptLogic._normalize(r) for r in val.split(",") if r.strip()]
         except Exception: 
             pass
         return reqs
@@ -204,7 +204,7 @@ class AptLogic:
     SHOW_MULTIPLE_CHUNK_SIZE = 30
 
     @staticmethod
-    def get_dependency_graph(venv_path: str, core) -> dict:
+    def get_dependency_graph(venv_path: str, core):
         """Načíta strom závislostí s ochranou proti kolízii procesov."""
         with AptLogic._get_venv_lock(venv_path):
             dispatcher = PackageManagerFactory.get_dispatcher(core.package_manager, venv_path)
@@ -214,10 +214,17 @@ class AptLogic:
             try:
                 list_cmd = dispatcher.get("list_json")
                 res_list = subprocess.run(list_cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW, timeout=30)
-                if res_list.returncode != 0: return {}
+                if res_list.returncode != 0:
+                    msg = LanguageManager.get(
+                        "apt_err_pkg_list_code",
+                        "[AptLogic] Chyba pri získavaní zoznamu balíčkov (kód {0})"
+                    ).format(res_list.returncode)
+                    print(msg)
+                    return None
 
                 installed_pkgs = [item["name"] for item in json.loads(res_list.stdout)]
-                if not installed_pkgs: return {}
+                if not installed_pkgs:
+                    return {}
 
                 chunk_size = AptLogic.SHOW_MULTIPLE_CHUNK_SIZE
 
@@ -226,8 +233,20 @@ class AptLogic:
                     try:
                         show_cmd = dispatcher.get("show_multiple", packages=chunk)
                         res_show = subprocess.run(show_cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW, timeout=30)
-                    except Exception:
-                        continue
+                        if res_show.returncode != 0:
+                            msg = LanguageManager.get(
+                                "apt_err_pkg_details_code",
+                                "[AptLogic] Chyba pri načítaní detailov balíčkov (kód {0})"
+                            ).format(res_show.returncode)
+                            print(msg)
+                            return None
+                    except Exception as e:
+                        msg = LanguageManager.get(
+                            "apt_err_pkg_details_fail",
+                            "[AptLogic] Zlyhalo načítanie detailov dávky balíčkov: {0}"
+                        ).format(e)
+                        print(msg)
+                        return None
 
                     current_pkg = None
                     for line in res_show.stdout.splitlines():
@@ -243,7 +262,12 @@ class AptLogic:
                                 ]
                                 
             except Exception as e:
-                print(f"[AptLogic] Chyba pri tvorbe grafu závislostí: {e}")
+                msg = LanguageManager.get(
+                    "apt_err_graph",
+                    "[AptLogic] Chyba pri tvorbe grafu závislostí: {0}"
+                ).format(e)
+                print(msg)
+                return None
 
             return graph
 
@@ -267,6 +291,10 @@ class AptLogic:
 
                 # Zistíme, čo reálne vo venv je
                 graph = AptLogic.get_dependency_graph(venv_path, core)
+                if graph is None:
+                    log_callback(LanguageManager.get("apt_err_graph_failed", "❌ [APT] Zlyhalo načítanie zoznamu balíčkov."))
+                    return False
+
                 installed_packages = set(graph.keys())
 
                 # Výpočet: čo mi chýba?
@@ -302,7 +330,13 @@ class AptLogic:
             log_callback(LanguageManager.get("apt_analyzing", "\n🔍 [APT] Analyzujem strom závislostí pre autoremove..."))
 
             graph = AptLogic.get_dependency_graph(venv_path, core)
-            if not graph: return True
+            if graph is None:
+                log_callback(LanguageManager.get("apt_err_graph_failed", "❌ [APT] Zlyhalo načítanie zoznamu balíčkov."))
+                return False
+
+            if not graph:
+                log_callback(LanguageManager.get("apt_clean", "✅ [APT] Systém je čistý. Žiadne osirelé balíčky."))
+                return True
 
             all_installed = set(graph.keys())
             state_explicit = AptLogic.load_explicit_list(venv_path)

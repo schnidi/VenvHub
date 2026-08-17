@@ -780,6 +780,12 @@
     "apt_removing": "🗑️ [APT] Autoremove: Removing orphan dependencies: {0}",
     "apt_err": "❌ [APT] Error during uninstallation: {0}",
 
-    "msg_create_install_tools": "Step 4: Installing basic tools (setuptools, wheel)..."
+    "msg_create_install_tools": "Step 4: Installing basic tools (setuptools, wheel)...",
+    "apt_err_pkg_details_code": "[APT] Error loading package details (code {0})",
+    "apt_err_pkg_details_fail": "[APT] Failed to load package batch details: {0}",
+
+    "apt_err_graph_failed": "❌ [APT] Failed to load package list.",
+    "apt_err_pkg_list_code": "[APT] Error retrieving package list (code {0})",
+    "apt_err_graph": "[APT] Error building dependency graph: {0}"
 
 }

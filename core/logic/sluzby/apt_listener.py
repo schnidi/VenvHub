@@ -79,16 +79,20 @@ class AptListener:
                 
                 uninstalled_pkgs = AptListener._extract_packages_from_uninstall_cmd(worker.cmd) if is_uninstall else []
                 installed_pkgs = AptListener._extract_packages_from_install_cmd(worker.cmd) if "install" in cmd_lower else []
+                upgraded_pkgs = installed_pkgs if is_upgrade else []
             else:
                 is_uninstall = False
                 is_upgrade = True
                 is_req_install = False
                 uninstalled_pkgs = []
                 installed_pkgs = []
+                upgraded_pkgs = []
 
             should_autoremove = is_uninstall or is_upgrade
             released_reqs = []
             for pkg in uninstalled_pkgs:
+                released_reqs.extend(AptLogic.get_requires_for_package(worker.venv_path, pkg, core.package_manager))
+            for pkg in upgraded_pkgs:
                 released_reqs.extend(AptLogic.get_requires_for_package(worker.venv_path, pkg, core.package_manager))
 
             def apt_callback():
@@ -137,10 +141,13 @@ class AptListener:
             should_autoremove = is_uninstall or is_upgrade
 
             uninstalled_pkgs = AptListener._extract_packages_from_uninstall_cmd(full_command) if is_uninstall else []
-            installed_pkgs = AptListener._extract_packages_from_install_cmd(full_command) if "install" in full_command else []
+            installed_pkgs = AptListener._extract_packages_from_install_cmd(full_command) if "install" in cmd_lower else []
+            upgraded_pkgs = installed_pkgs if is_upgrade else []
 
             released_reqs = []
             for pkg in uninstalled_pkgs:
+                released_reqs.extend(AptLogic.get_requires_for_package(self.venv_path, pkg, core.package_manager))
+            for pkg in upgraded_pkgs:
                 released_reqs.extend(AptLogic.get_requires_for_package(self.venv_path, pkg, core.package_manager))
 
             orig_run_pip_command(self, full_command, start_message)

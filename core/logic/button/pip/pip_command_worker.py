@@ -47,6 +47,8 @@ class PipCommandWorker(QObject):
 
             process.wait()
 
+            final_returncode = process.returncode
+
             if process.returncode == 0:
                 # --- KONTROLA ZÁVISLOSTÍ PRE UV VETVU ---
                 if self.manager_type == "uv":
@@ -84,16 +86,20 @@ class PipCommandWorker(QObject):
                                     self.output_line.emit(LanguageManager.get("uv_fix_ok", "✅ Všetky konflikty boli úspešne vyriešené."))
                                 else:
                                     self.output_line.emit(LanguageManager.get("uv_fix_fail_check_log", "⚠️ Nepodarilo sa vyriešiť všetky konflikty. Skontrolujte log."))
+                                    final_returncode = 1
                             else:
                                 self.output_line.emit(LanguageManager.get("uv_fix_error_manual", "⚠️ Automatická oprava zlyhala. Opravte závislosti manuálne."))
+                                final_returncode = fix_proc.returncode if fix_proc.returncode != 0 else 1
                         else:
                             self.output_line.emit(LanguageManager.get("uv_parse_error_worker", "⚠️ Boli nájdené problémy so závislosťami, ale aplikácia ich nedokázala automaticky vyparsovať."))
+                            final_returncode = 1
                     else:
                         self.output_line.emit(LanguageManager.get("uv_compatible", "✅ Všetky závislosti sú kompatibilné."))
 
-                BirthCertificateGenerator.update_venv_certificate(self.venv_path)
+                if final_returncode == 0:
+                    BirthCertificateGenerator.update_venv_certificate(self.venv_path)
             
-            self.finished.emit(process.returncode)
+            self.finished.emit(final_returncode)
 
         except Exception as e:
             err_msg = LanguageManager.get("pip_worker_err_critical", "Nastala kritická chyba pri spúšťaní príkazu: {error}").format(error=e)
