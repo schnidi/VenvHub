@@ -59,7 +59,7 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <h2>VenvHub Pro</h2>
-            <span>Užívateľský Manuál v2.5.14</span>
+            <span>Užívateľský Manuál v2.5.26</span>
         </div>
         <div class="nav-links">
             <!-- AKTÍVNA HLAVNÁ KAPITOLA -->
@@ -89,7 +89,7 @@
         <div class="hero">
             <h1>VenvHub Pro</h1>
             <p>Ultimátny nástroj pre vývojárov na správu, orchestráciu a distribúciu Python aplikácií.</p>
-            <div class="version">Verzia v2.5.14 | Vytvorila: Seal and Lube, spol. s r.o.</div>
+            <div class="version">Verzia v2.5.26 | Vytvorila: Seal and Lube, spol. s r.o.</div>
         </div>
 
         <div class="section-box" style="padding-bottom: 20px;">
@@ -105,16 +105,34 @@
                 <p>Koniec neporiadku v kóde! VenvHub Pro <strong>fyzicky oddeľuje váš zdrojový kód od virtuálnych prostredí</strong>. Vaše projekty zostávajú čisté, zatiaľ čo všetky Venvs sú centrálne spravované v dedikovanom <em>Venv Hub</em> priečinku. Ak zmažete Venv, kód je v bezpečí.</p>
             </div>
 
-            <!-- VS Code -->
+            <!-- VS Code & Meta Sync -->
             <div class="feature-card">
-                <h3>💻 Izolované VS Code Profily</h3>
-                <p>Otvorte VS Code a IntelliSense okamžite funguje. VenvHub ticho synchronizuje <code>settings.json</code>, priraďuje Venv, Tasks aj Keybindings. <strong>Navyše ponúka plne izolované užívateľské profily</strong> – každý vývojár alebo projekt môže mať oddelené vlastné rozšírenia a nastavenia editora.</p>
+                <h3>💻 VS Code Integrácia & Meta-Sync</h3>
+                <p>Otvorte VS Code a IntelliSense okamžite funguje. VenvHub synchronizuje <code>settings.json</code> a priraďuje Venv. Cez funkciu <strong>Meta-Sync</strong> naviac prečítalo <code>local_meta.json</code> a automaticky zapíše preddefinované VS Code Tasky a klávesové skratky priamo do projektu.</p>
             </div>
 
             <!-- Pip Manager -->
             <div class="feature-card">
                 <h3>📦 Dual-Scan Pip & UV Autopilot</h3>
                 <p>Extrémne rýchly správca balíčkov. Používa paralelný scan pre detekciu zastaraných knižníc. <strong>Revolučná funkcia:</strong> Pri použití inštalátora <code>uv</code> dokáže VenvHub po aktualizácii vykonať hĺbkovú kontrolu (Check) a <strong>automaticky opraviť konflikty závislostí (Auto-Fix)</strong> presným downgradom poškodených balíčkov.</p>
+            </div>
+
+            <!-- Smart Klonovanie (Z manager.html 3.5) -->
+            <div class="feature-card">
+                <h3>🐑 Smart Klonovací Engine</h3>
+                <p>Klonovanie Venvu nevytvára slepé kópie s nefunkčnými absolútnymi cestami. Vykonáva <strong>5-krokovú reprodukčnú rekonštrukciu</strong>: zistí závislosti, vytvorí čistý Venv, znova nainštaluje balíčky vrátane editovateľných (<code>pip -e</code>) a prenesie bootstrap súbory pre lokálne balíčky.</p>
+            </div>
+
+            <!-- Venv Validator (Z manager.html 3.6) -->
+            <div class="feature-card">
+                <h3>🔍 Venv Validator & Diagnostika</h3>
+                <p>Systém neustále kontroluje integritu súboru <code>pyvenv.cfg</code>. Ak sa zmení cesta k Pythonu alebo disk, rozlíši stavy <em>FIXABLE</em> a <em>INCOMPATIBLE</em> a umožní automatickú opravu prostredia bez straty nainštalovaných balíčkov.</p>
+            </div>
+
+            <!-- Process Registry & Execution (Z manager.html 3.3) -->
+            <div class="feature-card">
+                <h3>⚡ Dočasný execution engine & Kill Tree</h3>
+                <p>Spúšťanie skriptov cez dočasné <code>.bat</code> súbory predchádza chybám v cestách s medzerami. Interný <strong>Process Registry</strong> eviduje všetky PID vrátane podprocesov a pri zastavení vykoná čistý <em>Kill Tree</em> celej rodiny procesov.</p>
             </div>
 
             <!-- Kontajner -->
@@ -183,10 +201,28 @@
                             <td class="highlight-col"><span class="check">Áno (Hardware ID Hashing)</span></td>
                         </tr>
                         <tr>
+                            <td>Smart Klonovanie prostredí (5-kroková rekonštrukcia)</td>
+                            <td><span class="cross">Nie (Slepé kopírovanie rozbije cesty)</span></td>
+                            <td><span class="cross">Nie</span></td>
+                            <td class="highlight-col"><span class="check">Áno (So zachovaním pip -e a hookov)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Diagnostika pyvenv.cfg a autodetekcia neplatných ciest</td>
+                            <td><span class="cross">Nie</span></td>
+                            <td><span class="cross">Nie</span></td>
+                            <td class="highlight-col"><span class="check">Áno (Venv Validator)</span></td>
+                        </tr>
+                        <tr>
                             <td>Izolované Používateľské Profily Editora</td>
                             <td><span class="cross">Nie</span></td>
                             <td><span class="cross">Nie (Iba globálne/workspace)</span></td>
                             <td class="highlight-col"><span class="check">Áno (Vlastné extensions a data)</span></td>
+                        </tr>
+                        <tr>
+                            <td>VS Code Meta-Sync (Injekcia Taskov a Skratiek)</td>
+                            <td><span class="cross">Nie</span></td>
+                            <td><span class="cross">Nie</span></td>
+                            <td class="highlight-col"><span class="check">Áno (cez local_meta.json)</span></td>
                         </tr>
                         <tr>
                             <td>Orchestrácia, Kotva a Auto-Respawn po páde</td>

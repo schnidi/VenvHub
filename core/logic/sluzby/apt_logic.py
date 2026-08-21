@@ -62,26 +62,39 @@ class AptLogic:
         return os.path.join(venv_path, site_folder, "site-packages", "venvhub_apt_state.json")
 
     @staticmethod
+    def _load_state_data(venv_path: str) -> dict:
+        state_file = AptLogic._get_state_file(venv_path)
+        if os.path.exists(state_file):
+            try:
+                with open(state_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        return {}
+
+    @staticmethod
+    def _save_state_data(venv_path: str, data: dict):
+        state_file = AptLogic._get_state_file(venv_path)
+        try:
+            with open(state_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=4)
+        except Exception:
+            pass
+
+    @staticmethod
     def load_explicit_list(venv_path: str) -> set:
         """Bezpečné načítanie explicitného zoznamu."""
         with AptLogic._get_venv_lock(venv_path):
-            state_file = AptLogic._get_state_file(venv_path)
-            if os.path.exists(state_file):
-                try:
-                    with open(state_file, 'r', encoding='utf-8') as f:
-                        return set(json.load(f).get("explicit", []))
-                except Exception: pass
-            return set()
+            data = AptLogic._load_state_data(venv_path)
+            return set(data.get("explicit", []))
 
     @staticmethod
     def save_explicit_list(venv_path: str, explicit_set: set):
         """Bezpečný zápis explicitného zoznamu."""
         with AptLogic._get_venv_lock(venv_path):
-            state_file = AptLogic._get_state_file(venv_path)
-            try:
-                with open(state_file, 'w', encoding='utf-8') as f:
-                    json.dump({"explicit": list(explicit_set)}, f, indent=4)
-            except Exception: pass
+            data = AptLogic._load_state_data(venv_path)
+            data["explicit"] = list(explicit_set)
+            AptLogic._save_state_data(venv_path, data)
 
     @staticmethod
     def mark_as_explicit(venv_path: str, package_name: str):
@@ -102,14 +115,13 @@ class AptLogic:
                 AptLogic.save_explicit_list(venv_path, explicit)
 
     # =========================================================================
-    # --- METÓDY PRE ANALÝZU ZÁVISLOSTÍ (PRESUNUTÉ Z APT LISTENER) ---
+    # --- METÓDY PRE ANALÝZU ZÁVISLOSTÍ ---
     # =========================================================================
 
     @staticmethod
     def get_editable_packages(venv_path):
         """
-        Získa zoznam -e balíčkov vo forme JSON (list slovníkov) priamo z venvu.
-        Vráti napr.: [{"name": "moj-balicek", "version": "0.1.0", "editable_project_location": "C:/Cesta"}]
+        Získa zoznam -e balíčkov vo forme JSON priamo z venvu.
         """
         python_exe = Paths.get_venv_python_exe_path(venv_path)
         if not os.path.exists(python_exe):
@@ -145,11 +157,12 @@ class AptLogic:
 
         # 1. Kontrola štandardných PIP závislostí
         graph = AptLogic.get_dependency_graph(venv_path, core)
-        for other_pkg, requirements in graph.items():
-            if other_pkg == pkg_norm:
-                continue
-            if pkg_norm in requirements:
-                dependents.append(other_pkg)
+        if graph:
+            for other_pkg, requirements in graph.items():
+                if other_pkg == pkg_norm:
+                    continue
+                if pkg_norm in requirements:
+                    dependents.append(other_pkg)
 
         # 2. Kontrola VenvHub Linker závislostí (venvhub.json -> local_meta.json)
         site_folder = "Lib" if os.name == 'nt' else "lib"
@@ -195,6 +208,22 @@ class AptLogic:
                     val = line.replace("Requires:", "").strip()
                     if val: 
                         reqs = [AptLogic._normalize(r) for r in val.split(",") if r.strip()]
+
+            # >>> ZMENA: Robustnejšie zistenie závislostí pre pip -e (fallback pri zámene pomlčiek a podčiarkovníkov)
+            if not reqs and ("-" in pkg_name or "_" in pkg_name):
+                alt_name = pkg_name.replace("-", "_") if "-" in pkg_name else pkg_name.replace("_", "-")
+                try:
+                    alt_cmd = dispatcher.get("show", package_name=alt_name)
+                    alt_res = subprocess.run(alt_cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW)
+                    for line in alt_res.stdout.splitlines():
+                        if line.startswith("Requires:"):
+                            val = line.replace("Requires:", "").strip()
+                            if val:
+                                reqs = [AptLogic._normalize(r) for r in val.split(",") if r.strip()]
+                except Exception:
+                    pass
+            # <<< KONIEC ZMENY
+
         except Exception: 
             pass
         return reqs
@@ -215,11 +244,6 @@ class AptLogic:
                 list_cmd = dispatcher.get("list_json")
                 res_list = subprocess.run(list_cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW, timeout=30)
                 if res_list.returncode != 0:
-                    msg = LanguageManager.get(
-                        "apt_err_pkg_list_code",
-                        "[AptLogic] Chyba pri získavaní zoznamu balíčkov (kód {0})"
-                    ).format(res_list.returncode)
-                    print(msg)
                     return None
 
                 installed_pkgs = [item["name"] for item in json.loads(res_list.stdout)]
@@ -234,18 +258,8 @@ class AptLogic:
                         show_cmd = dispatcher.get("show_multiple", packages=chunk)
                         res_show = subprocess.run(show_cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW, timeout=30)
                         if res_show.returncode != 0:
-                            msg = LanguageManager.get(
-                                "apt_err_pkg_details_code",
-                                "[AptLogic] Chyba pri načítaní detailov balíčkov (kód {0})"
-                            ).format(res_show.returncode)
-                            print(msg)
                             return None
-                    except Exception as e:
-                        msg = LanguageManager.get(
-                            "apt_err_pkg_details_fail",
-                            "[AptLogic] Zlyhalo načítanie detailov dávky balíčkov: {0}"
-                        ).format(e)
-                        print(msg)
+                    except Exception:
                         return None
 
                     current_pkg = None
@@ -261,33 +275,43 @@ class AptLogic:
                                     for r in reqs.split(",") if r.strip()
                                 ]
                                 
-            except Exception as e:
-                msg = LanguageManager.get(
-                    "apt_err_graph",
-                    "[AptLogic] Chyba pri tvorbe grafu závislostí: {0}"
-                ).format(e)
-                print(msg)
+            except Exception:
                 return None
 
             return graph
 
     # =========================================================================
-    # --- SYNCHRONIZÁCIA (INSTALL MISSING) ---
+    # --- SYNCHRONIZÁCIA (INSTALL MISSING & PRUNE REMOVED) ---
     # =========================================================================
     @staticmethod
     def install_sync(core, venv_path: str, log_callback) -> bool:
-        """Skontroluje všetky requirements (vrátane vnorených) a doinštaluje chýbajúce."""
+        """
+        1. Analyzuje všetky requirements (vrátane -r vnorených súborov).
+        2. Zistí balíčky, ktoré boli zo súborov odstránené / zakomentované.
+        3. Doinštaluje chýbajúce balíčky.
+        4. Automaticky odstráni osirelé balíčky, ktoré vypadli zo súborov.
+        """
         with AptLogic._get_venv_lock(venv_path):
-            log_callback(LanguageManager.get("apt_checking_missing", "\n📦 [APT] Kontrolujem chýbajúce balíčky podľa requirements..."))
+            log_callback(LanguageManager.get("apt_checking_missing", "\n📦 [APT] Kontrolujem zmeny v requirements..."))
 
             try:
                 project_path = Paths.get_project_path(core.projects_root, core.active_project)
                 req_file = Paths.get_requirements_txt_path(project_path)
                 
-                # Získame kompletný zoznam "zo súborov"
-                wanted_packages = RequirementsParser.parse(req_file)
-                if not wanted_packages:
-                    return True
+                # Získame kompletný aktuálny zoznam zo všetkých súborov (rekurzívne)
+                raw_wanted = RequirementsParser.parse(req_file) if os.path.exists(req_file) else set()
+                wanted_packages = {AptLogic._normalize(p) for p in raw_wanted}
+
+                # Načítame predchádzajúci stav requirements pre tento venv
+                state_data = AptLogic._load_state_data(venv_path)
+                prev_reqs = set(state_data.get("requirements_cache", []))
+
+                # Čo bolo zakomentované alebo zmazané zo súborov
+                released_from_reqs = list(prev_reqs - wanted_packages)
+
+                # Aktualizujeme uložený stav requirements
+                state_data["requirements_cache"] = list(wanted_packages)
+                AptLogic._save_state_data(venv_path, state_data)
 
                 # Zistíme, čo reálne vo venv je
                 graph = AptLogic.get_dependency_graph(venv_path, core)
@@ -297,27 +321,27 @@ class AptLogic:
 
                 installed_packages = set(graph.keys())
 
-                # Výpočet: čo mi chýba?
+                # 1. Doinštalovanie chýbajúcich
                 missing = wanted_packages - installed_packages
-
-                if not missing:
+                if missing:
+                    log_callback(LanguageManager.get("apt_installing_missing", "🚀 [APT] Doinštalovávam chýbajúce balíčky: {0}").format(", ".join(missing)))
+                    dispatcher = PackageManagerFactory.get_dispatcher(core.package_manager, venv_path)
+                    install_args = dispatcher.get("install_multiple_exact", packages=list(missing))
+                    
+                    CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
+                    process = subprocess.Popen(install_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, creationflags=CREATE_NO_WINDOW)
+                    for line in process.stdout:
+                        log_callback(f"  {line.strip()}")
+                    process.wait()
+                else:
                     log_callback(LanguageManager.get("apt_all_installed", "✅ [APT] Všetky požadované balíčky sú prítomné."))
-                    return True
 
-                # Ak niečo chýba, spustíme inštaláciu
-                log_callback(LanguageManager.get("apt_installing_missing", "🚀 [APT] Doinštalovávam chýbajúce balíčky: {0}").format(", ".join(missing)))
+                # 2. Automatické odstránenie balíčkov, ktoré zo súboru vypadli (vrátane ich sirôt)
+                if released_from_reqs:
+                    log_callback(LanguageManager.get("apt_reqs_released", "ℹ️ [APT] Zo súborov boli odstránené: {0}").format(", ".join(released_from_reqs)))
                 
-                dispatcher = PackageManagerFactory.get_dispatcher(core.package_manager, venv_path)
-                install_args = dispatcher.get("install_multiple_exact", packages=list(missing))
-                
-                CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
-                process = subprocess.Popen(install_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, creationflags=CREATE_NO_WINDOW)
-                
-                for line in process.stdout:
-                    log_callback(f"  {line.strip()}")
-                
-                process.wait()
-                return process.returncode == 0
+                AptLogic.autoremove(core, venv_path, log_callback, released_packages=released_from_reqs)
+                return True
 
             except Exception as e:
                 log_callback(f"❌ [APT] Chyba pri synchronizácii inštalácie: {e}")
@@ -343,19 +367,24 @@ class AptLogic:
             explicit_roots = state_explicit.copy()
             
             # 1. Poistka: Requirements (Rekurzívne cez Parser + pip-e prepojenie)
+            parsed_reqs = set()
             try:
                 project_path = Paths.get_project_path(core.projects_root, core.active_project)
                 req_file = Paths.get_requirements_txt_path(project_path)
-                parsed_reqs = RequirementsParser.parse(req_file)
-                explicit_roots.update(parsed_reqs)
+                if os.path.exists(req_file):
+                    raw_parsed = RequirementsParser.parse(req_file)
+                    parsed_reqs = {AptLogic._normalize(p) for p in raw_parsed}
+                    explicit_roots.update(parsed_reqs)
 
-                # Overenie: Ak sa nainštalovaný -e balíček nachádza v requirements.txt, stáva sa explicitným
+                # >>> ZMENA: Podpora pre pip -e balíčky (zaradenie medzi explicitné korene bez nutnosti zápisu v requirements.txt)
                 editable_pkgs = AptLogic.get_editable_packages(venv_path)
                 for e_pkg in editable_pkgs:
                     e_name = AptLogic._normalize(e_pkg.get("name", ""))
-                    if e_name and e_name in parsed_reqs:
+                    if e_name:
                         explicit_roots.add(e_name)
-            except Exception: pass
+                # <<< KONIEC ZMENY
+            except Exception:
+                pass
 
             # 2. Poistka: Ostatné Linkery
             site_folder = "Lib" if os.name == 'nt' else "lib"
@@ -369,7 +398,8 @@ class AptLogic:
                                 with open(meta_path, 'r', encoding='utf-8') as mf:
                                     for req in json.load(mf).get("requires_pip", []):
                                         explicit_roots.add(AptLogic._normalize(req))
-                except Exception: pass
+                except Exception:
+                    pass
 
             def get_all_required(roots):
                 required = set()

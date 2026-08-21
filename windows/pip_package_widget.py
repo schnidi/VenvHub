@@ -2,13 +2,16 @@
 # Súbor: windows/pip_package_widget.py
 #----------------------------------------
 
+import os
 from PyQt6.QtWidgets import QWidget, QMessageBox
 from PyQt6 import uic
 from PyQt6.QtCore import QThread
 from core._path import Paths
 from core.logic.language_manager import LanguageManager
 from core.logic.button.pip.pip_command_worker import PipCommandWorker
-from core.logic.commands.command_factory import PackageManagerFactory # NOVÉ
+from core.logic.commands.command_factory import PackageManagerFactory
+from core.logic.sluzby.requirements_parser import RequirementsParser
+from core.logic.sluzby.apt_logic import AptLogic
 
 class PipPackageWidget(QWidget):
     def __init__(self, parent_window, venv_path):
@@ -169,11 +172,46 @@ class PipPackageWidget(QWidget):
     def on_uninstall(self):
         if not self.package_data: return
         pkg_name = self.package_data['name']
-        title = LanguageManager.get("title_confirm", "Potvrdenie")
-        msg = LanguageManager.get("msg_confirm_uninstall", "Naozaj chcete odinštalovať balíček '{0}'?").format(pkg_name)
         
-        confirm = QMessageBox.question(self, title, msg, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if confirm == QMessageBox.StandardButton.Yes:
+        # --- ZISŤOVANIE, ČI JE BALÍČEK V REQUIREMENTS.TXT ---
+        core = self.parent_window.parent().core
+        project_path = Paths.get_project_path(core.projects_root, core.active_project)
+        req_file = Paths.get_requirements_txt_path(project_path)
+        
+        is_in_requirements = False
+        if os.path.exists(req_file):
+            try:
+                # Prečítame súbor (vráti množinu normalizovaných názvov)
+                parsed_reqs = RequirementsParser.parse(req_file)
+                # Normalizujeme názov balíčka, na ktorý sme klikli (napr. Flask -> flask)
+                normalized_pkg = AptLogic._normalize(pkg_name)
+                
+                if normalized_pkg in parsed_reqs:
+                    is_in_requirements = True
+            except Exception:
+                pass
+        # ----------------------------------------------------
+
+        title = LanguageManager.get("title_confirm", "Potvrdenie")
+        
+        # Štandardný a bezpečný zápis cez LanguageManager
+        if is_in_requirements:
+            default_req_msg = (
+                "⚠️ UPOZORNENIE: Balíček '{0}' je explicitne definovaný v súbore requirements.txt!\n\n"
+                "Ak ho odinštalujete, vaše prostredie už nebude plne zodpovedať definícii projektu.\n"
+                "Naozaj chcete pokračovať?"
+            )
+            msg = LanguageManager.get("msg_confirm_uninstall_req", default_req_msg).format(pkg_name)
+        else:
+            default_msg = "Naozaj chcete odinštalovať balíček '{0}'?"
+            msg = LanguageManager.get("msg_confirm_uninstall", default_msg).format(pkg_name)
+        
+        # Dialógové okno s lokalizovanými tlačidlami Áno / Nie
+        msg_box = QMessageBox(QMessageBox.Icon.Question, title, msg, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, self)
+        msg_box.setButtonText(QMessageBox.StandardButton.Yes, LanguageManager.get("btn_yes", "Áno"))
+        msg_box.setButtonText(QMessageBox.StandardButton.No, LanguageManager.get("btn_no", "Nie"))
+        
+        if msg_box.exec() == QMessageBox.StandardButton.Yes:
             dispatcher = PackageManagerFactory.get_dispatcher(self._get_manager_type(), self.venv_path)
             full_cmd = dispatcher.get("uninstall", package_name=pkg_name)
             

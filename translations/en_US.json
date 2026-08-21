@@ -786,6 +786,11 @@
 
     "apt_err_graph_failed": "❌ [APT] Failed to load package list.",
     "apt_err_pkg_list_code": "[APT] Error retrieving package list (code {0})",
-    "apt_err_graph": "[APT] Error building dependency graph: {0}"
+    "apt_err_graph": "[APT] Error building dependency graph: {0}",
+
+    "msg_confirm_uninstall_req": "⚠️ WARNING: Package '{0}' is explicitly defined in requirements.txt!\n\nIf you uninstall it, your environment will no longer fully match the project definition.\nDo you really want to continue?",
+
+    "btn_yes": "Yes",
+    "btn_no": "No"
 
 }

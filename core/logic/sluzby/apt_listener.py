@@ -4,9 +4,14 @@
 
 import os
 import json
+import subprocess
+from core._path import Paths
 from core.logic.sluzby.apt_logic import AptLogic
 from core.logic.sluzby.requirements_parser import RequirementsParser
 from core.logic.language_manager import LanguageManager
+from core.logic.birth_certificate import BirthCertificateGenerator
+
+CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
 
 class AptListener:
     """
@@ -18,9 +23,19 @@ class AptListener:
     def start_listening(core):
         AptListener._patch_pip_manager(core)
         AptListener._patch_pip_package_widget(core)
+        AptListener._patch_pip_worker_all_update(core)
         AptListener._patch_pipe_install(core)
         AptListener._patch_pipe_uninstall(core)
         AptListener._patch_local_linker(core)
+
+    @staticmethod
+    def _get_worker_cmd(worker):
+        """Získa príkaz z workera bez ohľadu na to, či je to full_command alebo cmd."""
+        if hasattr(worker, 'full_command') and worker.full_command:
+            return worker.full_command
+        if hasattr(worker, 'cmd') and worker.cmd:
+            return worker.cmd
+        return None
 
     @staticmethod
     def _extract_packages_from_install_cmd(cmd_list):
@@ -55,12 +70,15 @@ class AptListener:
 
         @staticmethod
         def patched_run_pip_task(worker, log_widget):
-            if hasattr(worker, 'cmd'):
-                cmd_lower = [x.lower() for x in worker.cmd]
+            cmd_list = AptListener._get_worker_cmd(worker)
+            released_reqs = []
+
+            if cmd_list:
+                cmd_lower = [x.lower() for x in cmd_list]
                 is_uninstall = "uninstall" in cmd_lower
 
                 if is_uninstall:
-                    pkgs_to_uninstall = AptListener._extract_packages_from_uninstall_cmd(worker.cmd)
+                    pkgs_to_uninstall = AptListener._extract_packages_from_uninstall_cmd(cmd_list)
                     for pkg in pkgs_to_uninstall:
                         deps = AptLogic.is_package_required_by_others(worker.venv_path, core, pkg)
                         if deps:
@@ -70,16 +88,23 @@ class AptListener:
                             ).format(pkg, ", ".join(deps))
                             log_widget.append(msg)
                             worker.success = False
-                            if hasattr(worker, 'signals'):
+                            if hasattr(worker, 'finished'):
+                                worker.finished.emit(1)
+                            elif hasattr(worker, 'signals') and hasattr(worker.signals, 'finished'):
                                 worker.signals.finished.emit()
                             return
 
-                is_upgrade = "install" in cmd_lower and ("--upgrade" in worker.cmd or "-U" in worker.cmd)
+                is_upgrade = "install" in cmd_lower and ("--upgrade" in cmd_list or "-U" in cmd_list)
                 is_req_install = "install" in cmd_lower and "-r" in cmd_lower
                 
-                uninstalled_pkgs = AptListener._extract_packages_from_uninstall_cmd(worker.cmd) if is_uninstall else []
-                installed_pkgs = AptListener._extract_packages_from_install_cmd(worker.cmd) if "install" in cmd_lower else []
+                uninstalled_pkgs = AptListener._extract_packages_from_uninstall_cmd(cmd_list) if is_uninstall else []
+                installed_pkgs = AptListener._extract_packages_from_install_cmd(cmd_list) if "install" in cmd_lower else []
                 upgraded_pkgs = installed_pkgs if is_upgrade else []
+
+                for pkg in uninstalled_pkgs:
+                    released_reqs.extend(AptLogic.get_requires_for_package(worker.venv_path, pkg, core.package_manager))
+                for pkg in upgraded_pkgs:
+                    released_reqs.extend(AptLogic.get_requires_for_package(worker.venv_path, pkg, core.package_manager))
             else:
                 is_uninstall = False
                 is_upgrade = True
@@ -88,28 +113,36 @@ class AptListener:
                 installed_pkgs = []
                 upgraded_pkgs = []
 
-            should_autoremove = is_uninstall or is_upgrade
-            released_reqs = []
-            for pkg in uninstalled_pkgs:
-                released_reqs.extend(AptLogic.get_requires_for_package(worker.venv_path, pkg, core.package_manager))
-            for pkg in upgraded_pkgs:
-                released_reqs.extend(AptLogic.get_requires_for_package(worker.venv_path, pkg, core.package_manager))
+                graph = AptLogic.get_dependency_graph(worker.venv_path, core)
+                if graph:
+                    for reqs in graph.values():
+                        released_reqs.extend(reqs)
 
-            def apt_callback():
-                success = getattr(worker, 'success', True)
+            should_autoremove = is_uninstall or is_upgrade
+
+            def apt_callback(result=0):
+                success = (result == 0 or result is True) if isinstance(result, (int, bool)) else getattr(worker, 'success', True)
+                
                 if not success:
                     log_widget.append("⚠️ [APT] Operácia zlyhala — APT stav ostáva nezmenený.")
                 else:
                     for pkg in uninstalled_pkgs:
                         AptLogic.unmark_explicit(worker.venv_path, pkg)
-                    for pkg in installed_pkgs:
-                        AptLogic.mark_as_explicit(worker.venv_path, pkg)
+                    if not is_upgrade and not is_req_install:
+                        for pkg in installed_pkgs:
+                            AptLogic.mark_as_explicit(worker.venv_path, pkg)
                     if is_req_install:
                         AptLogic.install_sync(core, worker.venv_path, log_widget.append)
                     if should_autoremove:
                         AptLogic.autoremove(core, worker.venv_path, log_widget.append, released_packages=released_reqs)
 
-            worker.signals.finished.connect(apt_callback)
+            worker._apt_callback = apt_callback
+
+            if hasattr(worker, 'finished'):
+                worker.finished.connect(worker._apt_callback)
+            elif hasattr(worker, 'signals') and hasattr(worker.signals, 'finished'):
+                worker.signals.finished.connect(worker._apt_callback)
+
             orig_run_pip_task(worker, log_widget)
 
         PipManager._run_pip_task = patched_run_pip_task
@@ -122,6 +155,7 @@ class AptListener:
         def patched_run_pip_command(self, full_command, start_message):
             cmd_lower = [x.lower() for x in full_command]
             is_uninstall = "uninstall" in cmd_lower
+            is_req_install = "install" in cmd_lower and "-r" in cmd_lower
 
             if is_uninstall:
                 pkgs_to_uninstall = AptListener._extract_packages_from_uninstall_cmd(full_command)
@@ -158,15 +192,41 @@ class AptListener:
                     return
                 for pkg in uninstalled_pkgs:
                     AptLogic.unmark_explicit(self.venv_path, pkg)
-                for pkg in installed_pkgs:
-                    AptLogic.mark_as_explicit(self.venv_path, pkg)
+                if not is_upgrade and not is_req_install:
+                    for pkg in installed_pkgs:
+                        AptLogic.mark_as_explicit(self.venv_path, pkg)
+                if is_req_install:
+                    AptLogic.install_sync(core, self.venv_path, self.log)
                 if should_autoremove:
                     AptLogic.autoremove(core, self.venv_path, self.log, released_packages=released_reqs)
 
             if hasattr(self, 'worker') and self.worker:
-                self.worker.finished.connect(on_finished)
+                self.worker._apt_callback = on_finished
+                self.worker.finished.connect(self.worker._apt_callback)
 
         PipPackageWidget.run_pip_command = patched_run_pip_command
+
+    @staticmethod
+    def _patch_pip_worker_all_update(core):
+        from core.logic.button.pip.pip_worker_allupdate import PipWorkerAllUpdate
+        orig_run = PipWorkerAllUpdate.run
+
+        def patched_run(self):
+            graph = AptLogic.get_dependency_graph(self.venv_path, core)
+            released_reqs = []
+            if graph:
+                for reqs in graph.values():
+                    released_reqs.extend(reqs)
+
+            def on_finished_update(success):
+                if success:
+                    AptLogic.autoremove(core, self.venv_path, self.output_line.emit, released_packages=released_reqs)
+
+            self._apt_callback = on_finished_update
+            self.finished.connect(self._apt_callback)
+            orig_run(self)
+
+        PipWorkerAllUpdate.run = patched_run
 
     @staticmethod
     def _patch_pipe_install(core):
@@ -178,45 +238,86 @@ class AptListener:
 
             def on_finished_install(success):
                 if success:
+                    # >>> ZMENA: Označenie nainštalovaného pip -e balíčka ako explicitného
+                    pkg_name = RequirementsParser._get_package_name_from_dir(self.target_path)
+                    if pkg_name:
+                        AptLogic.mark_as_explicit(self.venv_path, pkg_name)
+                    # <<< KONIEC ZMENY
                     AptLogic.install_sync(core, self.venv_path, self.log_msg.emit)
 
-            self.finished.connect(on_finished_install)
+            self._apt_callback = on_finished_install
+            self.finished.connect(self._apt_callback)
 
         PipEInstallWorker.__init__ = patched_init
 
     @staticmethod
     def _patch_pipe_uninstall(core):
         from core.logic.pip_e import PipEUninstallWorker
-        orig_init = PipEUninstallWorker.__init__
-        orig_run = PipEUninstallWorker.run
 
-        def patched_init(self, venv_path, package_name):
-            orig_init(self, venv_path, package_name)
+        # >>> ZMENA: Kompletná synchrónna obsluha odinštalácie a autoremove priamo v tele workera
+        def patched_run(self):
+            try:
+                python_exe = Paths.get_venv_python_exe_path(self.venv_path)
+                if not os.path.exists(python_exe):
+                    self.error.emit(LanguageManager.get("pipe_err_no_python", "❌ Python executable nebol nájdený: {0}").format(python_exe))
+                    self.finished.emit(False)
+                    return
 
-            released_reqs = AptLogic.get_requires_for_package(self.venv_path, self.package_name, core.package_manager)
+                # 1. Kontrola reverzných závislostí
+                deps = AptLogic.is_package_required_by_others(self.venv_path, core, self.package_name)
+                if deps:
+                    msg = LanguageManager.get(
+                        "apt_err_cannot_uninstall",
+                        "❌ Nemožno odinštalovať '{0}', pretože ho vyžadujú: {1}"
+                    ).format(self.package_name, ", ".join(deps))
+                    self.log_msg.emit(msg)
+                    self.finished.emit(False)
+                    return
 
-            def on_finished_uninstall(success):
+                # 2. Zistenie uvoľňovaných závislostí EŠTE PRED zmazaním balíčka
+                released_reqs = AptLogic.get_requires_for_package(self.venv_path, self.package_name, core.package_manager)
+
+                cmd = [python_exe, "-m", "pip", "uninstall", "-y", self.package_name]
+                self.log_msg.emit(LanguageManager.get("pipe_log_uninstalling", "\n🗑️ Odinštalujem balíček '{0}'...").format(self.package_name))
+
+                process = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    bufsize=1,
+                    creationflags=CREATE_NO_WINDOW
+                )
+
+                for line in iter(process.stdout.readline, ''):
+                    clean_line = line.strip()
+                    if clean_line:
+                        self.log_msg.emit(f"  {clean_line}")
+
+                process.wait()
+
+                success = (process.returncode == 0)
                 if success:
+                    self.log_msg.emit(LanguageManager.get("pipe_log_uninstall_success", "✅ Balíček '{0}' bol úspešne odstránený.").format(self.package_name))
+                    BirthCertificateGenerator.update_venv_certificate(self.venv_path)
+
+                    # 3. APT autoremove sa spustí priamo tu v tom istom vlákne pred emitovaním finished!
                     AptLogic.unmark_explicit(self.venv_path, self.package_name)
                     AptLogic.autoremove(core, self.venv_path, self.log_msg.emit, released_packages=released_reqs)
+                else:
+                    self.error.emit(LanguageManager.get("pipe_err_uninstall_failed", "❌ Odinštalácia zlyhala s kódom {0}.").format(process.returncode))
 
-            self.finished.connect(on_finished_uninstall)
+                # 4. Až po kompletnom vyčistení odovzdáme riadenie oknu
+                self.finished.emit(success)
 
-        def patched_run(self):
-            deps = AptLogic.is_package_required_by_others(self.venv_path, core, self.package_name)
-            if deps:
-                msg = LanguageManager.get(
-                    "apt_err_cannot_uninstall",
-                    "❌ Nemožno odinštalovať '{0}', pretože ho vyžadujú: {1}"
-                ).format(self.package_name, ", ".join(deps))
-                self.log_msg.emit(msg)
+            except Exception as e:
+                self.error.emit(LanguageManager.get("pipe_err_critical", "❌ Kritická chyba: {0}").format(e))
                 self.finished.emit(False)
-                return
 
-            orig_run(self)
-
-        PipEUninstallWorker.__init__ = patched_init
         PipEUninstallWorker.run = patched_run
+        # <<< KONIEC ZMENY
 
     @staticmethod
     def _patch_local_linker(core):

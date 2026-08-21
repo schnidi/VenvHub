@@ -174,8 +174,9 @@ class PipEWindow(QDialog):
         self.active_worker.log_msg.connect(self.log)
         self.active_worker.error.connect(self._handle_error)
         
+        # >>> ZMENA: Čisté poradie ukončenia – najprv callback s obnovou zoznamu, potom uvoľnenie vlákna
         self.active_worker.finished.connect(self._on_action_finished)
-        self.active_worker.finished.connect(self._cleanup_thread)
+        # <<< KONIEC ZMENY
         self.active_thread.start()
 
     # =========================================================================
@@ -211,8 +212,9 @@ class PipEWindow(QDialog):
         self.active_worker.log_msg.connect(self.log)
         self.active_worker.error.connect(self._handle_error)
         
+        # >>> ZMENA: Odstránené predčasné volanie _cleanup_thread, okno počká na kompletné dokončenie v _on_action_finished
         self.active_worker.finished.connect(self._on_action_finished)
-        self.active_worker.finished.connect(self._cleanup_thread)
+        # <<< KONIEC ZMENY
         self.active_thread.start()
 
     # =========================================================================

@@ -779,7 +779,12 @@
 
     "apt_err_graph_failed": "❌ [APT] Zlyhalo načítanie zoznamu balíčkov.",
     "apt_err_pkg_list_code": "[APT] Chyba pri získavaní zoznamu balíčkov (kód {0})",
-    "apt_err_graph": "[APT] Chyba pri tvorbe grafu závislostí: {0}"
+    "apt_err_graph": "[APT] Chyba pri tvorbe grafu závislostí: {0}",
+
+    "msg_confirm_uninstall_req": "⚠️ UPOZORNENIE: Balíček '{0}' je explicitne definovaný v súbore requirements.txt!\n\nAk ho odinštalujete, vaše prostredie už nebude plne zodpovedať definícii projektu.\nNaozaj chcete pokračovať?",
+
+    "btn_yes": "Áno",
+    "btn_no": "Nie"
     
 
 }
