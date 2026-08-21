@@ -1,0 +1,8 @@
+{
+  "title": "Hromadné Spúšťanie (Multi-run) – VenvHub Pro Manuál",
+  "description": "Paralelné spúšťanie skupín projektov, 3-zónový Drag & Drop, inteligentný reštart a stabilita cez Windows Job Objects a Handles.",
+  "keywords": "multi-run, hromadné spúšťanie python, windows job objects, process handles, smart restart",
+  "og_title": "Hromadné Spúšťanie (Multi-run) – VenvHub Pro Manuál",
+  "og_description": "Paralelné spúšťanie skupín projektov a nízkoúrovňová stabilita cez Windows Job Objects.",
+  "og_image": "assets/icon/og-image.png"
+}

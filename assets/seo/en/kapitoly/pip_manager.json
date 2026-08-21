@@ -1,0 +1,8 @@
+{
+  "title": "Pip Package Manager – VenvHub Pro Manual",
+  "description": "Parallel Dual-Scan package manager with UV autopilot support, APT autoremove self-cleaning dependency engine, and safe package downgrades.",
+  "keywords": "pip manager, uv autopilot, python packages, apt autoremove, downgrade package, dual-scan pip",
+  "og_title": "Pip Package Manager – VenvHub Pro Manual",
+  "og_description": "Parallel Dual-Scan package manager, UV autopilot, and smart dependency self-cleaning.",
+  "og_image": "assets/icon/og-image.png"
+}

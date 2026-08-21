@@ -1,0 +1,8 @@
+{
+  "title": "VS Code Integration – VenvHub Pro Manual",
+  "description": "Automated settings.json synchronization, Pylance IntelliSense extra paths injection, and Meta-Sync for generating custom Tasks and Keybindings.",
+  "keywords": "vs code integration, python intellisense, settings.json sync, pylance extra paths, meta-sync tasks",
+  "og_title": "VS Code Integration – VenvHub Pro Manual",
+  "og_description": "Automated VS Code settings.json synchronization, Pylance support, and custom task injection.",
+  "og_image": "assets/icon/og-image.png"
+}

@@ -1,0 +1,37 @@
+{
+  "id": "builder",
+  "icon": "🛠",
+  "title": "Tvorba .EXE (PyInstaller Builder)",
+  "sections": [
+    {
+      "id": "priprava",
+      "title": "Výber cieľov a prostredia",
+      "content": "<p>VenvHub Pro obsahuje integrovaný vizuálny nástroj na konverziu Python skriptov (<code>.py</code>) na samostatne spustiteľné aplikácie (<code>.exe</code>) pre Windows. Nástroj funguje ako nadstavba (wrapper) nad knižnicou <strong>PyInstaller</strong>.</p><h3>Kde začať?</h3><ol><li><strong>Výber Projektu:</strong> Zvoľte projekt, ktorý chcete zabaliť.</li><li><strong>Zdrojový Venv:</strong> PyInstaller si 'vycucne' a zabalí presne tie knižnice a verzie, ktoré sú aktuálne nainštalované v tomto vybranom prostredí.</li><li><strong>Spúšťací Skript:</strong> Hlavný súbor (napr. <code>main.py</code>). Aplikácia prehľadá koreňový priečinok projektu a ponúkne všetky nájdené <code>.py</code> súbory.</li><li><strong>Výstupný priečinok:</strong> Kam sa uloží hotový <code>.exe</code> súbor (predvolene zložka <code>dist</code> priamo v projekte).</li></ol><div class='alert'><strong>Automatická kontrola:</strong> Ak vo vybranom Venv-e chýba balíček <code>pyinstaller</code>, VenvHub Pro to pri kliknutí na 'BUILD' zistí a ponúkne vám jeho bleskovú inštaláciu na pozadí.</div>"
+    },
+    {
+      "id": "zakladne",
+      "title": "Základné nastavenia (Konzola, OneFile vs Onedir)",
+      "content": "<h3>Režim okna a konzoly</h3><ul><li><strong>Zobraziť Konzolu:</strong> Vhodné pre CLI nástroje alebo vývoj (vidíte chybové výpisy).</li><li><strong>Skryť Konzolu (Windowed / --noconsole):</strong> Určené pre finálne grafické aplikácie (GUI). Spustí sa len vaše okno bez čierneho terminálu.</li></ul><h3>Spôsob Balenia (Výkon vs. Prenositeľnosť)</h3><ul><li><strong>Jeden súbor (--onefile):</strong> Všetko sa zlisuje do jediného <code>.exe</code> súboru. Jednoduchá distribúcia, ale o niečo pomalší štart, pretože sa najprv rozbaľuje do Temp zložky.</li><li><strong>Priečinok (--onedir):</strong> Aplikácia sa vygeneruje ako zložka so stovkami súborov. Výhodou je <strong>okamžitý štart</strong>, nevýhodou nutnosť distribuovať celú zložku (v ZIPe).</li></ul>"
+    },
+    {
+      "id": "assets",
+      "title": "Pridávanie dát (Assets) a sys._MEIPASS",
+      "content": "<p>PyInstaller balí iba Python kód. Ak vaša aplikácia potrebuje obrázky, zvuky, fonty alebo konfiguračné súbory (<code>config.json</code>), <strong>musíte ich pridať do tabuľky Assets</strong>, inak program po zabalení spadne s chybou <em>FileNotFoundError</em>.</p><h3>Mapovanie súborov:</h3><div class='table-responsive'><table style='width: 100%; border-collapse: collapse; margin-top: 15px;'><tr style='background-color: #f1f1f1; text-align: left;'><th style='padding: 10px; border: 1px solid #ddd;'>Zdroj na disku</th><th style='padding: 10px; border: 1px solid #ddd;'>Cieľový priečinok</th><th style='padding: 10px; border: 1px solid #ddd;'>Význam</th></tr><tr><td style='padding: 10px; border: 1px solid #ddd;'><code>C:\\Projekt\\logo.png</code></td><td style='padding: 10px; border: 1px solid #ddd;'><code>.</code> (bodka)</td><td style='padding: 10px; border: 1px solid #ddd;'>Obrázok sa skopíruje priamo k <code>.exe</code> súboru (do koreňa).</td></tr><tr><td style='padding: 10px; border: 1px solid #ddd;'><code>C:\\Projekt\\ui_files\\</code></td><td style='padding: 10px; border: 1px solid #ddd;'><code>gui/templates</code></td><td style='padding: 10px; border: 1px solid #ddd;'>Zložka sa zbalí a vznikne štruktúra <code>gui/templates/</code> vo vnútri aplikácie.</td></tr></table></div><div class='alert' style='border-left-color: #e74c3c;'><strong>Kritické upozornenie:</strong> Po zabalení v režime OneFile bežné cesty ako <code>open('logo.png')</code> nefungujú. Použite túto funkciu:</div><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto;'>import sys\nimport os\n\ndef get_resource_path(relative_path):\n    try:\n        base_path = sys._MEIPASS\n    except AttributeError:\n        base_path = os.path.abspath(&quot;.&quot;)\n    return os.path.join(base_path, relative_path)\n\n# Použitie:\nlogo = get_resource_path(&quot;logo.png&quot;)</pre>"
+    },
+    {
+      "id": "unikatne",
+      "title": "Unikátne funkcie (Rodný list, UV a Auto-Injector)",
+      "content": "<h3>1. Pribalenie Rodného listu (Metadáta aplikácie)</h3><p>Vezme kompletný zoznam balíčkov a verziu Pythonu a pred buildom vygeneruje <code>[Projekt]_birth_certificate.json</code> priamo do <code>.exe</code>. Aplikácia si tak pamätá, kedy a v akom prostredí bola skompilovaná.</p><h3>2. Pribalenie inštalátora UV (uv.exe)</h3><p>Ak vaša aplikácia potrebuje u klienta dynamicky doinštalovávať knižnice, zaškrtnutím tejto voľby pribalíte <code>uv.exe</code> priamo do jadra aplikácie (cez <code>--add-binary</code>).</p><h3>3. VenvHub Auto-Injector (Lokálne balíčky)</h3><p>Ak používate <strong>Lokálne balíčky (Linker)</strong>, predprocesor VenvHubu pred spustením PyInstallera:</p><ul><li>Prečíta <code>venvhub.json</code> a vygeneruje parameter <code>--paths</code> pre všetky prelinkované moduly.</li><li>Pre každý balíček vygeneruje <code>--add-data</code>, čím automaticky pribalí všetky ich obrázky, JSON konfigurácie a UI šablóny bez manuálneho nastavovania.</li></ul>"
+    },
+    {
+      "id": "importy",
+      "title": "Importy a Pokročilé (Hidden Imports, Excludes, UAC)",
+      "content": "<h3>Skryté Importy (Hidden Imports)</h3><p>Ak vám výsledný <code>.exe</code> spadne s chybou <em>ModuleNotFoundError</em> (pretože knižnica bola volaná dynamicky cez <code>importlib</code>), zadajte jej názov sem a PyInstaller ju pribalí nasilu.</p><h3>Vylúčené Moduly (Exclude Modules)</h3><p>Ak PyInstaller zbytočne pribalí ťažké knižnice, ktoré nepoužívate (napr. <code>pandas</code> alebo <code>tkinter</code>), zadaním sem ich ignoruje a zmenší výsledný súbor.</p><h3>Pokročilé:</h3><ul><li><strong>Vyčistiť cache (--clean):</strong> Zmaže dočasné súbory v zložke <code>build</code> z predchádzajúcich pokusov.</li><li><strong>Vyžiadať Admin práva (--uac-admin):</strong> Vyžiada Windows Administrátorské práva pri štarte <code>.exe</code>.</li></ul>"
+    },
+    {
+      "id": "build",
+      "title": "Proces Buildovania a Live Preview",
+      "content": "<h3>Živý náhľad príkazu (Live Preview)</h3><p>V spodnej časti okna vidíte v reálnom čase generovaný príkaz pre PyInstaller vrátane poľa pre vlastné argumenty (napr. <code>--noupx</code>).</p><h3>Spustenie:</h3><ol><li>Kliknite na <strong>🛠 BUILD .EXE</strong>.</li><li>Otvorí sa okno s priebehom (Build Log Dialog) bežiace v samostatnom vlákne.</li><li>Po dokončení (zelená správa ✅ HOTOVO) nájdete hotovú aplikáciu v zložke <code>dist</code>.</li></ol>"
+    }
+  ]
+}

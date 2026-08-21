@@ -1,0 +1,8 @@
+{
+  "title": "Build .EXE (PyInstaller Builder) – VenvHub Pro Manual",
+  "description": "Visual PyInstaller GUI builder for compiling Python to standalone Windows executables, auto-injecting local packages, and bundling metadata.",
+  "keywords": "pyinstaller gui, build exe python, compile python, auto-injector, python windows builder",
+  "og_title": "Build .EXE (PyInstaller Builder) – VenvHub Pro Manual",
+  "og_description": "Visual PyInstaller Builder for converting Python projects into standalone Windows .exe executables.",
+  "og_image": "assets/icon/og-image.png"
+}

@@ -1,0 +1,8 @@
+{
+  "title": "Tvorba .EXE (PyInstaller Builder) – VenvHub Pro Manuál",
+  "description": "Vizuálny builder pre kompiláciu Pythonu do samostatných .exe súborov, auto-injektor lokálnych balíčkov a generovanie rodného listu.",
+  "keywords": "pyinstaller gui, tvorba exe python, build exe, auto-injector, kompilácia python windows",
+  "og_title": "Tvorba .EXE (PyInstaller Builder) – VenvHub Pro Manuál",
+  "og_description": "Vizuálny PyInstaller Builder pre kompiláciu Python projektov do samostatných .exe súborov.",
+  "og_image": "assets/icon/og-image.png"
+}

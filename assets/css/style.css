@@ -1,0 +1,386 @@
+/* =========================================
+   Company: Seal and Lube, spol. s r.o.
+   Author: Ing. Viliam Schneider
+========================================= */
+
+:root {
+    --primary-color: #007acc;
+    --primary-hover: #005999;
+    --bg-dark: #1e2024;
+    --bg-header: #15171a;
+    --bg-body: #f5f7f9;
+    --text-main: #333333;
+    --text-muted: #666666;
+    --border-color: #e2e8f0;
+    --card-bg: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg-body);
+}
+
+/* HORNA NAVIGAČNÁ LIŠTA */
+.top-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--bg-header);
+    color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    border-bottom: 1px solid #333;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 65px;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: white;
+}
+
+.brand-logo h1 {
+    font-size: 20px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.brand-logo span {
+    background-color: var(--primary-color);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 10px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu a {
+    color: #cccccc;
+    text-decoration: none;
+    padding: 10px 18px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-menu a.active {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* Prepínač Jazykov */
+.lang-switcher {
+    position: relative;
+}
+
+.lang-btn {
+    background: #2a2d32;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.lang-btn:hover {
+    background: var(--primary-color);
+}
+
+.lang-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 5px;
+    background-color: #2a2d32;
+    border: 1px solid #444;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    min-width: 130px;
+    overflow: hidden;
+    z-index: 1001;
+}
+
+.lang-dropdown.show {
+    display: block;
+}
+
+.lang-dropdown a {
+    display: block;
+    padding: 10px 15px;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.lang-dropdown a:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* OBSAH PORTÁLU */
+.main-wrapper {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.hero-box {
+    background: linear-gradient(135deg, var(--bg-dark) 0%, #2c3e50 100%);
+    color: white;
+    padding: 50px 40px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.hero-box h2 {
+    font-size: 32px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.hero-box p {
+    font-size: 17px;
+    color: #a8b2bd;
+    max-width: 800px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+    background-color: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255,255,255,0.25);
+}
+
+.section-title {
+    font-size: 24px;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+    margin-bottom: 50px;
+}
+
+.content-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.content-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+    border-color: var(--primary-color);
+}
+
+.content-card h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 20px;
+}
+
+.content-card p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-size: 14.5px;
+}
+
+.footer {
+    text-align: center;
+    padding: 30px;
+    background-color: var(--bg-dark);
+    color: #888;
+    font-size: 14px;
+    margin-top: 60px;
+}
+
+
+
+/* =========================================
+   RESPONZIVITA PRE MOBILNÉ ZARIADENIA (MOBIL)
+========================================= */
+
+@media (max-width: 768px) {
+    /* Hero sekcia na mobile */
+    .hero-box {
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    .hero-box h2 {
+        font-size: 24px;
+    }
+
+    .hero-box p {
+        font-size: 15px;
+    }
+
+    /* MOBILNÉ TLAČIDLÁ - Rovnaká 100% šírka a jednotný dizajn */
+    .hero-buttons {
+        display: flex;
+        flex-direction: column; /* Tlačidlá pod sebou */
+        width: 100%;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .hero-buttons .btn,
+    .hero-buttons a {
+        display: block;
+        width: 100% !important; /* Plná šírka pre všetky 3 tlačidlá */
+        box-sizing: border-box;
+        text-align: center;
+        padding: 14px 15px !important;
+        font-size: 15px !important;
+        margin: 0 !important;
+    }
+
+    /* Prispôsobenie textu verzie na tlačidle, aby sa zmestil na 1 riadok */
+    #latestVersionBadge {
+        display: inline-block;
+        font-size: 13px;
+    }
+}
+
+
+/* Tlačidlo pre mobilné menu (Hamburger) */
+.menu-toggle {
+    display: none; /* Na PC skryté */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+/* RESPONZIVITA PRE MOBIL (POD 768px) */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block; /* Zobraziť iba na mobile */
+    }
+
+    /* Transformácia menu na rozbaľovací panel pod lištou */
+    .nav-menu {
+        display: none; /* Predvolene skryté */
+        position: absolute;
+        top: 65px;
+        left: 0;
+        width: 100%;
+        background-color: var(--bg-header);
+        flex-direction: column;
+        padding: 15px 0;
+        border-bottom: 2px solid var(--primary-color);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .nav-menu.active {
+        display: flex; /* Rozbaliť po kliknutí na ☰ */
+    }
+
+    .nav-menu a {
+        padding: 12px 25px;
+        width: 100%;
+        border-radius: 0;
+        border-left: 4px solid transparent;
+    }
+
+    .nav-menu a.active {
+        border-bottom: none;
+        border-left: 4px solid var(--primary-color);
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+}
+
+
+/* Automatické roztiahnutie tlačidiel v banneri na celú šírku v mobile */
+@media (max-width: 768px) {
+    .manual-banner-card {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    
+    .manual-banner-card .manual-btn-wrapper,
+    .manual-banner-card .manual-btn-wrapper a {
+        width: 100% !important;
+        text-align: center;
+        box-sizing: border-box;
+    }
+}

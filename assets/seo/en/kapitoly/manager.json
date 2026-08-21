@@ -1,0 +1,8 @@
+{
+  "title": "Environment Manager – VenvHub Pro Manual",
+  "description": "Centralized Python virtual environment management, physically separated architecture, 5-step smart cloning, birth certificates, and process watchdog.",
+  "keywords": "venv manager, python virtual environment, smart cloning, venv birth certificate, sanitize venv",
+  "og_title": "Environment Manager – VenvHub Pro Manual",
+  "og_description": "Centralized Python virtual environment management, smart cloning, and separated architecture.",
+  "og_image": "assets/icon/og-image.png"
+}

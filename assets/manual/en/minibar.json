@@ -1,0 +1,32 @@
+{
+  "id": "minibar",
+  "icon": "🚀",
+  "title": "Mini-Bar and Quick Settings",
+  "sections": [
+    {
+      "id": "opis",
+      "title": "Bar Elements Description (Mini-Bar)",
+      "content": "<p>The Mini-Bar is a floating bar designed to take up minimal screen space while providing maximum control. Description of elements from left to right:</p><ul style='list-style: none; padding-left: 0;'><li><strong>● (Status Dot):</strong> Indicates the validity of the selected environment.<ul><li><span style='color:#2ecc71; font-weight:bold;'>Green:</span> Environment is OK and exists on disk.</li><li><span style='color:#e74c3c; font-weight:bold;'>Red:</span> Environment does not exist or its path is invalid.</li></ul></li><li><strong>INFO Text / Group List:</strong> Displays the name of the current project and Venv (in Single mode), or the list of groups (in Multi mode).</li><br><li><strong><img src='../assets/icon/vscode5.svg' style='width: 18px; height: 18px; vertical-align: text-bottom;' alt='VS Code'> (VS Code):</strong> Opens the current project directly in VS Code with the properly linked environment and user profile.</li><li><span style='color:#2ecc71; font-weight:bold;'>▶ Play:</span> Launches the assigned script or the entire group.</li><li><span style='color:#e74c3c; font-weight:bold;'>■ Stop:</span> Immediately terminates the running script or the entire group.</li><li><strong><span style='font-family: \"Segoe UI Emoji\", sans-serif;'>⚙</span> (Gear):</strong> Opens/Closes the <strong>Quick Settings</strong> panel.</li><li><strong><span style='font-family: \"Segoe UI Emoji\", sans-serif;'>🖥</span> (Monitor):</strong> Opens the full <strong>Master Manager</strong> window for advanced management.</li><li><strong>📌 (Pin):</strong> Toggles 'Always on Top' mode. When active, the bar stays above other windows.</li><li><strong><img src='../assets/icon/icon_mode_widget_black.svg' style='width: 18px; height: 18px; vertical-align: text-bottom;' alt='Mode'> (Mode Switch):</strong> Toggles between <strong>Single</strong> mode (individual project) and <strong>Multi</strong> mode (batch launching).</li><li><strong>✕ (Close):</strong> Completely exits the entire VenvHub Pro application.</li></ul>"
+    },
+    {
+      "id": "quick",
+      "title": "Quick Settings (Slide-out Panel)",
+      "content": "<p>Clicking the gear icon <strong>(<span style='font-family: \"Segoe UI Emoji\", sans-serif;'>⚙</span>)</strong> slides out a panel that allows you to quickly adjust parameters without having to open the full Manager.</p><h3>What can you configure here?</h3><ol><li><strong>Project, Venv, and VS Code Profile:</strong> Quickly switch projects and their environments, including isolated editor profiles.</li><li><strong>Startup Script:</strong> Displays which file will be executed. This path is configured in the main Manager, not here.</li><li><strong>Language:</strong> Allows instant changes to the application language. <em>(Note: Theme/skin changes are performed in the main Manager window).</em></li><li><strong>Quick Install (Pip/UV):</strong> Enter a package name (e.g. <code>requests</code>) and click Install. The package will be installed using your configured default installer.</li></ol>"
+    },
+    {
+      "id": "override",
+      "title": "Environment Switching and Synchronization (Master Override)",
+      "content": "<p>In older versions of VenvHub, the Quick Settings panel only served for temporary in-memory environment changes. <strong>In the current version (Pro), this is no longer the case!</strong></p><p>If you change the Venv or VS Code profile in the Quick Settings panel, the system executes a <strong>Master Override</strong>:</p><ul><li>The environment is immediately saved to the configuration file and becomes the permanent <strong>default</strong> for the given project.</li><li>The system automatically <strong>synchronizes VS Code in the background</strong> (updates the <code>settings.json</code> file) so the editor uses this new Venv upon launch.</li><li>The <strong>VenvHub Linker</strong> also runs automatically in the background, updating paths and tasks in VS Code for all your local packages.</li></ul>"
+    },
+    {
+      "id": "rezimy-spustenia",
+      "title": "Execution Modes",
+      "content": "<p>In the '3. Actions' section, you can choose how the <strong>Play ▶</strong> button behaves:</p><ul><li><strong>Open Terminal:</strong> Does not execute the script, but only opens a command prompt (CMD) activated in the selected environment. Suitable if you want to enter commands manually.</li><li><strong>Run in Terminal (Default):</strong> Opens a new window, activates the venv, and automatically runs your script. You see all output (prints) and errors.</li><li><strong>Run in Background (Silent):</strong> The script runs without any visible window (invisibly). Ideal for production applications, GUI programs, or background processes.</li></ul><div class='alert'><strong>Note on Silent mode:</strong> Since no window is visible, you must terminate the script either using the <strong>Stop ■</strong> button on the bar or via Task Manager.</div>"
+    },
+    {
+      "id": "rezim-multi",
+      "title": "Multi-run Mode on Mini-Bar",
+      "content": "<p>When you click the mode switch button <strong>(<img src='../assets/icon/icon_mode_widget_black.svg' style='width: 18px; height: 18px; vertical-align: text-bottom;' alt='Mode'>)</strong>, the Mini-Bar switches to batch launch mode. The interface adjusts:</p><ul><li>Instead of project text, a <strong>dropdown list</strong> appears with all your groups created in the Manager.</li><li>The <strong>Quick Settings button (<span style='font-family: \"Segoe UI Emoji\", sans-serif;'>⚙</span>) and <img src='../assets/icon/vscode5.svg' style='width: 18px; height: 18px; vertical-align: text-bottom;' alt='VS Code'> (VS Code) icon</strong> are automatically hidden, as single-project settings do not apply in this mode.</li><li>The <strong>Play ▶</strong> and <strong>Stop ■</strong> buttons now control the <strong>entire selected group at once</strong>.</li></ul><div class='tip'><strong>Advantage:</strong> In this mode, you do not need to open the main window. Simply select a group from the bar and launch or stop all servers and processes belonging to it with a single click.</div>"
+    }
+  ]
+}

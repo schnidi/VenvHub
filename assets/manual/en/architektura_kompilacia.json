@@ -1,0 +1,32 @@
+{
+  "id": "architektura_kompilacia",
+  "icon": "🏛️",
+  "title": "Architecture, Compilation & Self-Replication",
+  "sections": [
+    {
+      "id": "kap12-1",
+      "title": "Dual-Framework (Compatibility Bridge)",
+      "content": "<p>Python GUI code is traditionally tightly coupled to either <strong>PyQt6</strong> or <strong>PySide6</strong>. VenvHub Pro resolves this via an automated <strong>Compatibility Bridge</strong> (<code>core/logic/pyqt_to_pyside.py</code>) implementing a low-level <em>MetaPathFinder</em> hook.</p><ul><li>On <code>main.py</code> launch, runtime framework discovery triggers.</li><li>If <code>PyQt6</code> is detected, the app executes natively.</li><li>If <code>PySide6</code> is present, the bridge intercepts all <code>from PyQt6...</code> import statements in memory and redirects them seamlessly to <code>PySide6</code>.</li></ul><div class='tip'><strong>Outcome:</strong> The codebase is written 100% in clean PyQt6 syntax while dynamically executing on host PySide6 environments without code alterations.</div>"
+    },
+    {
+      "id": "kap12-2",
+      "title": "UI Template Virtualization (QUiLoader Mimic)",
+      "content": "<p>Frameworks load XML UI definitions differently:</p><ul><li><strong>PyQt6 (uic.loadUi):</strong> Mounts widgets directly into the existing window instance (<code>self</code>).</li><li><strong>PySide6 (QUiLoader):</strong> Strictly spawns a new window instance.</li></ul><p>VenvHub Pro integrates an intelligent <strong>Mimic Engine</strong>: Under PySide6, <code>QUiLoader</code> builds the XML graph, then programmatically extracts all child widgets and layouts, binding them onto the primary <code>self</code> instance with relative icon path preservation.</p>"
+    },
+    {
+      "id": "kap12-3",
+      "title": "Self-Replication Pipeline (Dogfooding)",
+      "content": "<p>Because VenvHub Pro includes a built-in <strong>PyInstaller Builder</strong>, the application compiles itself without external build scripts.</p><ol><li>Launch VenvHub Pro.</li><li>Set the Projects Root to the VenvHub Pro source repository in <strong>Settings</strong>.</li><li>Open <strong>PyInstaller Builder</strong> and select <code>main.py</code> as the entry point.</li><li>Configure Assets and compilation parameters.</li><li>Click <strong>BUILD .EXE</strong>.</li></ol><div class='alert'>Dogfooding validates the builder's reliability by successfully compiling its own complex codebase.</div>"
+    },
+    {
+      "id": "kap12-4",
+      "title": "PyInstaller Build Variants (PyQt6 vs PySide6)",
+      "content": "<p>Because PyInstaller relies on static AST inspection, compilation settings adapt based on the GUI runtime in your active Venv.</p><p><strong>Required Assets:</strong><br>Always bundle these core folders (source = destination): <code>ui</code>, <code>core/themes</code>, <code>translations</code>, <code>assets</code>, <code>navod</code>.</p><h3>Branch A: Compiling with PyQt6</h3><p>PyInstaller traces imports directly from <code>main.py</code> and bundles required PyQt6 binaries automatically. No extra flags are needed in the <strong>Imports</strong> tab.</p><h3>Branch B: Compiling with PySide6</h3><p>Because the source code references <code>PyQt6</code>, PyInstaller requires explicit directives in the <strong>Imports</strong> tab:</p><ul><li><strong>Hidden Imports:</strong> Append: <code>PySide6</code>, <code>PySide6.QtCore</code>, <code>PySide6.QtGui</code>, <code>PySide6.QtWidgets</code>, <code>PySide6.QtNetwork</code>, <code>PySide6.QtUiTools</code>.</li><li><strong>Exclude Modules:</strong> Exclude <code>PyQt6</code> to prevent redundant binary bloat.</li></ul><p>At startup, the runtime Bridge initializes and links the bundled PySide6 framework seamlessly.</p>"
+    },
+    {
+      "id": "kap12-5",
+      "title": "Packaging Distributables with NSIS",
+      "content": "<p>Regardless of the build branch, compiling in directory mode (<code>--onedir</code>) generates <code>dist/VenvHubPro</code>.</p><p>To generate an enterprise installer using <strong>NSIS</strong>, package the output directory:</p><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 12px; border-radius: 5px;'># NSIS Script directive:\nFile /r &quot;path\\to\\project\\dist\\VenvHubPro\\*&quot;</pre><p>NSIS compresses the bundle (LZMA) into a standalone <code>Setup.exe</code> installer with desktop shortcut generation.</p>"
+    }
+  ]
+}

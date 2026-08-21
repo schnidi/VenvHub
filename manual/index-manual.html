@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VenvHub Pro - Užívateľský Manuál</title>
+    <!-- Hlavný štýl (pre lang-switcher a tlačidlá) + štýl manuálu -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/manual/manual_css.css">
+</head>
+<body>
+
+    <!-- MOBILNÁ HORNÁ LIŠTA -->
+    <header class="mobile-header">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Otvoriť menu">
+            ☰ <span>Kapitoly</span>
+        </button>
+
+        <div class="mobile-right-tools">
+            <!-- Prepínač jazykov (rovnaký štýl) -->
+            <div class="lang-switcher">
+                <button class="lang-btn" id="mobileLangBtn">
+                    🌐 <span id="mobileLangLabel">SK</span> ▾
+                </button>
+                <div class="lang-dropdown" id="mobileLangDropdown">
+                    <a href="index-manual.html?lang=sk" data-lang="sk">🇸🇰 Slovenčina</a>
+                    <a href="index-manual.html?lang=en" data-lang="en">🇬🇧 English</a>
+                </div>
+            </div>
+
+            <a href="../index.html" class="mobile-home-btn" title="Návrat na portál">🏠</a>
+        </div>
+    </header>
+
+    <!-- ZATMAVENIE POZADIA PRI OTVORENOM MOBILNOM MENU -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="manual-layout">
+        <!-- ĽAVÝ BOČNÝ PANEL -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-top-bar">
+                    <a href="../index.html" class="back-home-link" id="backHomeLink">← Späť na web VenvHub</a>
+                    
+                    <!-- Prepínač jazykov na PC -->
+                    <div class="lang-switcher">
+                        <button class="lang-btn" id="desktopLangBtn">
+                            🌐 <span id="desktopLangLabel">Slovenčina</span> ▾
+                        </button>
+                        <div class="lang-dropdown" id="desktopLangDropdown">
+                            <a href="index-manual.html?lang=sk" data-lang="sk">🇸🇰 Slovenčina</a>
+                            <a href="index-manual.html?lang=en" data-lang="en">🇬🇧 English</a>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>VenvHub Pro</h2>
+                <span class="manual-badge" id="manualBadge">Užívateľský Manuál v2.5</span>
+            </div>
+
+            <!-- Dynamicky generované menu -->
+            <nav class="nav-links" id="sidebarNav">
+                <div style="padding: 15px; color: #888;">Načítavam kapitoly...</div>
+            </nav>
+        </aside>
+
+        <!-- HLAVNÝ OBSAH -->
+        <main class="main-content">
+            <div class="content-wrapper" id="contentArea">
+                <div style="padding: 40px; text-align: center; color: #888;">
+                    Načítavam obsah manuálu...
+                </div>
+            </div>
+
+            <!-- SPODNÁ NAVIGÁCIA MEDZI KAPITOLAMI -->
+            <footer class="chapter-navigation" id="chapterNav">
+                <a id="prevChapterBtn" class="nav-btn prev-btn" href="#" style="display: none;">
+                    <span class="sub-text" id="prevSubText">← Predchádzajúca</span>
+                    <span class="title-text" id="prevChapterTitle"></span>
+                </a>
+                <a id="nextChapterBtn" class="nav-btn next-btn" href="#" style="display: none;">
+                    <span class="sub-text" id="nextSubText">Ďalšia kapitola →</span>
+                    <span class="title-text" id="nextChapterTitle"></span>
+                </a>
+            </footer>
+        </main>
+    </div>
+
+    <!-- SKRIPTY -->
+    <script src="../assets/js/seo/seo_title.js"></script>
+    <script src="../assets/js/manual/chapter_numering.js"></script>
+</body>
+</html>

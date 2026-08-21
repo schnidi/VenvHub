@@ -1,0 +1,37 @@
+{
+  "id": "builder",
+  "icon": "🛠",
+  "title": "Executable Builder (.EXE / PyInstaller)",
+  "sections": [
+    {
+      "id": "priprava",
+      "title": "Target Configuration & Environment Selection",
+      "content": "<p>VenvHub Pro includes an integrated visual builder to compile Python scripts (<code>.py</code>) into standalone Windows executables (<code>.exe</code>) leveraging <strong>PyInstaller</strong>.</p><h3>Setup Pipeline:</h3><ol><li><strong>Project Selection:</strong> Choose the target workspace project.</li><li><strong>Source Environment:</strong> PyInstaller inspects and bundles exact package versions active in this specific virtual environment.</li><li><strong>Target Entry Script:</strong> Scans project root for runnable Python entry points (e.g. <code>main.py</code>).</li><li><strong>Output Destination:</strong> Where final <code>.exe</code> and intermediary build artifacts land (defaults to <code>dist/</code> inside the project).</li></ol><div class='alert'><strong>Automated Dependency Check:</strong> If <code>pyinstaller</code> is missing inside the active Venv, VenvHub detects it upon clicking 'BUILD' and provisions it in the background.</div>"
+    },
+    {
+      "id": "zakladne",
+      "title": "Core Settings (Console, OneFile vs Onedir)",
+      "content": "<h3>Window &amp; Console Execution</h3><ul><li><strong>Console Output:</strong> Ideal for CLI tools and debugging (displays stdout/stderr logs on crash).</li><li><strong>Windowed Mode (--noconsole):</strong> Intended for production GUI applications, suppressing the background CMD console.</li></ul><h3>Packaging Topology (Performance vs Distribution)</h3><ul><li><strong>Single File (--onefile):</strong> Bundles the interpreter, packages, and assets into a single distributable binary. Simple to share, but incurs a startup delay while extracting to the system Temp directory.</li><li><strong>Directory Mode (--onedir):</strong> Produces an application directory with unpacked binaries. Provides <strong>instant startup performance</strong>, but requires distributing the entire directory folder.</li></ul>"
+    },
+    {
+      "id": "assets",
+      "title": "Bundling Data Assets & sys._MEIPASS",
+      "content": "<p>PyInstaller bundles only Python source code by default. Non-Python dependencies (images, audio, fonts, <code>config.json</code>) <strong>must be mapped in the Assets matrix</strong> to prevent runtime <em>FileNotFoundError</em> exceptions.</p><h3>Asset Destination Mapping:</h3><div class='table-responsive'><table style='width: 100%; border-collapse: collapse; margin-top: 15px;'><tr style='background-color: #f1f1f1; text-align: left;'><th style='padding: 10px; border: 1px solid #ddd;'>Source Path</th><th style='padding: 10px; border: 1px solid #ddd;'>Destination Folder</th><th style='padding: 10px; border: 1px solid #ddd;'>Description</th></tr><tr><td style='padding: 10px; border: 1px solid #ddd;'><code>C:\\Project\\logo.png</code></td><td style='padding: 10px; border: 1px solid #ddd;'><code>.</code> (dot)</td><td style='padding: 10px; border: 1px solid #ddd;'>Extracted directly alongside the <code>.exe</code> binary root.</td></tr><tr><td style='padding: 10px; border: 1px solid #ddd;'><code>C:\\Project\\ui_files\\</code></td><td style='padding: 10px; border: 1px solid #ddd;'><code>gui/templates</code></td><td style='padding: 10px; border: 1px solid #ddd;'>Preserves folder tree as <code>gui/templates/</code> inside the bundle.</td></tr></table></div><div class='alert' style='border-left-color: #e74c3c;'><strong>Critical Runtime Path Notice:</strong> In OneFile bundles, static relative paths break because files unpack into temporary directories. Use this resolution helper:</div><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto;'>import sys\nimport os\n\ndef get_resource_path(relative_path):\n    try:\n        base_path = sys._MEIPASS\n    except AttributeError:\n        base_path = os.path.abspath(&quot;.&quot;)\n    return os.path.join(base_path, relative_path)\n\n# Usage:\nlogo = get_resource_path(&quot;logo.png&quot;)</pre>"
+    },
+    {
+      "id": "unikatne",
+      "title": "Unique Features (Birth Certificate, UV & Auto-Injector)",
+      "content": "<h3>1. Birth Certificate Metadata Injection</h3><p>Generates <code>[Project]_birth_certificate.json</code> containing the full package ledger and Python version directly into the build root, allowing applications to audit their compilation environment.</p><h3>2. Standalone UV Runtime Bundling (uv.exe)</h3><p>For applications that dynamically provision plugins at client sites, checking this embeds <code>uv.exe</code> via <code>--add-binary</code> for ultra-fast client-side package management.</p><h3>3. VenvHub Auto-Injector (Local Packages)</h3><p>When utilizing <strong>Local Packages (Linker)</strong>, the builder preprocessor:</p><ul><li>Parses <code>venvhub.json</code> and injects <code>--paths</code> flags for all linked codebases.</li><li>Injects <code>--add-data</code> arguments for every linked module, bundling all assets, JSON configs, and UI files automatically without manual configuration.</li></ul>"
+    },
+    {
+      "id": "importy",
+      "title": "Imports & Advanced Tuning (Hidden Imports, Excludes, UAC)",
+      "content": "<h3>Hidden Imports</h3><p>For dynamic imports loaded via <code>importlib</code> that bypass static analysis, add module names here to force bundle inclusion.</p><h3>Exclude Modules</h3><p>Strip unnecessary heavy dependencies (e.g. <code>pandas</code>, <code>tkinter</code>) pulled in as optional sub-dependencies to minimize binary footprint.</p><h3>Advanced Flags:</h3><ul><li><strong>Clean Cache (--clean):</strong> Purges stale build cache artifacts before compiling.</li><li><strong>Request Elevation (--uac-admin):</strong> Embeds Windows Administrator UAC manifest into the executable header.</li></ul>"
+    },
+    {
+      "id": "build",
+      "title": "Build Pipeline & Live Preview",
+      "content": "<h3>Live CLI Preview</h3><p>Inspects the generated PyInstaller command in real time with support for custom user arguments (e.g. <code>--noupx</code>).</p><h3>Execution:</h3><ol><li>Click <strong>🛠 BUILD .EXE</strong>.</li><li>Streams live compiler telemetry to the Build Log Dialog in an asynchronous worker thread.</li><li>Upon completion (✅ DONE), final distributables are ready in the <code>dist/</code> folder.</li></ol>"
+    }
+  ]
+}

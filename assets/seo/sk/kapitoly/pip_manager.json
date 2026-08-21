@@ -1,0 +1,8 @@
+{
+  "title": "Pip Manažér Balíčkov – VenvHub Pro Manuál",
+  "description": "Paralelný Dual-Scan manažér knižníc, podpora UV autopilota, APT autoremove samočistenie závislostí a bezpečný downgrade balíčkov.",
+  "keywords": "pip manažér, uv autopilot, python balíčky, apt autoremove, downgrade balíčka, dual-scan pip",
+  "og_title": "Pip Manažér Balíčkov – VenvHub Pro Manuál",
+  "og_description": "Paralelný Dual-Scan manažér knižníc, UV autopilot a inteligentné čistenie závislostí.",
+  "og_image": "assets/icon/og-image.png"
+}

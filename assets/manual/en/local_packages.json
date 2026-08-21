@@ -1,0 +1,47 @@
+{
+  "id": "local_packages",
+  "icon": "🔗",
+  "title": "Local Packages (Shared Libraries)",
+  "sections": [
+    {
+      "id": "princip",
+      "title": "Architecture & Mechanism (Zero-UAC)",
+      "content": "<p>The <strong>Local Packages</strong> module solves a common developer bottleneck: how to efficiently share modular in-house libraries across multiple projects without duplicating code or publishing to private indexes.</p><p>VenvHub Pro requires <strong>zero administrator elevation (UAC)</strong> and creates no fragile NTFS filesystem junctions. Instead, it utilizes high-performance <strong>Python Import Hooks (sys.meta_path)</strong>. The system automatically orchestrates:</p><ul><li>A ledger file <code>venvhub.json</code> inside the target environment's <code>site-packages</code>.</li><li>A runtime bootstrap hook (<code>.pth</code> and <code>.py</code> bootstrapper) intercepting imports and mapping them directly to your live repository.</li><li>Automated background installation of upstream PyPI package requirements.</li><li>Direct injection of absolute extraPaths and workspace Tasks into VS Code.</li></ul>"
+    },
+    {
+      "id": "struktura",
+      "title": "Package Structure (local_meta.json)",
+      "content": "<p>Every shared module directory requires a <code>local_meta.json</code> descriptor defining its identity, version, and dependencies.</p><h3>Metadata Specification:</h3><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto;'>{\n    &quot;name&quot;: &quot;MyDatabase&quot;,\n    &quot;version&quot;: &quot;1.2.0&quot;,\n    &quot;short_description&quot;: &quot;Handles MongoDB persistence and caching&quot;,\n    &quot;requires_local&quot;: [&quot;MyLogger&quot;],\n    &quot;requires_pip&quot;: [&quot;colorama&quot;, &quot;pymongo&quot;],\n    &quot;vscode_integration&quot;: {\n        &quot;tasks&quot;: [\n            {\n                &quot;label&quot;: &quot;Flush DB Cache&quot;,\n                &quot;type&quot;: &quot;shell&quot;,\n                &quot;command&quot;: &quot;python -c \\&quot;import db; db.clear()\\&quot;&quot;\n            }\n        ],\n        &quot;keybindings&quot;: [\n            {\n                &quot;key&quot;: &quot;ctrl+shift+d&quot;,\n                &quot;command&quot;: &quot;workbench.action.tasks.runTask&quot;,\n                &quot;args&quot;: &quot;Flush DB Cache&quot;\n            }\n        ]\n    }\n}</pre><div class='table-responsive'><table style='width: 100%; border-collapse: collapse; margin-top: 15px;'><tr style='background-color: #f1f1f1; text-align: left;'><th style='padding: 10px; border: 1px solid #ddd;'>Descriptor Key</th><th style='padding: 10px; border: 1px solid #ddd;'>Function</th></tr><tr><td style='padding: 10px; border: 1px solid #ddd;'><code>short_description</code></td><td style='padding: 10px; border: 1px solid #ddd;'>Overview summary displayed inside the VenvHub linker table.</td></tr><tr><td style='padding: 10px; border: 1px solid #ddd;'><code>requires_local</code></td><td style='padding: 10px; border: 1px solid #ddd;'>List of co-dependent module folder names inside the local package root.</td></tr><tr><td style='padding: 10px; border: 1px solid #ddd;'><code>requires_pip</code></td><td style='padding: 10px; border: 1px solid #ddd;'>List of third-party PyPI dependencies to automatically install.</td></tr><tr><td style='padding: 10px; border: 1px solid #ddd;'><code>vscode_integration</code></td><td style='padding: 10px; border: 1px solid #ddd;'>Defines custom Tasks and Keybindings to dynamically provision to target projects.</td></tr></table></div>"
+    },
+    {
+      "id": "nastavenie",
+      "title": "Configuring Root Storage Path",
+      "content": "<p>Configure your shared module repository location:</p><ol><li>Open <strong>Manager (🖥️)</strong> -> <strong>Settings</strong> tab.</li><li>Under <strong>Root Paths</strong>, locate <strong>Local Packages</strong>.</li><li>Click the folder icon 📁 and choose your repository root directory (where each package lives in its own subfolder).</li></ol><div class='tip'><strong>Portable Drive Binding:</strong> On USB flash drives, this path automatically binds relative to the current drive letter.</div>"
+    },
+    {
+      "id": "pouzitie",
+      "title": "Linking into Virtual Environments",
+      "content": "<p>Attaching libraries to target environments:</p><ol><li>Right-click target Venv in the Manager matrix.</li><li>Select <strong>🔗 Local Packages</strong>.</li><li>Check the packages you wish to link.</li><li>Click <strong>💾 Save Changes (Relink)</strong>.</li></ol><div class='alert'><strong>Automated Dependency Resolution:</strong> Linking 'Package A' which requires 'Package B' parses metadata recursively, maps all search paths into <code>venvhub.json</code>, and installs missing Pip dependencies silently.</div>"
+    },
+    {
+      "id": "vscode",
+      "title": "VS Code Integration (Hybrid Tracker)",
+      "content": "<p>One of the primary advantages of VenvHub Pro is seamless, coordinated synchronization with Visual Studio Code:</p><ul><li>VenvHub Pro inspects <code>venvhub.json</code> and injects absolute paths into <code>python.analysis.extraPaths</code> in your workspace <code>settings.json</code>. IntelliSense instantly resolves your imports.</li><li>Custom tasks (<code>tasks.json</code>) and keybindings (<code>keybindings.json</code>) are dynamically provisioned based on the package metadata.</li></ul><div class='tip' style='border-left-color: #007acc; background-color: #f0f7ff;'><strong style='color: #007acc;'>🛡️ Hybrid Mechanism (Brutal Check) & venvhub_tracker.json:</strong><p style='margin-top: 10px;'>To ensure that removing packages never damages your own custom VS Code tasks, the system utilizes a safety tracker:</p><ol style='margin-top: 10px; padding-left: 20px;'><li style='margin-bottom: 6px;'><strong>Receipt Ledger:</strong> All injected changes are recorded in <code>.vscode/venvhub_tracker.json</code>.</li><li style='margin-bottom: 6px;'><strong>Safety Brake:</strong> If a package directory is deleted manually via Windows Explorer, VenvHub Pro traces orphaned entries and cleanly purges them from VS Code.</li><li style='margin-bottom: 0;'><strong>Automatic Cleanup:</strong> If no tasks remain after unlinking, it physically deletes empty <code>tasks.json</code> and <code>keybindings.json</code> files to keep the workspace clean.</li></ol></div>"
+    },
+    {
+      "id": "pyinstaller",
+      "title": "Bundling with PyInstaller (.EXE)",
+      "content": "<p>Due to the zero-UAC architecture (Import Hooks), local packages are not physically copied into the environment's directory. Standard PyInstaller static analysis would not find them automatically.</p><div class='tip'><strong>VenvHub Auto-Injector (Full Automation):</strong><br>When creating a standalone <code>.exe</code>, you don't need to do <strong>anything extra</strong> in the PyInstaller Builder!<br><br>Before compilation, VenvHub Pro Builder automatically inspects <code>venvhub.json</code> and generates in the background:<ul><li>The <code>--paths</code> parameter, allowing PyInstaller to immediately discover all Python code from linked local packages.</li><li>The <code>--add-data</code> parameter for each linked package, automatically embedding images, JSON configurations, and UI templates directly into the final <code>.exe</code>.</li></ul></div>"
+    },
+    {
+      "id": "samooprava",
+      "title": "Self-Healing Paths on USB Drives (Portable Mode)",
+      "content": "<p>The hook architecture makes running projects from USB flash drives exceptionally reliable.</p><div class='tip'><strong>Lightning-Fast Silent Auto-Repair:</strong> Whenever you launch the application on a new PC:<ol><li>VenvHub Pro detects the change in drive letter (e.g. from <code>E:\\</code> to <code>F:\\</code>).</li><li>It opens <code>venvhub.json</code> inside the environment directory.</li><li>Instantly and <strong>completely silently</strong> rewrites outdated drive letters to the new ones in milliseconds without triggering any UAC prompts.</li></ol></div>"
+    },
+    {
+      "id": "sietove-disky",
+      "title": "Network Drives (NAS & Shared Folders)",
+      "content": "<div class='tip' style='border-left-color: #28a745; background-color: #eafaf1; color: #333;'><strong>✅ Full Support Anywhere!</strong><p style='margin-top: 10px;'>The root folder of local packages <strong>can reside literally anywhere</strong> – on a local drive, network-attached storage (NAS), or cloud sync folder. Because VenvHub Pro writes paths purely as standard strings into JSON files, the underlying physical storage type does not matter to the OS.</p></div>"
+    }
+  ]
+}

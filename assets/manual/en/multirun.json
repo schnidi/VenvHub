@@ -1,0 +1,37 @@
+{
+  "id": "multirun",
+  "icon": "🔄",
+  "title": "Container Orchestrator (Multi-run)",
+  "sections": [
+    {
+      "id": "princip",
+      "title": "Multi-run Architecture & Concept",
+      "content": "<p>Modern applications frequently consist of distributed services that must execute concurrently (e.g. Backend API + Frontend + Background Worker). Starting each runtime manually is inefficient.</p><p>The <strong>Multi-run</strong> module allows you to define declarative 'Process Groups'. A single click on the Play button launches the entire container stack simultaneously, with each service running in a fully isolated, monitored process tree.</p>"
+    },
+    {
+      "id": "vytvorenie",
+      "title": "Creating & Populating Process Groups",
+      "content": "<p>Navigate to the Master Manager window and select the <em>'Multi-run'</em> tab:</p><ol><li><strong>Create Group:</strong> Click <strong>+</strong> in the left sidebar and specify a group identifier (e.g. <em>'FullStack Dev'</em>).</li><li><strong>Select Members:</strong> The middle tree lists all scanned projects and their environments. Check any environment box to assign it to the active group.</li><li><strong>Save:</strong> Assigned members appear in the right matrix. Click <strong>Save Group Changes</strong> to persist group definitions to configuration.</li></ol>"
+    },
+    {
+      "id": "nastavenie",
+      "title": "Execution Order & Scripts (3-Zone Drag & Drop)",
+      "content": "<p>Fine-tune container execution within the 'Group Members' matrix:</p><h3>Advanced 3-Zone Drag &amp; Drop Reordering</h3><p>Row order defines execution sequence (e.g. starting a database before an API gateway). The table utilizes an intelligent 3-zone drop target system:</p><ul><li><strong>Insert:</strong> Dropping onto the <strong>top or bottom edge</strong> of a target row inserts the dragged row before or after it.</li><li><strong>Swap:</strong> Dropping directly into the <strong>center</strong> of a target row swaps positions between the two entries.</li></ul><h3>Script Override per Container</h3><p>By default, members execute their primary default script. To run an alternate entry point for a specific container group (e.g. <code>worker.py</code>), simply <strong>double-click the Script cell</strong> to override it.</p><div class='tip'><strong>Persistence:</strong> Click <strong>Save Group Changes</strong> after any reordering or script modification.</div>"
+    },
+    {
+      "id": "spustenie",
+      "title": "Execution Lifecycle & Smart Respawn",
+      "content": "<p>Launch a container group by setting the Mini-Bar to <strong>M (Multi)</strong> mode, selecting the group, and clicking <strong>Play ▶</strong>.</p><h3>Concurrency &amp; Collision Protection</h3><p>VenvHub Pro prevents duplicate executions. If any project in the group is already running, startup halts and alerts the developer to prevent socket and port collisions.</p><h3>Smart Respawn Engine</h3><p>If a single microservice within an active group crashes while other services remain healthy:</p><ol><li>Fix the defect in your codebase.</li><li>Click <strong>Play ▶</strong> on the Mini-Bar toolbar again.</li></ol><p><strong>The Smart Respawn engine evaluates running states:</strong></p><ul><li>Inspects the group matrix.</li><li>Identifies healthy active services -&gt; <span style='color:#f39c12; font-weight:bold;'>SKIPPED (Undisturbed)</span>.</li><li>Identifies the crashed service -&gt; <span style='color:#2ecc71; font-weight:bold;'>RESPAWNED (Relaunched)</span>.</li></ul><p>There is no need to restart the entire stack—only crashed processes are selectively revived.</p>"
+    },
+    {
+      "id": "vlastnictvo",
+      "title": "Process Ownership & Group Isolation",
+      "content": "<p>VenvHub Pro enforces a robust process ownership model. When launching a group named 'MyAPI', every spawned PID registers an ownership tag binding it to that specific group context.</p><h3>Why Process Ownership Matters:</h3><p>Consider overlapping group configurations:</p><ul><li><strong>Group A:</strong> contains Project 1 and Project 2.</li><li><strong>Group B:</strong> contains Project 2 and Project 3.</li></ul><p>If Group A is running and you issue a Stop command to Group B, standard PID killing might accidentally terminate Project 2. Process ownership prevents this cross-group interference.</p><div class='alert'><strong>Isolation Guarantee:</strong> Clicking <strong>Stop ■</strong> terminates <strong>strictly and exclusively</strong> processes launched under that specific group banner, leaving other concurrent runtimes untouched.</div>"
+    },
+    {
+      "id": "job-objects",
+      "title": "Windows Low-Level Stability (Job Objects & Handles)",
+      "content": "<p>VenvHub Pro includes low-level Windows process management using native C-runtime bindings via <code>ctypes</code>:</p><h3>1. Orphan Process Elimination (Windows Job Objects)</h3><p>Upon initialization, child processes assign to a native Windows <strong>Job Object</strong> with the <code>JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE</code> attribute.</p><ul><li>If VenvHub Pro exits or crashes unexpectedly, the Windows kernel intercepts the Job closure and <strong>instantly terminates all associated subprocesses</strong>.</li><li>Prevents orphaned background processes from locking listening ports or consuming RAM.</li></ul><h3>2. PID Collision Protection (Windows Process Handles)</h3><p>Windows aggressively recycles Process IDs (PIDs). If a monitored PID terminates and Windows assigns the same ID to another system application, registry polling could misidentify processes.</p><ul><li>VenvHub Pro retains an open kernel-level <strong>Process Handle</strong> throughout process lifecycle.</li><li>An open handle prevents Windows from recycling that specific PID until VenvHub explicitly closes the handle.</li><li>Guarantees zero risk of accidental termination of external system processes.</li></ul><div class='tip'><strong>Thread-Safe Resource Management:</strong> All kernel handles are protected by thread locks and close cleanly during normal termination, preventing handle leaks.</div>"
+    }
+  ]
+}

@@ -1,0 +1,414 @@
+/* =========================================
+   Company: Seal and Lube, spol. s r.o.
+   Author: Ing. Viliam Schneider
+   Theme: Modern Industrial Dark & Amber Premium
+========================================= */
+
+:root {
+    --primary-color: #f59e0b;       /* Teplá jantárovo-zlatá / meď */
+    --primary-hover: #d97706;       /* Tmavšia zlatá pri prejdení */
+    --primary-glow: rgba(245, 158, 11, 0.25);
+    
+    --bg-body: #0a0c10;             /* Hlboká tmavá bridlica */
+    --bg-header: rgba(18, 22, 32, 0.85); /* Polopriehľadná tmavá lišta */
+    --bg-card: #121620;             /* Tmavé karty */
+    --bg-card-hover: #181d2a;
+    
+    --text-main: #f3f4f6;           /* Jasný svetlý text */
+    --text-muted: #9ca3af;          /* Tlmený šedý text */
+    --border-color: #232a3b;        /* Tmavý elegantný rámik */
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg-body);
+    background-image: 
+        radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(15, 23, 42, 0.8) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+/* HORNA NAVIGAČNÁ LIŠTA (Glassmorphism Effect) */
+.top-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--bg-header);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 70px;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: white;
+}
+
+.brand-logo h1 {
+    font-size: 21px;
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.brand-logo span {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: #000;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu a {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.nav-menu a.active {
+    color: var(--primary-color);
+    background-color: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Prepínač Jazykov */
+.lang-switcher {
+    position: relative;
+}
+
+.lang-btn {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.lang-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    min-width: 150px;
+    overflow: hidden;
+    z-index: 1001;
+}
+
+.lang-dropdown.show {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.lang-dropdown a {
+    display: block;
+    padding: 12px 18px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.lang-dropdown a:hover {
+    background-color: var(--primary-color);
+    color: #000;
+    font-weight: 700;
+}
+
+/* OBSAH PORTÁLU */
+.main-wrapper {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+/* HERO BOX (Technický gradient & Zlato-jantárový akcent) */
+.hero-box {
+    background: linear-gradient(145deg, #121620 0%, #1a202c 100%);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 50px;
+    border-radius: 16px;
+    margin-bottom: 50px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), transparent);
+}
+
+.hero-box h2 {
+    font-size: 34px;
+    font-weight: 800;
+    margin-top: 0;
+    margin-bottom: 18px;
+    letter-spacing: -0.5px;
+}
+
+.hero-box p {
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 800px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: #000;
+    box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: rgba(245, 158, 11, 0.05);
+}
+
+/* SEKCIE A KARTY */
+.section-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.content-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 32px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.content-card:hover {
+    transform: translateY(-6px);
+    background-color: var(--bg-card-hover);
+    border-color: var(--primary-color);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 15px var(--primary-glow);
+}
+
+.content-card h3 {
+    margin-top: 0;
+    color: var(--text-main);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.content-card p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #07080c;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 80px;
+}
+
+/* RESPONZIVITA PRE MOBIL */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background-color: #121620;
+        flex-direction: column;
+        padding: 20px 0;
+        border-bottom: 2px solid var(--primary-color);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .nav-menu a {
+        padding: 14px 30px;
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .hero-box {
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    .hero-box h2 {
+        font-size: 26px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
+
+.theme-switcher select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--bg-card, #2a2d32);
+    color: var(--text-main, #fff);
+    border: 1px solid var(--border-color, #444);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+}
+
+.theme-switcher select:hover {
+    border-color: var(--primary-color);
+}
+
+

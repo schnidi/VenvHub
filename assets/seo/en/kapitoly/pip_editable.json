@@ -1,0 +1,8 @@
+{
+  "title": "Editable Packages (pip -e) – VenvHub Pro Manual",
+  "description": "Installing and managing development packages via pip install -e, pyproject.toml structure, USB path auto-repair, and VS Code Pylance support.",
+  "keywords": "pip editable, pip install -e, pyproject.toml, editable package, portable pip -e",
+  "og_title": "Editable Packages (pip -e) – VenvHub Pro Manual",
+  "og_description": "Installing development packages with pip install -e and automated USB drive letter recovery.",
+  "og_image": "assets/icon/og-image.png"
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ZÁKLADNÝ TITULOK (prepíše sa dynamicky cez seo_title.js) -->
+    <title>VenvHub Pro</title>
+    <meta name="description" content="VenvHub Pro">
+    <meta name="author" content="Ing. Viliam Schneider">
+    <meta name="robots" content="index, follow">
+
+    <!-- MULTIJAZYČNOSŤ PRE GOOGLE -->
+    <link rel="alternate" hreflang="sk" href="index.html?lang=sk">
+    <link rel="alternate" hreflang="en" href="index.html?lang=en">
+    <link rel="alternate" hreflang="x-default" href="index.html?lang=en">
+
+    <!-- IKONY A FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="assets/icon/icon-04.svg">
+    <link rel="icon" type="image/x-icon" href="assets/icon/app.ico">
+
+    <!-- HLAVNÝ ŠTÝL -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <!-- HORNÁ NAVIGAČNÁ LIŠTA -->
+    <header class="top-header">
+        <div class="nav-container">
+            
+            <!-- Logo s dynamickou verziou z GitHubu -->
+            <a href="index.html" class="brand-logo">
+                <h1>VenvHub Pro</h1>
+                <span id="headerVersionBadge">...</span>
+            </a>
+
+            <!-- Hlavné Menu (data-i18n sa prekladá z preklady_menu.json) -->
+            <nav aria-label="Hlavná navigácia">
+                <ul class="nav-menu">
+                    <li><a href="#domov" class="active" data-i18n="nav_home">Domov</a></li>
+                    <li><a href="#o-programe" data-i18n="nav_about">O programe</a></li>
+                    <li><a href="manual/index-manual.html" data-i18n="nav_manual">Manuál</a></li>
+                    <li><a href="#komunita" data-i18n="nav_community">Komunita</a></li>
+                </ul>
+            </nav>
+
+            <!-- Tlačidlo pre mobilné Hamburger menu -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+
+            <!-- Prepínač Jazykov (čisté linky pre Google, obsluhované cez JS) -->
+            <div class="lang-switcher">
+                <button class="lang-btn" id="langBtn" aria-label="Zvoliť jazyk">
+                    🌐 <span id="currentLangLabel">Slovenčina</span> ▾
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <a href="index.html?lang=sk" data-lang="sk">🇸🇰 Slovenčina</a>
+                    <a href="index.html?lang=en" data-lang="en">🇬🇧 English</a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- KONTAJNER PRE DYNAMICKÝ OBSAH -->
+    <main class="main-wrapper" id="content-container">
+    </main>
+
+    <!-- PÄTKA -->
+    <footer class="footer">
+        © Seal and Lube, spol. s r.o. | Author: Ing. Viliam Schneider
+    </footer>
+
+    <!-- SKRIPTY (Presné poradie: 1. SEO -> 2. GitHub Release -> 3. Menu & Jazyky) -->
+    <script src="assets/js/seo/seo_title.js"></script>
+    <script src="assets/js/git_exe_release.js"></script>
+    <script src="assets/js/horne_menu.js"></script>
+</body>
+</html>

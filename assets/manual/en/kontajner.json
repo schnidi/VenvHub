@@ -1,0 +1,37 @@
+{
+  "id": "kontajner",
+  "icon": "🔄",
+  "title": "Container & Autostart",
+  "sections": [
+    {
+      "id": "hybrid",
+      "title": "Hybrid Architecture (Venv Orchestration)",
+      "content": "<p>The <strong>Container / Autostart</strong> module is not a full-stack hypervisor like Docker. It does not virtualize kernel or network layers. Instead, it serves as a <strong>native Windows Orchestrator</strong>.</p><p>It clusters lightweight Python virtual environments into managed container groups. The result is instant startup and minimal RAM footprint (zero Docker daemon overhead) while maintaining auto-start, crash recovery, and memory monitoring.</p>"
+    },
+    {
+      "id": "pridanie",
+      "title": "Importing Groups & Real-time Persistence",
+      "content": "<p>This module tightly integrates with the <em>Multi-run</em> tab. Groups are imported into the container manager:</p><ol><li>Configure your project group in the <em>Multi-run</em> tab.</li><li>Navigate to <em>Container</em> and click <strong>➕ Add New Group</strong>.</li><li>Select the group from the catalog to generate its dedicated control widget.</li></ol><div class='tip'><strong>Zero-Save Real-time Persistence:</strong> All configurations persist instantly. Toggling checkboxes or adjusting timers writes to individual JSON descriptors in <code>assets/autostart_multi/</code> (or <code>%APPDATA%</code>) in milliseconds.</div>"
+    },
+    {
+      "id": "ovladanie",
+      "title": "Dashboard Metrics (LED, RAM & Modes)",
+      "content": "<p>Each imported widget operates as an independent telemetry dashboard.</p><h3>1. Live Telemetry</h3><ul><li><strong>Status LED:</strong> Real-time operational health indicator:<ul><li><strong style='color:gray;'>Gray:</strong> Empty group without projects.</li><li><strong style='color:#e74c3c;'>Red:</strong> All processes are currently stopped.</li><li><strong style='color:#2ecc71;'>Green:</strong> Live runtime active with zero failure states.</li><li><strong style='color:#f39c12;'>Flashing Orange:</strong> Crash state detected in one or more child processes.</li></ul></li><li><strong>Recursive RAM Monitor:</strong> Polls memory every 2 seconds, recursively summing memory across <strong>all subprocesses and worker threads</strong>.</li></ul><h3>2. Header Controls</h3><ul><li><strong>Autostart:</strong> Automatically boots the container group on application launch.</li><li><strong>T (Terminal) vs S (Silent):</strong> Launch mode (T = active CMD console for debugging; S = headless background execution).</li></ul><div class='alert' style='border-left-color: #e74c3c;'><strong>Silent Mode Management:</strong> Even in silent mode, <em>Windows Job Objects</em> automatically terminate child runtimes on app exit. Always use the <strong>STOP</strong> button for clean shutdown.</div>"
+    },
+    {
+      "id": "sekvencia",
+      "title": "Sequencing, Signal Anchors & Stability",
+      "content": "<p>Container launches are coordinated by a dedicated Launch Worker enforcing sequential execution and <strong>Chain Stability</strong>.</p><h3>1. Intelligent Wait Timers</h3><p>The <strong>Wait (s)</strong> parameter delays process startup. During countdown, VenvHub evaluates predecessor health every 500ms. If a predecessor crashes, the countdown <strong>pauses, resets, and waits</strong> for predecessor recovery.</p><h3>2. Signal Anchors (Hook Handshake)</h3><p>Anchors provide precise synchronization for asynchronous servers:</p><ul><li><strong>Unique Handshake Key:</strong> Injects the signal path into <code>VENVHUB_KOTVA</code>.</li><li><strong>Queue Blocking:</strong> Halts startup until the Python runtime writes the anchor file to disk.</li></ul><h3>Python Anchor Implementation:</h3><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px;'>import os\n\ndef signal_ready():\n    hook_path = os.environ.get(&quot;VENVHUB_KOTVA&quot;)\n    if hook_path:\n        try:\n            with open(hook_path, 'w') as f:\n                pass\n            print(&quot;⚓ Anchor: Signal dispatched.&quot;)\n        except Exception as e:\n            print(f&quot;⚠️ Anchor error: {e}&quot;)\n\n# Call once server initialization completes\nsignal_ready()</pre>"
+    },
+    {
+      "id": "respawn",
+      "title": "Crash Detection & 3-Strike Respawn",
+      "content": "<h3>1. Cascade Failure Prevention</h3><ul><li><strong>Grace Period (6s):</strong> Temporarily ignores process states during initial console boot.</li><li><strong>Fatal Break:</strong> If a predecessor fails 3 consecutive launch attempts, the sequence halts permanently (<strong>🛑 FATAL ERROR</strong>) to prevent dependency deadlock.</li></ul><h3>2. Runtime Respawn (3-Strike Rule)</h3><p>If a service crashes during normal operation:</p><ul><li><strong>Audit:</strong> Records crash telemetry to <code>crash_log.jsonl</code> inside the Venv directory.</li><li><strong>Hard Cleanup:</strong> Waits 2 seconds, kills orphaned windows, and releases network sockets.</li><li><strong>Reincarnation:</strong> Relaunches the process with preserved working directory.</li><li><strong>3-Strike Rule:</strong> After 3 sequential crashes, respawns lock to preserve console diagnostics.</li></ul><div class='alert'><strong>Resetting Counters:</strong> Clicking <strong>STOP</strong> on the container widget resets all failure counters and clears 3-Strike locks.</div>"
+    },
+    {
+      "id": "boot",
+      "title": "System Boot Lifecycle & Ownership Matrix",
+      "content": "<h3>Application Boot Engine</h3><p>On startup, <code>AutostartBooter</code> evaluates groups marked for Autostart. If conflicting processes are already active on host ports, <strong>Autostart safely aborts</strong> to prevent collisions.</p><h3>Process Ownership Matrix</h3><p>Child processes bind strictly to their parent group context in memory. Issuing a Stop command to Group B never affects concurrent processes owned by Group A.</p>"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "multirun",
+  "icon": "🔄",
+  "title": "Hromadné spúšťanie (Multi-run)",
+  "sections": [
+    {
+      "id": "princip",
+      "title": "Princíp Hromadného spúšťania (Multi-run)",
+      "content": "<p>Moderné aplikácie sa často skladajú z viacerých častí, ktoré musia bežať naraz (napr. Backend + Frontend + Worker). Manuálne spúšťanie každého zvlášť je zdĺhavé.</p><p>Režim <strong>Multi-run</strong> vám umožňuje definovať 'Skupiny'. Jedným kliknutím na tlačidlo Play sa spustí celá skupina naraz, pričom každý projekt beží vo vlastnom, plne izolovanom procese.</p>"
+    },
+    {
+      "id": "vytvorenie",
+      "title": "Vytvorenie a naplnenie skupiny",
+      "content": "<p>Prejdite do okna Správca Prostredí na záložku <em>'Hromadné Spúšťanie'</em>.</p><ol><li><strong>Vytvorenie skupiny:</strong> V ľavom paneli kliknite na tlačidlo <strong>+</strong> a zadajte názov (napr. <em>'FullStack Dev'</em>).</li><li><strong>Výber členov:</strong> V strednom paneli vidíte stromovú štruktúru všetkých vašich projektov a ich prostredí. Zaškrtnutím prostredia (checkbox) ho pridáte do skupiny.</li><li><strong>Uloženie:</strong> Členovia sa objavia v pravej tabuľke. Nezabudnite kliknúť na <strong>Uložiť zmeny v skupine</strong>! Vaše nastavenia sa zapíšu do hlavného konfiguračného súboru.</li></ol>"
+    },
+    {
+      "id": "nastavenie",
+      "title": "Poradie a Skripty (Pokročilý Drag & Drop)",
+      "content": "<p>V pravej tabuľke ('Členovia skupiny') môžete doladiť detaily:</p><h3>Pokročilá zmena poradia (3-zónový Drag &amp; Drop)</h3><p>Poradie v tabuľke určuje poradie spúšťania. Ak potrebujete, aby sa databáza spustila skôr ako server, môžete riadky presúvať myšou. Tabuľka používa inteligentný 3-zónový systém:</p><ul><li><strong>Vloženie (Insert):</strong> Ak pustíte myš na <strong>horný alebo spodný okraj</strong> cieľového riadka, presúvaný riadok sa vloží pred alebo za neho.</li><li><strong>Prehodenie (Swap):</strong> Ak pustíte myš do <strong>stredu</strong> cieľového riadka, riadky si iba vymenia svoje pozície.</li></ul><h3>Zmena spúšťacieho skriptu</h3><p>Predvolene aplikácia pre každý projekt použije skript nastavený v hlavnej záložke. Ak pre konkrétny projekt v tejto skupine potrebujete spustiť iný súbor (napr. <code>worker.py</code>), môžete názov skriptu v tabuľke jednoducho <strong>prepísať dvojklikom</strong>.</p><div class='tip'><strong>Automatické ukladanie:</strong> Po každej zmene poradia (Drag &amp; Drop) alebo úprave skriptu nezabudnite kliknúť na tlačidlo <strong>Uložiť zmeny v skupine</strong>.</div>"
+    },
+    {
+      "id": "spustenie",
+      "title": "Spustenie a chybové stavy",
+      "content": "<p>Skupinu spustíte prepnutím Mini-Baru do režimu <strong>M (Multi)</strong>, výberom skupiny a kliknutím na <strong>Play ▶</strong>.</p><h3>Prevencia konfliktov a duplicitného spustenia</h3><p>Aplikácia bráni spusteniu procesu, ak už beží. Ak sa pokúsite spustiť skupinu, v ktorej je projekt, ktorý už beží, zobrazí sa varovanie a štart sa preruší, aby sa zabránilo konfliktom.</p><h3>Inteligentný reštart (Smart Restart)</h3><p>Čo robiť, ak jeden z projektov v skupine spadne (crash), ale ostatné bežia ďalej?</p><ol><li>Opravte chybu vo vašom kóde.</li><li>Znova stlačte tlačidlo <strong>Play ▶</strong> na Mini-Bare.</li></ol><p><strong>Aplikácia sa zachová inteligentne:</strong></p><ul><li>Skontroluje celú skupinu.</li><li>Zistí, že projekty A a C stále bežia -&gt; <span style='color:#f39c12; font-weight:bold;'>Tieto projekty PRESKOČÍ</span>.</li><li>Zistí, že projekt B (ktorý spadol) nebeží -&gt; <span style='color:#2ecc71; font-weight:bold;'>Tento projekt SPUSTÍ ZNOVA</span>.</li></ul><p>Nemusíte teda vypínať celú skupinu a zapínať ju odznova. Stačí 'do-spustiť' len tie procesy, ktoré spadli.</p>"
+    },
+    {
+      "id": "vlastnictvo",
+      "title": "Vlastníctvo procesov (Process Ownership)",
+      "content": "<p>Na pozadí beží dôležitá logika, ktorá prideľuje každému spusteniu procesu 'vlastníka'. Keď spustíte skupinu napríklad s názvom 'MojaAPI', každý proces si do pamäte poznačí, že patrí tejto skupine.</p><h3>Prečo je to dôležité?</h3><p>Predstavte si, že máte dve skupiny:</p><ul><li><strong>Skupina A:</strong> obsahuje Projekt 1 a Projekt 2.</li><li><strong>Skupina B:</strong> obsahuje Projekt 2 a Projekt 3.</li></ul><p>Najprv spustíte Skupinu A. Bežia procesy pre Projekt 1 a 2. Následne sa rozhodnete zastaviť Skupinu B. Bez systému vlastníctva by aplikácia mohla omylom vypnúť aj bežiaci Projekt 2, aj keď patril pod Skupinu A.</p><div class='alert'><strong>Bezpečnostná poistka:</strong> Vďaka systému vlastníctva VenvHub Pro zaisťuje, že keď stlačíte tlačidlo <strong>Stop ■</strong> pre konkrétnu skupinu, ukončia sa <strong>len a výlučne</strong> tie procesy, ktoré boli spustené pod hlavičkou tejto skupiny. Ostatné bežiace procesy zostanú nedotknuté.</div>"
+    },
+    {
+      "id": "job-objects",
+      "title": "Nízkoúrovňová stabilita na Windows (Job Objects a Handles)",
+      "content": "<p>VenvHub Pro obsahuje implementáciu správy procesov prispôsobenú pre systém Windows (využívajúcu natívne volania cez knižnicu <code>ctypes</code>). Táto architektúra rieši dva kritické problémy:</p><h3>1. Prevencia 'visiacich' procesov (Windows Job Objects)</h3><p>Pri spustení aplikácie sa na pozadí vytvorí systémový kontajner procesov – tzv. <strong>Job Object</strong> s nastaveným obmedzením <code>JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE</code>.</p><ul><li>Každému novému podprocesu pridelí register systémový príznak a priradí ho do tohto Jobu.</li><li>Ak by materská aplikácia VenvHub Pro neočakávane spadla, operačný systém Windows vnútorne deteguje zatvorenie Job Objectu a <strong>okamžite ukončí všetky priradené dcérske procesy</strong>.</li><li>Vďaka tomu v systéme nezostávajú žiadne osirotené procesy bežiace na pozadí, ktoré by blokovali porty či pamäť RAM.</li></ul><h3>2. Ochrana pred zámenou procesov (Windows Handles)</h3><p>Windows pomerne rýchlo recykluje identifikátory procesov (PID). Ak monitorovaný proces skončí a systém pridelí rovnaké PID inej aplikácii, register by mohol získať nesprávne informácie.</p><ul><li>VenvHub Pro pri registrácii procesu otvorí a v pamäti drží otvorený systémový odkaz – <strong>Process Handle</strong>.</li><li>Kým je tento Handle otvorený, Windows garantuje, že <strong>dané PID nezrecykluje a nepridelí ho inej aplikácii</strong>, až pokiaľ ho register bezpečne nezatvorí.</li><li>Detekcia stavu procesov je tak presná a nehrozí riziko, že by aplikácia omylom monitorovala alebo ukončila iný (cudzí) program.</li></ul><div class='tip'><strong>Bezpečnosť na prvom mieste:</strong> Všetky systémové odkazy (Handles) sú vnútorne chránené zámkami (Thread Locks) a korektne sa zatvárajú pri každom zastavení, páde alebo čistení procesov, čím sa predchádza úniku pamäte.</div>"
+    }
+  ]
+}

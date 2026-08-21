@@ -1,0 +1,8 @@
+{
+  "title": "Local Packages (Shared Libraries) – VenvHub Pro Manual",
+  "description": "Sharing custom Python modules across projects via Import Hooks without admin (UAC) rights, auto-injector, and VS Code coordination.",
+  "keywords": "local packages, shared python libraries, python import hooks, zero uac, venvhub linker",
+  "og_title": "Local Packages (Shared Libraries) – VenvHub Pro Manual",
+  "og_description": "Sharing custom Python modules across projects via clean Import Hooks without administrative privileges.",
+  "og_image": "assets/icon/og-image.png"
+}

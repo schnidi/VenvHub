@@ -1,0 +1,32 @@
+{
+  "id": "minibar",
+  "icon": "🚀",
+  "title": "Mini-Bar a Quick Settings",
+  "sections": [
+    {
+      "id": "opis",
+      "title": "Popis prvkov na lište (Mini-Bar)",
+      "content": "<p>Mini-Bar je plávajúca lišta, ktorá bola navrhnutá tak, aby zaberala minimum miesta na obrazovke, ale poskytovala maximálnu kontrolu. Popis prvkov zľava doprava:</p><ul style='list-style: none; padding-left: 0;'><li><strong>● (Stavová bodka):</strong> Indikuje platnosť vybraného prostredia.<ul><li><span style='color:#2ecc71; font-weight:bold;'>Zelená:</span> Prostredie je v poriadku a existuje na disku.</li><li><span style='color:#e74c3c; font-weight:bold;'>Červená:</span> Prostredie neexistuje alebo je cesta k nemu neplatná.</li></ul></li><li><strong>INFO Text / Zoznam skupín:</strong> Zobrazuje názov aktuálneho projektu a Venvu (v režime Single), alebo zoznam skupín (v režime Multi).</li><br><li><strong><img src='../assets/icon/vscode5.svg' style='width: 18px; height: 18px; vertical-align: text-bottom;' alt='VS Code'> (VS Code):</strong> Otvorí aktuálny projekt priamo v editore VS Code so správne nalinkovaným prostredím a používateľským profilom.</li><li><span style='color:#2ecc71; font-weight:bold;'>▶ Play:</span> Spustí priradený skript alebo celú skupinu.</li><li><span style='color:#e74c3c; font-weight:bold;'>■ Stop:</span> Okamžite ukončí bežiaci skript alebo celú skupinu.</li><li><strong><span style='font-family: \"Segoe UI Emoji\", sans-serif;'>⚙</span> (Ozubené koleso):</strong> Otvorí/Zatvorí panel <strong>Quick Settings</strong>.</li><li><strong><span style='font-family: \"Segoe UI Emoji\", sans-serif;'>🖥</span> (Monitor):</strong> Otvorí veľké okno <strong>Master Manager</strong> pre pokročilú správu.</li><li><strong>📌 (Pripináčik):</strong> Prepína režim 'Vždy navrchu'. Keď je aktívny, lišta prekryje aj iné okná.</li><li><strong><img src='../assets/icon/icon_mode_widget_black.svg' style='width: 18px; height: 18px; vertical-align: text-bottom;' alt='Mode'> (Zmena režimu):</strong> Prepínač medzi režimom <strong>Single</strong> (jeden projekt) a <strong>Multi</strong> (hromadné spúšťanie).</li><li><strong>✕ (Krížik):</strong> Úplne ukončí celú aplikáciu VenvHub Pro.</li></ul>"
+    },
+    {
+      "id": "quick",
+      "title": "Quick Settings (Vysúvací panel)",
+      "content": "<p>Kliknutím na ikonu ozubeného kolesa <strong>(<span style='font-family: \"Segoe UI Emoji\", sans-serif;'>⚙</span>)</strong> sa vysunie panel, ktorý vám umožní rýchlo meniť parametre bez nutnosti otvárať veľkého Manažéra.</p><h3>Čo tu môžete nastaviť?</h3><ol><li><strong>Projekt, Venv a VS Code Profil:</strong> Rýchle prepínanie projektov a ich prostredí vrátane izolovaných profilov pre editor.</li><li><strong>Spúšťací skript:</strong> Zobrazuje, ktorý súbor sa spustí. Táto cesta sa nenastavuje tu, ale v hlavnom Manažérovi.</li><li><strong>Jazyk (Language):</strong> Umožňuje okamžitú zmenu jazyka aplikácie. <em>(Poznámka: Zmena vzhľadu/skinu sa vykonáva v hlavnom okne Manažéra).</em></li><li><strong>Rýchla inštalácia (Pip/UV):</strong> Zadajte názov balíčka (napr. <code>requests</code>) a stlačte Inštalovať. Balíček sa nainštaluje pomocou inštalátora, ktorý máte nastavený ako predvolený.</li></ol>"
+    },
+    {
+      "id": "override",
+      "title": "Zmena prostredia a synchronizácia (Plný zápis)",
+      "content": "<p>V starších verziách VenvHubu slúžil panel Quick Settings len na dočasnú zmenu prostredia v pamäti. <strong>V aktuálnej verzii (Pro) to už neplatí!</strong></p><p>Ak v paneli Quick Settings zmeníte Venv alebo VS Code profil, systém vykoná tzv. <strong>Plný zápis (Master Override)</strong>:</p><ul><li>Prostredie sa okamžite uloží do konfiguračného súboru a stáva sa natrvalo <strong>predvoleným</strong> pre daný projekt.</li><li>Systém na pozadí <strong>okamžite zosynchronizuje VS Code</strong> (prepíše súbor <code>settings.json</code>), aby editor pri spustení použil práve tento nový Venv.</li><li>Taktiež sa na pozadí automaticky spúšťa <strong>VenvHub Linker</strong>, ktorý do VS Code prenesie cesty a úlohy pre všetky vaše lokálne balíčky.</li></ul>"
+    },
+    {
+      "id": "rezimy-spustenia",
+      "title": "Režimy spustenia",
+      "content": "<p>V sekcii '3. Akcie' si môžete vybrať, ako sa má správať tlačidlo <strong>Play ▶</strong>:</p><ul><li><strong>Otvoriť terminál:</strong> Nespustí skript, iba otvorí príkazový riadok (CMD) aktivovaný v danom prostredí. Vhodné, ak chcete príkazy písať ručne.</li><li><strong>Spustiť v Termináli (Predvolené):</strong> Otvorí nové okno, aktivuje venv a automaticky spustí váš skript. Vidíte všetky výpisy (printy) a chyby.</li><li><strong>Spustiť na Pozadí (Silent):</strong> Skript sa spustí bez akéhokoľvek okna (neviditeľne). Vhodné pre finálne aplikácie, GUI programy alebo procesy na pozadí.</li></ul><div class='alert'><strong>Pozor pri Silent režime:</strong> Keďže nevidíte okno, skript musíte ukončiť buď cez tlačidlo <strong>Stop ■</strong> na lište, alebo cez Správcu úloh.</div>"
+    },
+    {
+      "id": "rezim-multi",
+      "title": "Režim Multi-run na Mini-Bare",
+      "content": "<p>Keď kliknete na tlačidlo pre zmenu režimu <strong>(<img src='../assets/icon/icon_mode_widget_black.svg' style='width: 18px; height: 18px; vertical-align: text-bottom;' alt='Mode'>)</strong>, Mini-Bar sa prepne do režimu hromadného spúšťania. Rozhranie sa zmení:</p><ul><li>Namiesto textu s projektom sa zobrazí <strong>rozbaľovací zoznam</strong> so všetkými vašimi skupinami vytvorenými v Manažérovi.</li><li>Tlačidlo <strong>Quick Settings (<span style='font-family: \"Segoe UI Emoji\", sans-serif;'>⚙</span>) a ikona <img src='../assets/icon/vscode5.svg' style='width: 18px; height: 18px; vertical-align: text-bottom;' alt='VS Code'> (VS Code)</strong> sa automaticky skryjú, pretože v tomto režime nemajú nastavenia pre jednotlivé projekty význam.</li><li>Tlačidlá <strong>Play ▶</strong> a <strong>Stop ■</strong> teraz ovládajú <strong>celú vybranú skupinu naraz</strong>.</li></ul><div class='tip'><strong>Výhoda:</strong> V tomto režime nemusíte otvárať hlavné okno. Stačí si na lište vybrať skupinu a jedným kliknutím spustiť alebo zastaviť všetky servery a procesy, ktoré do nej patria.</div>"
+    }
+  ]
+}

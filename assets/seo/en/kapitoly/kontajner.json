@@ -1,0 +1,8 @@
+{
+  "title": "Container and Autostart – VenvHub Pro Manual",
+  "description": "Native Windows Python Venv orchestration without Docker, sequential execution with timers and signal Anchors, RAM monitoring, and 3-Strike respawn.",
+  "keywords": "python orchestrator, venv container, autostart, anchor hook, watchdog respawn, ram monitor",
+  "og_title": "Container and Autostart – VenvHub Pro Manual",
+  "og_description": "Native Windows Python Venv orchestration, sequential execution with Anchors, and crash respawn.",
+  "og_image": "assets/icon/og-image.png"
+}

@@ -1,0 +1,8 @@
+{
+  "title": "Multi-run Project Execution – VenvHub Pro Manual",
+  "description": "Parallel multi-project execution, 3-zone Drag & Drop ordering, smart crash restart, and low-level stability via Windows Job Objects and Handles.",
+  "keywords": "multi-run, batch python launch, windows job objects, process handles, smart restart",
+  "og_title": "Multi-run Project Execution – VenvHub Pro Manual",
+  "og_description": "Parallel multi-project execution and low-level stability via Windows Job Objects.",
+  "og_image": "assets/icon/og-image.png"
+}

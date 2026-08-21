@@ -1,0 +1,23 @@
+{
+  "title": "VenvHub Pro – Python Virtual Environment Manager & Orchestrator",
+  "description": "VenvHub Pro is an advanced open-source desktop developer tool for Windows to manage, clone, orchestrate and distribute Python virtual environments with UV, PyInstaller and VS Code support.",
+  "keywords": "Python, Venv, virtual environment, orchestrator, UV package manager, PyInstaller GUI, VS Code sync, clone venv, Python Windows developer tool",
+  "og_locale": "en_US",
+  "og_type": "website",
+  "og_site_name": "VenvHub Pro",
+  "og_title": "VenvHub Pro – Python Virtual Environment Manager & Orchestrator",
+  "og_description": "Separated architecture, smart cloning, VS Code integration, ultra-fast UV autopilot and visual PyInstaller builder.",
+  "og_image": "assets/icon/og-image.png",
+  "twitter_card": "summary_large_image",
+  "twitter_title": "VenvHub Pro – Python Virtual Environment Manager",
+  "twitter_description": "Advanced developer tool for managing, orchestrating, and distributing Python applications and virtual environments.",
+  "twitter_image": "assets/icon/og-image.png",
+  "schema_name": "VenvHub Pro",
+  "schema_description": "Advanced open-source desktop developer tool for Windows to manage, clone, orchestrate and distribute Python virtual environments and applications.",
+  "schema_application_category": "DeveloperApplication",
+  "schema_operating_system": "Windows 10, Windows 11",
+  "nav_home_title": "VenvHub Pro Hero Section",
+  "nav_about_title": "Features and Architecture Overview",
+  "nav_manual_title": "Comprehensive User Documentation",
+  "nav_community_title": "Community Discussions, Reddit and YouTube"
+}

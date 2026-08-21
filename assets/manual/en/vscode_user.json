@@ -1,0 +1,27 @@
+{
+  "id": "vscode_user",
+  "icon": "💻",
+  "title": "VS Code Isolated Profiles",
+  "sections": [
+    {
+      "id": "princip",
+      "title": "Architecture: Profile Isolation & Portability",
+      "content": "<p>Standard VS Code stores settings and extensions in global system directories (<code>%APPDATA%\\Code\\User</code> and <code>%USERPROFILE%\\.vscode\\extensions</code>). When working across projects with conflicting plugin requirements or developing from USB drives, global persistence causes configuration drift.</p><p><strong>VenvHub Pro introduces a Portable Profile Layer:</strong></p><ul><li><strong>Complete Isolation:</strong> Every profile maintains an independent storage container—custom <code>settings.json</code>, dedicated keybindings, and an isolated extensions directory.</li><li><strong>Zero Host Footprint:</strong> Leaves your host Windows VS Code installation untouched. VenvHub launches the editor with isolated runtime flags (<code>--user-data-dir</code> and <code>--extensions-dir</code>).</li><li><strong>True USB Portability:</strong> Storing profile directories on external drives guarantees an identical developer workspace across any workstation.</li></ul>"
+    },
+    {
+      "id": "nastavenie",
+      "title": "Configuring Profile Root Storage",
+      "content": "<p>Initialize your profile container root:</p><ol><li>Open <strong>Manager (🖥️)</strong> -> <strong>Settings</strong> tab.</li><li>Under 'VS Code Profile', click <strong>Account Management</strong>.</li><li>In <strong>Profile Root Directory</strong>, click 📁 and choose your storage directory (e.g. <code>vscode_users</code> inside your portable folder).</li></ol><div class='tip'><strong>UUID Hardware Binding:</strong> Profile paths bind dynamically to volume UUIDs, ensuring uninterrupted resolution when USB drive letters change.</div>"
+    },
+    {
+      "id": "sprava",
+      "title": "Profile Creation, System Import & Rollback",
+      "content": "<h3>Creating Isolated Profiles</h3><ul><li><strong>User ID:</strong> Filesystem directory name without spaces or special characters (e.g. <code>backend_dev</code>).</li><li><strong>Display Name:</strong> Friendly label visible in workspace dropdowns (e.g. 'Backend - Django Lead').</li></ul><h3>Importing Host Configuration</h3><p>To clone your existing Windows VS Code extensions and settings into a clean portable container:</p><ul><li><strong>On Creation:</strong> Check 'Clone from host system during creation'.</li><li><strong>On Demand:</strong> Select an existing profile and click <strong>📥 Import from System Now</strong>.</li></ul><div class='alert'><strong>Fail-Safe Rollback Engine:</strong> If an import is canceled mid-flight, VenvHub purges partial files automatically, leaving no corrupted dependencies on disk.</div>"
+    },
+    {
+      "id": "aktivny",
+      "title": "Active Profiles & 3-Way State Synchronization",
+      "content": "<h3>1. 3-Way Real-time State Synchronization</h3><p>Switching an active profile in any UI node updates all nodes simultaneously:</p><ul><li><strong>Quick Settings:</strong> Toolbar dropdown on the Mini-Bar.</li><li><strong>Master Manager:</strong> Primary Profile combobox in Settings.</li><li><strong>Account Management Matrix:</strong> Profile table with <code>★ [ACTIVE]</code> indicator.</li></ul><h3>2. Toolbar VS Code Launcher</h3><ul><li><strong>Pre-flight Diagnostic:</strong> Verifies workspace existence and Venv health before launching.</li><li><strong>Profile Injection:</strong> Launches VS Code with active user data and extensions paths.</li><li><strong>Multi-Mode Protection:</strong> Hidden in Multi-run mode to prevent multi-root project collisions.</li></ul><div class='alert' style='border-left-color: #e74c3c;'><strong>Portability Best Practice:</strong> Never modify Python interpreter paths manually inside VS Code settings. Always assign Venvs within VenvHub Pro to preserve automated USB drive letter resolution.</div>"
+    }
+  ]
+}

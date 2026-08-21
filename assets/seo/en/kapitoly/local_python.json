@@ -1,0 +1,8 @@
+{
+  "title": "Local Python (Embeddable Runtime) – VenvHub Pro Manual",
+  "description": "Managing isolated Windows Embeddable Python runtimes without system installation, automated Pip patching, and unlocking site-packages.",
+  "keywords": "local python, embeddable python, python without install, patch pip, portable python runtime",
+  "og_title": "Local Python (Embeddable Runtime) – VenvHub Pro Manual",
+  "og_description": "Managing portable Python runtimes without Windows installation and automated Pip patching.",
+  "og_image": "assets/icon/og-image.png"
+}

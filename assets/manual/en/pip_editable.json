@@ -1,0 +1,47 @@
+{
+  "id": "pip_editable",
+  "icon": "✏️",
+  "title": "Editable Packages (pip -e)",
+  "sections": [
+    {
+      "id": "struktura",
+      "title": "Repository Folder Hierarchy",
+      "content": "<p>To ensure VenvHub Pro discovers your development codebases and maintains USB portability, <strong>proper root organization is required</strong>.</p><p><strong>A. Set Root Path:</strong><br>Open <strong>Settings -> Root Paths -> Local Packages (pip -e)</strong> and pick your root development directory.</p><p><strong>B. Directory Separation (Recommended):</strong><br>Keep standard Linker packages separated from <code>pip -e</code> source trees:</p><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 12px; border-radius: 5px;'>└── local_packages/\n    ├── linker/    (packages containing local_meta.json)\n    └── pip_e/     (packages containing setup.py / pyproject.toml)</pre><div class='alert'><strong>Portable Mode Requirement:</strong> In portable USB workflows, your source directories <strong>must reside on the same drive</strong> as VenvHub Pro. Storing packages on the desktop breaks path resolution on secondary machines.</div>"
+    },
+    {
+      "id": "instalacia",
+      "title": "Installing & Linking Editable Packages",
+      "content": "<p>Linking local source packages into virtual environments:</p><ol><li>Open <strong>Venv Manager</strong>.</li><li>Right-click the target virtual environment row.</li><li>Select <strong>✏️ Local Packages (pip -e)</strong>.</li><li>Click <strong>➕ Install from Folder (pip -e)</strong>.</li><li>Select the root folder of your module containing <code>setup.py</code> or <code>pyproject.toml</code>.</li></ol><p>Pip (or UV) links the package into the active environment without copying files, creating a live bridge directly to your source code.</p><div class='tip'><strong>Tip:</strong> If the installer prompts that no build descriptor was found, ensure you selected the root directory rather than an internal <code>src/</code> subdirectory.</div>"
+    },
+    {
+      "id": "spravanie",
+      "title": "Runtime Behavior & Native VS Code IntelliSense",
+      "content": "<p>Post-installation lifecycle mechanics:</p><ul><li><strong>A. Dependency Resolution:</strong> Pip inspects <code>pyproject.toml</code> and downloads required upstream PyPI packages automatically into the Venv.</li><li><strong>B. Link File (.pth/.egg-link):</strong> Creates a path pointer inside <code>site-packages</code> referencing your live source folder.</li><li><strong>C. Native IDE Resolution:</strong> Unlike the Linker module, <code>pip -e</code> registers directly in <code>site-packages</code>. Pylance in VS Code <strong>natively indexes the module</strong> without modifying <code>settings.json</code>. IntelliSense and Go-to-Definition (F12) work automatically out-of-the-box.</li></ul>"
+    },
+    {
+      "id": "portable",
+      "title": "USB Portability & Automated Path Self-Healing",
+      "content": "<p>When USB drive letters change across workstations (e.g. <code>E:\\</code> at home to <code>F:\\</code> at work), standard Pip <code>.pth</code> files break because they contain hardcoded absolute paths, causing <code>ModuleNotFoundError</code>.</p><h3>How VenvHub Pro Auto-Heals Broken Paths</h3><p>Upon every execution launch, the <code>PortablePathLogic</code> engine runs in milliseconds:</p><ol><li>Detects previous drive letter binding from Venv metadata (e.g. E:).</li><li>Resolves the current physical drive letter (e.g. F:).</li><li>Scans <code>site-packages</code> for all <code>.pth</code> and <code>.egg-link</code> references.</li><li><strong>Silently rewrites drive letter bindings across all link files.</strong></li></ol><div class='alert'><strong>Automated Healing Matrix:</strong><div class='table-responsive'><table style='width:100%; border-collapse: collapse; margin: 15px 0;'><tr style='background:#f1f1f1;'><th style='text-align:left; padding:8px; border:1px solid #ddd;'>Scenario</th><th style='text-align:left; padding:8px; border:1px solid #ddd;'>Auto-Healed?</th></tr><tr><td style='padding:8px; border:1px solid #ddd;'>Entire stack (Project + Venv + Source) moves on <strong>same</strong> USB drive (E: → F:)</td><td style='padding:8px; border:1px solid #ddd;'><strong>Yes</strong> – matches physical drive UUID</td></tr><tr style='background:#fafafa;'><td style='padding:8px; border:1px solid #ddd;'>Copied to a <strong>different physical disk</strong> (different UUID)</td><td style='padding:8px; border:1px solid #ddd;'><strong>No</strong> – relink via ➕ button</td></tr><tr><td style='padding:8px; border:1px solid #ddd;'>Only source folder moved independently of Venv</td><td style='padding:8px; border:1px solid #ddd;'><strong>No</strong> – healing tracks Venv disk</td></tr></table></div></div>"
+    },
+    {
+      "id": "odinstalacia",
+      "title": "Uninstalling & Detaching Packages",
+      "content": "<p>Removing editable packages from an environment:</p><ol><li>Open <strong>✏️ Local Packages (pip -e)</strong>.</li><li>Select the package from the table.</li><li>Click <strong>❌ Uninstall Selected</strong>.</li></ol><p>VenvHub executes <code>pip uninstall -y &lt;package&gt;</code> and purges link descriptors from <code>site-packages</code> immediately.</p>"
+    },
+    {
+      "id": "upozornenia",
+      "title": "Critical Best Practices & Warnings",
+      "content": "<div class='alert'><strong>Do Not Combine Linker and Pip -e on the Same Package!</strong><br>Never link a single directory simultaneously via 'Local Packages (Linker)' and 'Pip -e'. Conflicting import hooks and <code>.pth</code> files will trigger unpredictable namespace collisions.</div>"
+    },
+    {
+      "id": "toml",
+      "title": "Configuring pyproject.toml",
+      "content": "<p>Minimal functional <code>pyproject.toml</code> for editable packages:</p><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px;'>[build-system]\nrequires = [&quot;setuptools&gt;=61.0&quot;]\nbuild-backend = &quot;setuptools.build_meta&quot;\n\n[project]\nname = &quot;my-test-package&quot;\nversion = &quot;0.1.0&quot;\ndescription = &quot;Package overview&quot;\ndependencies = []</pre><h3>Flat Layout Architecture (Simplest)</h3><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 12px; border-radius: 5px;'>my_package/\n├── pyproject.toml\n└── my_test/            &lt;- folder name = import name\n    ├── __init__.py\n    └── greeting.py</pre><h3>Src Layout Architecture</h3><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 12px; border-radius: 5px;'>my_package/\n├── pyproject.toml\n└── src/\n    └── my_test/         &lt;- subfolder inside src/\n        ├── __init__.py\n        └── greeting.py</pre><div class='alert'><strong>Common Pitfall:</strong> Placing <code>__init__.py</code> directly in <code>src/</code> rather than <code>src/my_test/</code> causes package discovery to fail with <code>ModuleNotFoundError</code>.</div>"
+    },
+    {
+      "id": "zavislosti",
+      "title": "Chained Local Dependencies (pip1 → pip2)",
+      "content": "<p>When developing interdependent local libraries where <code>pip2</code> imports from <code>pip1</code>, install packages in sequential order.</p><h3>Recommended Directory Structure</h3><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 12px; border-radius: 5px;'>pip_e/\n├── pip1/\n│   ├── pyproject.toml\n│   └── my_test/\n│       ├── __init__.py\n│       └── greeting.py\n└── pip2/\n    ├── pyproject.toml\n    └── my_tool/\n        ├── __init__.py\n        └── helper.py       &lt;- imports &quot;from my_test import hello&quot;</pre><div class='alert'><strong>Do Not Add Local Package Names to <code>dependencies</code>!</strong><br>Adding unreleased local names to dependencies causes Pip to query PyPI, failing the installation. Install local modules sequentially instead.</div><h3>Installation Pipeline:</h3><ol><li>In 'Local Packages (pip -e)', install <code>pip1</code> first.</li><li>Install dependent <code>pip2</code> next.</li><li>Confirm both packages appear active in the matrix.</li></ol>"
+    }
+  ]
+}

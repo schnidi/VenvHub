@@ -1,0 +1,8 @@
+{
+  "title": "VS Code Integrácia – VenvHub Pro Manuál",
+  "description": "Automatická synchronizácia settings.json, podpora Pylance IntelliSense a Meta-Sync pre generovanie úloh (Tasks) a klávesových skratiek.",
+  "keywords": "vs code integrácia, python intellisense, settings.json sync, pylance extra paths, meta-sync tasks",
+  "og_title": "VS Code Integrácia – VenvHub Pro Manuál",
+  "og_description": "Automatická synchronizácia VS Code settings.json, podpora Pylance a injektovanie úloh.",
+  "og_image": "assets/icon/og-image.png"
+}

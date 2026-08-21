@@ -1,0 +1,23 @@
+{
+  "title": "VenvHub Pro – Manažér a orchestrátor Python virtuálnych prostredí",
+  "description": "VenvHub Pro je pokročilý open-source desktopový nástroj pre Windows na správu, smart klonovanie, orchestráciu a distribúciu Python prostredí s podporou UV, PyInstaller a VS Code.",
+  "keywords": "Python, Venv, virtual environment, orchestrácia, UV package manager, PyInstaller GUI, VS Code sync, klonovanie venv, Python Windows tool",
+  "og_locale": "sk_SK",
+  "og_type": "website",
+  "og_site_name": "VenvHub Pro",
+  "og_title": "VenvHub Pro – Manažér a orchestrátor Python virtuálnych prostredí",
+  "og_description": "Oddelená architektúra, smart klonovanie, integrácia VS Code, rýchly UV autopilot a vizuálna tvorba .exe inštalátorov.",
+  "og_image": "assets/icon/og-image.png",
+  "twitter_card": "summary_large_image",
+  "twitter_title": "VenvHub Pro – Manažér a orchestrátor Python virtuálnych prostredí",
+  "twitter_description": "Pokročilý nástroj pre správu, orchestráciu a distribúciu Python aplikácií a virtuálnych prostredí.",
+  "twitter_image": "assets/icon/og-image.png",
+  "schema_name": "VenvHub Pro",
+  "schema_description": "Pokročilý open-source desktopový nástroj na správu, smart klonovanie, orchestráciu a distribúciu Python virtuálnych prostredí a aplikácií.",
+  "schema_application_category": "DeveloperApplication",
+  "schema_operating_system": "Windows 10, Windows 11",
+  "nav_home_title": "Úvodná sekcia VenvHub Pro",
+  "nav_about_title": "Prehľad vlastností a architektúry",
+  "nav_manual_title": "Kompletný používateľský manuál a dokumentácia",
+  "nav_community_title": "Diskusné fóra, Reddit a YouTube kanál"
+}

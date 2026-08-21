@@ -1,0 +1,27 @@
+{
+  "id": "vscode_user",
+  "icon": "💻",
+  "title": "VS Code Profily",
+  "sections": [
+    {
+      "id": "princip",
+      "title": "Princíp izolácie a prenosnosti",
+      "content": "<p>Štandardný VS Code ukladá všetky nastavenia a rozšírenia do dvoch obrovských systémových priečinkov vo Windowse (<code>%APPDATA%\\Code\\User</code> a <code>%USERPROFILE%\\.vscode\\extensions</code>). Ak pracujete na viacerých projektoch s rôznymi požiadavkami, alebo ak prenášate prácu na USB kľúči, toto správanie je nežiaduce.</p><p><strong>VenvHub Pro prináša 'Portable' vrstvu pre VS Code:</strong></p><ul><li><strong>Izolácia:</strong> Každý vami vytvorený profil má vlastnú zložku – vlastné <code>settings.json</code>, vlastné klávesové skratky a fyzicky vlastný zoznam nainštalovaných rozšírení (Extensions).</li><li><strong>Čistota systému:</strong> Inštalácia VS Code v systéme Windows zostáva absolútne nedotknutá. VenvHub Pro spúšťa editor s parametrami <code>--user-data-dir</code> a <code>--extensions-dir</code>.</li><li><strong>Prenosnosť:</strong> Ak máte profily na USB disku, vaše pracovné prostredie vrátane všetkých pluginov bude identické na každom počítači.</li></ul>"
+    },
+    {
+      "id": "nastavenie",
+      "title": "Nastavenie koreňa profilov",
+      "content": "<p>Pred prvým použitím musíte určiť úložisko profilov:</p><ol><li>Otvorte <strong>Manager (Správca)</strong> -> záložka <strong>Nastavenia</strong>.</li><li>V sekcii 'VS Code Profil' kliknite na tlačidlo <strong>Správa kont</strong>.</li><li>V poli <strong>Koreňový priečinok profilov</strong> kliknite na ikonu 📁 a vyberte prázdny priečinok (napr. <code>vscode_users</code> vo vašom portable adresári).</li></ol><div class='tip'><strong>Inteligentné cesty (UUID):</strong> Rovnako ako pri iných nastaveniach vo VenvHub Pro, aj táto cesta je chránená prenosným režimom. Pri zmene písmena disku (E: na F:) aplikácia automaticky prepočíta cestu podľa unikátneho ID disku.</div>"
+    },
+    {
+      "id": "sprava",
+      "title": "Tvorba a Import profilov",
+      "content": "<h3>Vytvorenie nového profilu</h3><ul><li><strong>ID Používateľa:</strong> Technický názov zložky na disku bez medzier a diakritiky (napr. <code>jozo_dev</code>).</li><li><strong>Zobrazované meno:</strong> Čitateľný názov v rozhraní (napr. 'Jozef - Python Expert').</li></ul><h3>Import zo systému</h3><p>Vytvoriť prázdny profil znamená začať s čistým editorom bez pluginov. Ak chcete skopírovať nastavenia a pluginy z vášho aktuálneho Windowsu:</p><ul><li><strong>Pri vytvorení:</strong> Zaškrtnite 'Pri vytvorení kopírovať zo systému'.</li><li><strong>Dodatočne:</strong> Vyberte profil a kliknite na <strong>📥 Importovať zo systému teraz</strong>.</li></ul><div class='alert'><strong>Inteligentné zrušenie (Rollback):</strong> Ak počas kopírovania stlačíte 'Zrušiť', VenvHub Pro vymaže neúplný profil alebo vráti existujúci profil do pôvodného čistého stavu, aby nezostal na disku odpad.</div>"
+    },
+    {
+      "id": "aktivny",
+      "title": "Aktívny profil a Trojuholníková synchronizácia",
+      "content": "<h3>1. Princíp trojitej synchronizácie (Real-time Sync)</h3><p>Zmena profilu na ktoromkoľvek z troch miest sa v zlomku sekundy prenesie do ostatných dvoch:</p><ul><li><strong>Rýchle nastavenia (Quick Settings):</strong> ComboBox na Mini-Bare.</li><li><strong>Správca (Manager) - Nastavenia:</strong> Hlavný výber profilu.</li><li><strong>Správa účtov (VSCode User Window):</strong> Zoznam profilov s hviezdičkou <code>★ [AKTÍVNY]</code>.</li></ul><h3>2. Spúšťacie tlačidlo VS Code v Mini-Bare</h3><ul><li><strong>Pred-štartová kontrola:</strong> Systém overí existenciu projektu a validitu Venvu pred spustením.</li><li><strong>Automatická injekcia profilu:</strong> Tlačidlo automaticky spustí VS Code s aktívnym profilom a priradeným Venvom.</li><li><strong>Blokovanie v Multi-režime:</strong> Tlačidlo je dostupné len v režime Single, aby nedošlo k zámene viacerých projektov.</li></ul><div class='alert' style='border-left-color: #e74c3c;'><strong>Pravidlo pre Prenositeľnosť:</strong> Nikdy neupravujte cestu k Pythonu priamo vo VS Code. Vždy ju zmeňte vo VenvHub Pro, ktorý cesty automaticky prepisuje podľa aktuálneho písmena disku na USB.</div>"
+    }
+  ]
+}

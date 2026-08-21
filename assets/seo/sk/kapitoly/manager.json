@@ -1,0 +1,8 @@
+{
+  "title": "Správca Prostredí – VenvHub Pro Manuál",
+  "description": "Centrálna správa Python virtuálnych prostredí, oddelená architektúra, smart klonovanie Venvu, rodný list a procesný watchdog.",
+  "keywords": "správca venv, python virtual environment, smart klonovanie, rodný list venv, sanitize venv",
+  "og_title": "Správca Prostredí – VenvHub Pro Manuál",
+  "og_description": "Centrálna správa Python virtuálnych prostredí, smart klonovanie a oddelená architektúra.",
+  "og_image": "assets/icon/og-image.png"
+}

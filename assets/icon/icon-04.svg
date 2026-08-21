@@ -1,0 +1,16 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pozadie: Tmavý zaoblený štvorec -->
+  <rect x="10" y="10" width="236" height="236" rx="45" fill="#181818"/>
+  
+  <!-- Python Hady (zmenšené v hornej časti) -->
+  <g transform="translate(93, 40) scale(0.27)">
+    <path d="M 128 0 C 64 0 64 60 64 60 L 64 120 L 128 120 L 128 170 L 30 170 C 10 170 0 150 0 130 L 0 60 C 0 20 40 0 90 0 L 128 0 Z" fill="#3498db"/>
+    <path d="M 128 256 C 192 256 192 196 192 196 L 192 136 L 128 136 L 128 86 L 226 86 C 246 86 256 106 256 126 L 256 196 C 256 236 216 256 166 256 L 128 256 Z" fill="#f1c40f"/>
+  </g>
+
+  <!-- Text "venv" - Moderný, tučný, zelený -->
+  <text x="128" y="200" font-family="Segoe UI, Arial, sans-serif" font-weight="900" font-size="75" fill="#2ecc71" text-anchor="middle" letter-spacing="-2">venv</text>
+  
+  <!-- Jemná čiara pod textom (ako v termináli) -->
+  <rect x="60" y="215" width="136" height="6" rx="3" fill="#2ecc71" fill-opacity="0.3"/>
+</svg>

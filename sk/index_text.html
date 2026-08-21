@@ -1,0 +1,144 @@
+<!-- SEKCIA: DOMOV / HERO -->
+<section id="domov" class="hero-box">
+    <h2>Vitajte vo VenvHub Pro</h2>
+    <p>Ultimátny open-source nástroj pre vývojárov na správu, orchestráciu a distribúciu Python aplikácií a virtuálnych prostredí.</p>
+    
+    <!-- TLAČIDLÁ STIAHNUTIA A GITHUB -->
+    <div class="hero-buttons" style="flex-wrap: wrap; gap: 12px; margin-bottom: 15px;">
+        <a id="downloadExeBtn" href="https://github.com/schnidi/VenvHub/releases/latest/download/VenvHubPro.exe" class="btn btn-primary" style="background-color: #28a745; font-size: 16px;">
+            📥 Stiahnuť VenvHubPro.exe <span id="latestVersionBadge">(Načítavam verziu...)</span>
+        </a>
+
+        <a href="https://github.com/schnidi/VenvHub" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 16px;">
+            ⭐ GitHub Repozitár
+        </a>
+
+        <a href="#o-programe" class="btn btn-secondary">ℹ️ Prehľad Vlastností</a>
+    </div>
+
+    <div id="releaseInfoBox" style="font-size: 13px; color: #a8b2bd;">
+        Direct link: Automaticky načítava najnovšie vydanie z GitHub Releases.
+    </div>
+</section>
+
+<!-- SEKCIA: O PROGRAME (VŠETKY VLASTNOSTI) -->
+<section id="o-programe">
+    <h2 class="section-title">O programe & Vlastnosti</h2>
+    
+    <div class="grid-3">
+        <!-- 1. Architektúra -->
+        <div class="content-card">
+            <h3>📁 Oddelená Architektúra</h3>
+            <p>Koniec neporiadku v kóde! VenvHub Pro <strong>fyzicky oddeľuje váš zdrojový kód od virtuálnych prostredí</strong>. Vaše projekty zostávajú čisté, zatiaľ čo všetky Venvs sú centrálne spravované v dedikovanom <em>Venv Hub</em> priečinku. Ak zmažete Venv, kód je v bezpečí.</p>
+        </div>
+
+        <!-- 2. VS Code & Meta Sync -->
+        <div class="content-card">
+            <h3>💻 VS Code Integrácia & Meta-Sync</h3>
+            <p>Otvorte VS Code a IntelliSense okamžite funguje. VenvHub synchronizuje <code>settings.json</code> a priraďuje Venv. Cez funkciu <strong>Meta-Sync</strong> naviac prečíta <code>local_meta.json</code> a automaticky zapíše preddefinované VS Code Tasky a klávesové skratky priamo do projektu.</p>
+        </div>
+
+        <!-- 3. Pip Manager -->
+        <div class="content-card">
+            <h3>📦 Dual-Scan Pip & UV Autopilot</h3>
+            <p>Extrémne rýchly správca balíčkov. Používa paralelný scan pre detekciu zastaraných knižníc. <strong>Revolučná funkcia:</strong> Pri použití inštalátora <code>uv</code> dokáže VenvHub po aktualizácii vykonať hĺbkovú kontrolu (Check) a <strong>automaticky opraviť konflikty závislostí (Auto-Fix)</strong> presným downgradom poškodených balíčkov.</p>
+        </div>
+
+        <!-- 4. Smart Klonovanie -->
+        <div class="content-card">
+            <h3>🐑 Smart Klonovací Engine</h3>
+            <p>Klonovanie Venvu nevytvára slepé kópie s nefunkčnými absolútnymi cestami. Vykonáva <strong>5-krokovú reprodukčnú rekonštrukciu</strong>: zistí závislosti, vytvorí čistý Venv, znova nainštaluje balíčky vrátane editovateľných (<code>pip -e</code>) a prenesie bootstrap súbory pre lokálne balíčky.</p>
+        </div>
+
+        <!-- 5. Venv Validator -->
+        <div class="content-card">
+            <h3>🔍 Venv Validator & Diagnostika</h3>
+            <p>Systém neustále kontroluje integritu súboru <code>pyvenv.cfg</code>. Ak sa zmení cesta k Pythonu alebo disk, rozlíši stavy <em>FIXABLE</em> a <em>INCOMPATIBLE</em> a umožní automatickú opravu prostredia bez straty nainštalovaných balíčkov.</p>
+        </div>
+
+        <!-- 6. Process Registry -->
+        <div class="content-card">
+            <h3>⚡ Dočasný execution engine & Kill Tree</h3>
+            <p>Spúšťanie skriptov cez dočasné <code>.bat</code> súbory predchádza chybám v cestách s medzerami. Interný <strong>Process Registry</strong> eviduje všetky PID vrátane podprocesov a pri zastavení vykoná čistý <em>Kill Tree</em> celej rodiny procesov.</p>
+        </div>
+
+        <!-- 7. Kontajner & Watchdog -->
+        <div class="content-card">
+            <h3>🔄 Venv Orchestrator & Watchdog</h3>
+            <p>Zoskupujte Venvs (Frontend, Backend, DB) do Kontajnerov. VenvHub ich spúšťa v presnom poradí pomocou <strong>časovačov a signálnej "Kotvy (Hook)"</strong> pre garanciu štartu. Watchdog monitoruje PID procesov a v prípade pádu ich <strong>inteligentne reštartuje (Respawn)</strong> až 3-krát.</p>
+        </div>
+
+        <!-- 8. PyInstaller -->
+        <div class="content-card">
+            <h3>🛠 PyInstaller & Auto-Injector</h3>
+            <p>Vizuálna tvorba <code>.exe</code> súborov. Nielenže pribalí inštalátor <code>uv.exe</code> a vygeneruje "Rodný list" (JSON metadáta) s verziou Pythonu, ale vďaka <strong>Auto-Injectoru</strong> sám prečíta prelinkované lokálne balíčky a dynamicky vloží ich zdrojové kódy a assets do buildu.</p>
+        </div>
+
+        <!-- 9. Local Python -->
+        <div class="content-card">
+            <h3>🐍 Local Embeddable Runtimes</h3>
+            <p>Sťahujte "Local" verzie Pythonu zo ZIP archívov bez nutnosti inštalácie do Windowsu (bez zásahu do Registrov a PATH). VenvHub ich <strong>automaticky "hackne" a opraví</strong> (nainštaluje Pip, odomkne <code>site-packages</code> v <code>._pth</code> súbore), aby sa správali ako plnohodnotné inštalácie.</p>
+        </div>
+
+        <!-- 10. Portable -->
+        <div class="content-card">
+            <h3>🧳 Ochrana prenosnosti (Portable)</h3>
+            <p>Kódujete na USB kľúči? Ak sa na inom PC zmení písmeno disku, <strong>Venv Validator</strong> všetky cesty automaticky opraví. <strong>Zároveň chráni váš kód:</strong> Systémový Listener sleduje Hardware ID počítača a zakáže spúšťanie nekompatibilných systémových Venvov na cudzích strojoch.</p>
+        </div>
+
+        <!-- 11. UI/UX & AI Modding -->
+        <div class="content-card">
+            <h3>🎨 Dual-Theme & AI Modding</h3>
+            <p>Moderné UI postavené na robustnom moste pre PyQt6/PySide6, ktoré beží kompletne asynchrónne (nevyrušuje pri inštaláciách). Obsahuje systém zabudovaných aj užívateľských QSS skinov. Dajte skin prefarbiť umelej inteligencii a naimportujte ho späť do aplikácie jedným kliknutím!</p>
+        </div>
+    </div>
+</section>
+
+<!-- BANNER / BOX: MANUÁL -->
+<section id="manual-box" style="margin: 40px 0;">
+    <div class="content-card manual-banner-card" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-left: 5px solid #007acc; padding: 25px 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; border-radius: 8px;">
+        <div style="max-width: 650px;">
+            <h3 style="margin-top: 0; color: #38bdf8; font-size: 22px;">📖 Kompletná Dokumentácia & Používateľský Manuál</h3>
+            <p style="margin-bottom: 0; color: #cbd5e1; font-size: 15px;">Potrebujete detailný návod na inštaláciu, klonovanie Venvov, orchestráciu kontajnerov alebo tvorbu .exe inštalátorov? Preštudujte si náš prehľadný online manuál.</p>
+        </div>
+        <div class="manual-btn-wrapper">
+            <a href="manual/index-manual.html" class="btn btn-primary" style="background-color: #007acc; font-size: 16px; padding: 12px 24px;">
+                Otvoriť Manuál ➔
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- SEKCIA: KOMUNITA & SOCIÁLNE SIETE -->
+<section id="komunita">
+    <h2 class="section-title">Komunita & Sociálne siete</h2>
+    <p style="color: #666; margin-bottom: 25px;">Sledujte vývoj projektu, zapojte sa do diskusií alebo si pozrite videonávody a ukážky nových funkcií.</p>
+    
+    <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));">
+
+        <!-- Reddit Card -->
+        <div class="content-card" style="border-top: 4px solid #FF4500;">
+            <h3 style="color: #FF4500;">👾 Reddit Profil</h3>
+            <p>Oficiálny vývojársky Reddit profil pre diskusie, otázky & odpovede, spätne väzby a komunikáciu ohľadom projektu VenvHub Pro.</p>
+            <div style="font-size: 13px; color: #888; margin: 15px 0 10px 0;">
+                <strong>Používateľ:</strong> u/Schnidi01
+            </div>
+            <div>
+                <a href="https://www.reddit.com/user/Schnidi01/" target="_blank" rel="noopener noreferrer" class="btn" style="background-color: #FF4500; color: white; width: 100%; text-align: center;">Navštíviť u/Schnidi01</a>
+            </div>
+        </div>
+
+        <!-- YouTube Card -->
+        <div class="content-card" style="border-top: 4px solid #FF0000;">
+            <h3 style="color: #FF0000;">📺 YouTube Kanál</h3>
+            <p>Video návody, praktické ukážky spúšťania kontajnerov, videá k novým verziam a kompletný walkthrough nastavením prostredí.</p>
+            <div style="font-size: 13px; color: #888; margin: 15px 0 10px 0;">
+                <strong>Kanál:</strong> @Schnidi-dev
+            </div>
+            <div>
+                <a href="https://www.youtube.com/@Schnidi-dev" target="_blank" rel="noopener noreferrer" class="btn" style="background-color: #FF0000; color: white; width: 100%; text-align: center;">Sledovať na YouTube</a>
+            </div>
+        </div>
+
+    </div>
+</section>

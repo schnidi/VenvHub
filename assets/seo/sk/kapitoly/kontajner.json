@@ -1,0 +1,8 @@
+{
+  "title": "Kontajner a Autostart – VenvHub Pro Manuál",
+  "description": "Orchestrácia Python Venvov na Windows bez Dockeru, reťazová stabilita s časovačmi a Kotvou (Hook), monitorovanie RAM a 3-Strike Respawn.",
+  "keywords": "python orchestrátor, venv kontajner, autostart, kotva hook, watchdog respawn, ram monitor",
+  "og_title": "Kontajner a Autostart – VenvHub Pro Manuál",
+  "og_description": "Natívna Windows orchestrácia Python Venvov, reťazová stabilita s Kotvou a automatický reštart.",
+  "og_image": "assets/icon/og-image.png"
+}

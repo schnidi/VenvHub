@@ -1,0 +1,144 @@
+<!-- HERO SECTION -->
+<section id="domov" class="hero-box">
+    <h2>Welcome to VenvHub Pro</h2>
+    <p>The ultimate open-source developer tool for managing, orchestrating, and distributing Python applications and virtual environments.</p>
+    
+    <!-- DOWNLOAD AND GITHUB BUTTONS -->
+    <div class="hero-buttons" style="flex-wrap: wrap; gap: 12px; margin-bottom: 15px;">
+        <a id="downloadExeBtn" href="https://github.com/schnidi/VenvHub/releases/latest/download/VenvHubPro.exe" class="btn btn-primary" style="background-color: #28a745; font-size: 16px;">
+            📥 Download VenvHubPro.exe <span id="latestVersionBadge">(Loading version...)</span>
+        </a>
+
+        <a href="https://github.com/schnidi/VenvHub" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 16px;">
+            ⭐ GitHub Repository
+        </a>
+
+        <a href="#o-programe" class="btn btn-secondary">ℹ️ Feature Overview</a>
+    </div>
+
+    <div id="releaseInfoBox" style="font-size: 13px; color: #a8b2bd;">
+        Direct link: Automatically loads the latest release from GitHub Releases.
+    </div>
+</section>
+
+<!-- SECTION: ABOUT & FEATURES -->
+<section id="o-programe">
+    <h2 class="section-title">Features & Capabilities</h2>
+    
+    <div class="grid-3">
+        <!-- 1. Architecture -->
+        <div class="content-card">
+            <h3>📁 Separated Architecture</h3>
+            <p>No more mess in your source code! VenvHub Pro <strong>physically separates your source code from virtual environments</strong>. Your projects remain clean while all Venvs are centrally managed in a dedicated <em>Venv Hub</em> directory. If you delete a Venv, your code stays safe.</p>
+        </div>
+
+        <!-- 2. VS Code & Meta Sync -->
+        <div class="content-card">
+            <h3>💻 VS Code Integration & Meta-Sync</h3>
+            <p>Open VS Code and IntelliSense works instantly. VenvHub quietly syncs <code>settings.json</code> and assigns the Venv. Via <strong>Meta-Sync</strong>, it reads <code>local_meta.json</code> and automatically injects pre-defined VS Code Tasks and Keybindings directly into your project.</p>
+        </div>
+
+        <!-- 3. Pip Manager -->
+        <div class="content-card">
+            <h3>📦 Dual-Scan Pip & UV Autopilot</h3>
+            <p>Ultra-fast package manager using parallel scanning for outdated libraries. <strong>Key feature:</strong> When using the <code>uv</code> installer, VenvHub performs a deep check and <strong>automatically resolves dependency conflicts (Auto-Fix)</strong> by precisely downgrading broken packages.</p>
+        </div>
+
+        <!-- 4. Smart Cloning -->
+        <div class="content-card">
+            <h3>🐑 Smart Cloning Engine</h3>
+            <p>Cloning a Venv doesn't create blind copies with hardcoded broken paths. It executes a <strong>5-step reproduction reconstruction</strong>: freezes dependencies, builds a clean Venv, re-installs packages including editables (<code>pip -e</code>), and transfers bootstrap files for local packages.</p>
+        </div>
+
+        <!-- 5. Venv Validator -->
+        <div class="content-card">
+            <h3>🔍 Venv Validator & Diagnostics</h3>
+            <p>The system constantly checks <code>pyvenv.cfg</code> integrity. If the Python path or drive letter changes, it identifies <em>FIXABLE</em> and <em>INCOMPATIBLE</em> states and enables automated environment repair without losing installed packages.</p>
+        </div>
+
+        <!-- 6. Process Registry -->
+        <div class="content-card">
+            <h3>⚡ Temporary Execution Engine & Kill Tree</h3>
+            <p>Script execution via temporary <code>.bat</code> files prevents issues with paths containing spaces. The internal <strong>Process Registry</strong> tracks all PIDs including subprocesses and performs a clean <em>Kill Tree</em> on execution stop.</p>
+        </div>
+
+        <!-- 7. Container & Watchdog -->
+        <div class="content-card">
+            <h3>🔄 Venv Orchestrator & Watchdog</h3>
+            <p>Group Venvs (Frontend, Backend, DB) into Containers. VenvHub launches them in precise order using <strong>timers and signal Anchors (Hooks)</strong> to guarantee startup. The Watchdog monitors process PIDs and <strong>automatically respawns</strong> crashed processes up to 3 times.</p>
+        </div>
+
+        <!-- 8. PyInstaller -->
+        <div class="content-card">
+            <h3>🛠 PyInstaller & Auto-Injector</h3>
+            <p>Visual <code>.exe</code> builder. It bundles the <code>uv.exe</code> installer, generates a JSON "Birth Certificate" with runtime metadata, and uses the <strong>Auto-Injector</strong> to dynamically embed linked local packages and assets directly into the build.</p>
+        </div>
+
+        <!-- 9. Local Python -->
+        <div class="content-card">
+            <h3>🐍 Local Embeddable Runtimes</h3>
+            <p>Download "Local" Python runtimes from ZIP archives without Windows installation (zero registry or PATH changes). VenvHub <strong>automatically patches them</strong> (installs Pip, unlocks <code>site-packages</code> in <code>._pth</code>) to behave as full installations.</p>
+        </div>
+
+        <!-- 10. Portable -->
+        <div class="content-card">
+            <h3>🧳 USB Portability & Hardware Protection</h3>
+            <p>Coding on a USB stick? If the drive letter changes on another PC, <strong>Venv Validator</strong> automatically fixes all paths. <strong>Hardware Protection:</strong> A system Listener tracks Hardware ID hashes and prevents running incompatible system Venvs on foreign machines.</p>
+        </div>
+
+        <!-- 11. UI/UX & AI Modding -->
+        <div class="content-card">
+            <h3>🎨 Dual-Theme & AI Modding</h3>
+            <p>Modern UI built on a robust PyQt6/PySide6 bridge running fully asynchronously. Includes built-in and user QSS skins. Generate custom themes using AI and import them into the application with a single click!</p>
+        </div>
+    </div>
+</section>
+
+<!-- BANNER / BOX: MANUAL -->
+<section id="manual-box" style="margin: 40px 0;">
+    <div class="content-card manual-banner-card" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; border-left: 5px solid #007acc; padding: 25px 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; border-radius: 8px;">
+        <div style="max-width: 650px;">
+            <h3 style="margin-top: 0; color: #38bdf8; font-size: 22px;">📖 Comprehensive Documentation & User Manual</h3>
+            <p style="margin-bottom: 0; color: #cbd5e1; font-size: 15px;">Need step-by-step guidance on installation, Venv cloning, container orchestration, or building .exe distributables? Explore our complete online documentation.</p>
+        </div>
+        <div class="manual-btn-wrapper">
+            <a href="manual/index-manual.html" class="btn btn-primary" style="background-color: #007acc; font-size: 16px; padding: 12px 24px;">
+                Open Manual ➔
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION: COMMUNITY & SOCIALS -->
+<section id="komunita">
+    <h2 class="section-title">Community & Social Media</h2>
+    <p style="color: #666; margin-bottom: 25px;">Follow project development, join community discussions, or watch video tutorials and feature walkthroughs.</p>
+    
+    <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));">
+
+        <!-- Reddit Card -->
+        <div class="content-card" style="border-top: 4px solid #FF4500;">
+            <h3 style="color: #FF4500;">👾 Reddit Profile</h3>
+            <p>Official developer Reddit profile for discussions, Q&A, feedback, feature requests, and community interaction.</p>
+            <div style="font-size: 13px; color: #888; margin: 15px 0 10px 0;">
+                <strong>User:</strong> u/Schnidi01
+            </div>
+            <div>
+                <a href="https://www.reddit.com/user/Schnidi01/" target="_blank" rel="noopener noreferrer" class="btn" style="background-color: #FF4500; color: white; width: 100%; text-align: center;">Visit u/Schnidi01</a>
+            </div>
+        </div>
+
+        <!-- YouTube Card -->
+        <div class="content-card" style="border-top: 4px solid #FF0000;">
+            <h3 style="color: #FF0000;">📺 YouTube Channel</h3>
+            <p>Video tutorials, practical container orchestration walkthroughs, release showcases, and environment setup guides.</p>
+            <div style="font-size: 13px; color: #888; margin: 15px 0 10px 0;">
+                <strong>Channel:</strong> @Schnidi-dev
+            </div>
+            <div>
+                <a href="https://www.youtube.com/@Schnidi-dev" target="_blank" rel="noopener noreferrer" class="btn" style="background-color: #FF0000; color: white; width: 100%; text-align: center;">Watch on YouTube</a>
+            </div>
+        </div>
+
+    </div>
+</section>

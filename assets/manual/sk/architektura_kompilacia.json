@@ -1,0 +1,32 @@
+{
+  "id": "architektura_kompilacia",
+  "icon": "🏛️",
+  "title": "Architektúra, Kompilácia a Samoreplikácia",
+  "sections": [
+    {
+      "id": "kap12-1",
+      "title": "Dual-Framework (Compatibility Bridge)",
+      "content": "<p>Aplikácie v Pythone zvyčajne musia byť napísané buď pre <strong>PyQt6</strong>, alebo pre <strong>PySide6</strong>. VenvHub Pro to rieši pomocou <strong>Compatibility Bridge</strong> (<code>core/logic/pyqt_to_pyside.py</code>). Tento most využíva techniku <em>MetaPathFinder</em>.</p><ul><li>Pri spustení <code>main.py</code> sa aktivuje detekcia prostredia vo Venv.</li><li>Ak aplikácia nájde <code>PyQt6</code>, beží natívne.</li><li>Ak nájde <code>PySide6</code>, most sa vloží do systémovej pamäte. Akonáhle Python narazí na import <code>from PyQt6...</code>, náš interceptor zakročí, preloží požiadavku a vráti <code>PySide6</code>.</li></ul><div class='tip'><strong>Výsledok:</strong> Zdrojový kód zostáva na 100% napísaný pre PyQt6, no softvér si za behu automaticky prepíše všetky importy, signály a sloty na PySide6, ak je to potrebné.</div>"
+    },
+    {
+      "id": "kap12-2",
+      "title": "Mágia .UI súborov (QUiLoader Mimic)",
+      "content": "<p>Rozdiel medzi frameworkami je aj v načítavaní XML dizajnov (<code>.ui</code>).</p><ul><li><strong>PyQt6 (uic.loadUi):</strong> Natlačí tlačidlá priamo do existujúceho okna (<code>self</code>).</li><li><strong>PySide6 (QUiLoader):</strong> Vždy vytvorí úplne nové okno.</li></ul><p>VenvHub Pro obsahuje tzv. <strong>Mimic funkciu</strong>. Ak beží pod PySide6, táto funkcia nechá <code>QUiLoader</code> vytvoriť nové okno, <strong>vytrhá z neho všetky widgety a Layout</strong> a 'nalepí' ich na tvoju originálnu <code>self</code> inštanciu. Správne tiež nastaví pracovný adresár, aby sa nestratili relatívne cesty k ikonám.</p>"
+    },
+    {
+      "id": "kap12-3",
+      "title": "Samoreplikácia VenvHubu (Dogfooding)",
+      "content": "<p>Pretože VenvHub Pro disponuje integrovaným nástrojom <strong>PyInstaller Builder</strong>, nepotrebujete na kompiláciu samotného VenvHubu žiadne externé skripty.</p><ol><li>Otvorte bežiaci VenvHub Pro.</li><li>V záložke <strong>Nastavenia</strong> vyberte koreň projektov, kde leží kód VenvHubu.</li><li>Prejdite do záložky <strong>PyInstaller Builder</strong> a ako spúšťací skript zvoľte <code>main.py</code>.</li><li>Nastavte Assets a parametre (viď sekciu nižšie).</li><li>Kliknite na <strong>BUILD .EXE</strong>.</li></ol><div class='alert'>Tento prístup (dogfooding) garantuje, že builder vo VenvHube je plne funkčný, keďže dokáže bezpečne skompilovať aj takú masívnu aplikáciu, akou je on sám.</div>"
+    },
+    {
+      "id": "kap12-4",
+      "title": "Tvorba .EXE (PyQt6 vs PySide6 v PyInstalleri)",
+      "content": "<p>Keďže PyInstaller funguje na princípe statickej analýzy kódu, kompilácia sa mierne líši v závislosti od grafickej knižnice vo vašom Venv-e.</p><p><strong>Spoločné pravidlo pre Assets:</strong><br>VŽDY musíte pribaliť nasledujúce priečinky (zdroj = cieľ): <code>ui</code>, <code>core/themes</code>, <code>translations</code>, <code>assets</code>, <code>navod</code>.</p><h3>Vetva A: Kompilácia s PyQt6</h3><p>PyInstaller pri analýze súboru <code>main.py</code> priamo vidí importy a automaticky nabalí do <code>.exe</code> všetky potrebné DLL knižnice pre PyQt6. V záložke <strong>Importy</strong> nemusíte nastavovať nič navyše.</p><h3>Vetva B: Kompilácia s PySide6</h3><p>Z pohľadu kódu je všade napísané <code>PyQt6</code>. PyInstaller si PySide6 nevšimne. V záložke <strong>Importy</strong> musíte zadať:</p><ul><li><strong>Skryté Importy:</strong> Pridajte postupne: <code>PySide6</code>, <code>PySide6.QtCore</code>, <code>PySide6.QtGui</code>, <code>PySide6.QtWidgets</code>, <code>PySide6.QtNetwork</code>, <code>PySide6.QtUiTools</code>.</li><li><strong>Vylúčiť Moduly:</strong> Pridajte <code>PyQt6</code> (aby sa zbytočne nenabalil balast).</li></ul><p>Po spustení výsledného <code>.exe</code> sa náš 'Most' aktivuje a bez problémov spojí zdrojový kód s pribaleným PySide6.</p>"
+    },
+    {
+      "id": "kap12-5",
+      "title": "Tvorba inštalátora (NSIS)",
+      "content": "<p>Bez ohľadu na použitú vetvu, výsledkom kompilácie bude zložka <code>dist/VenvHubPro</code> (pri voľbe --onedir). Táto zložka obsahuje všetko potrebné na beh aplikácie.</p><p>Pre vytvorenie inštalátora pomocou systému <strong>NSIS</strong> stačí túto celú zložku zbaliť do skriptu:</p><pre style='background-color: #2d2d2d; color: #f8f8f2; padding: 12px; border-radius: 5px;'># Vložte do vášho .nsi skriptu:\nFile /r &quot;cesta\\k\\projektu\\dist\\VenvHubPro\\*&quot;</pre><p>NSIS iba zlisuje (LZMA kompresia) celú zložku do jedného <code>Setup.exe</code> súboru a vytvorí odkazy na plochu pre koncového používateľa.</p>"
+    }
+  ]
+}

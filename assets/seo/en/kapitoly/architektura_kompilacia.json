@@ -1,0 +1,8 @@
+{
+  "title": "Architecture, Compilation & Dogfooding – VenvHub Pro Manual",
+  "description": "Dual-Framework Compatibility Bridge between PyQt6 and PySide6, compiling VenvHub Pro using its own builder (dogfooding), and NSIS installer generation.",
+  "keywords": "compatibility bridge, pyqt6 to pyside6, metapathfinder, dogfooding, nsis installer",
+  "og_title": "Architecture, Compilation & Dogfooding – VenvHub Pro Manual",
+  "og_description": "PyQt6 to PySide6 bridge, VenvHub self-replication (dogfooding), and NSIS installer packaging.",
+  "og_image": "assets/icon/og-image.png"
+}

@@ -1,0 +1,8 @@
+{
+  "title": "Editovateľné Balíčky (pip -e) – VenvHub Pro Manuál",
+  "description": "Inštalácia a správa vývojárskych balíčkov cez pip install -e, štruktúra pyproject.toml, oprava ciest na USB a VS Code Pylance podpora.",
+  "keywords": "pip editable, pip install -e, pyproject.toml, editovateľný balíček, portable pip -e",
+  "og_title": "Editovateľné Balíčky (pip -e) – VenvHub Pro Manuál",
+  "og_description": "Inštalácia a správa vývojárskych balíčkov cez pip install -e a automatická oprava ciest na USB.",
+  "og_image": "assets/icon/og-image.png"
+}

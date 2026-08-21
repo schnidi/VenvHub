@@ -1,0 +1,8 @@
+{
+  "title": "Settings and Appearance – VenvHub Pro Manual",
+  "description": "Configuring project paths, selecting package managers (Pip vs UV), modifying QSS themes with AI, custom icons, and language localization.",
+  "keywords": "venvhub settings, qss themes, ai modding, pip vs uv, switch language venvhub",
+  "og_title": "Settings and Appearance – VenvHub Pro Manual",
+  "og_description": "Configuring project paths, package engines (Pip vs UV), and AI-driven QSS theme customization.",
+  "og_image": "assets/icon/og-image.png"
+}

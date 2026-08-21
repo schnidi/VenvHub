@@ -1,0 +1,8 @@
+{
+  "title": "Lokálne Balíčky (Shared Libraries) – VenvHub Pro Manuál",
+  "description": "Zdieľanie vlastných Python modulov medzi projektmi cez Import Hooks bez UAC práv, auto-injektor a koordinácia s VS Code.",
+  "keywords": "lokálne balíčky, shared python libraries, python import hooks, bez uac, venvhub linker",
+  "og_title": "Lokálne Balíčky (Shared Libraries) – VenvHub Pro Manuál",
+  "og_description": "Zdieľanie vlastných Python modulov medzi projektmi cez čisté Import Hooks bez administrátorských práv.",
+  "og_image": "assets/icon/og-image.png"
+}

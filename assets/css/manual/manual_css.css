@@ -1,0 +1,385 @@
+/* =========================================
+   Company: Seal and Lube, spol. s r.o.
+   Author: Ing. Viliam Schneider
+   File: assets/css/manual/manual_css.css
+========================================= */
+
+:root {
+    --bg-dark: #0f172a;
+    --sidebar-bg: #1e293b;
+    --sidebar-hover: #334155;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --text-main: #334155;
+    --text-heading: #0f172a;
+    --border-color: #e2e8f0;
+    --sidebar-width: 300px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-main);
+    background-color: #f8fafc;
+    line-height: 1.6;
+}
+
+/* --- ROZLOŽENIE (DESKTOP) --- */
+.manual-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- BOČNÝ PANEL (SIDEBAR) --- */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg);
+    color: #f8fafc;
+    flex-shrink: 0;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #334155;
+    z-index: 1000;
+}
+
+.sidebar-header {
+    padding: 20px;
+    background-color: #0f172a;
+    border-bottom: 1px solid #334155;
+}
+
+.back-home-link {
+    display: inline-block;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+}
+
+.back-home-link:hover {
+    color: #fff;
+}
+
+.sidebar-header h2 {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 2px;
+}
+
+.manual-badge {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* --- NAVIGAČNÉ ODKAZY --- */
+.nav-links {
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-item {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-item:hover {
+    background-color: var(--sidebar-hover);
+    color: #fff;
+}
+
+.nav-item.active {
+    background-color: #0284c7;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Podkapitoly */
+.sub-nav {
+    margin-left: 15px;
+    padding-left: 10px;
+    border-left: 2px solid #334155;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sub-item {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: color 0.2s;
+}
+
+.sub-item:hover {
+    color: var(--accent);
+}
+
+/* --- OBSAHOVÁ ČASŤ (MAIN CONTENT) --- */
+.main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.content-wrapper {
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+/* Typografia manuálu */
+.content-wrapper h1 {
+    font-size: 28px;
+    color: var(--text-heading);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.content-wrapper h2 {
+    font-size: 20px;
+    color: var(--text-heading);
+    margin-top: 30px;
+    margin-bottom: 12px;
+}
+
+.content-wrapper h3 {
+    font-size: 16px;
+    color: #1e293b;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+
+.content-wrapper p {
+    margin-bottom: 16px;
+}
+
+.content-wrapper ol, .content-wrapper ul {
+    margin-bottom: 16px;
+    padding-left: 25px;
+}
+
+.content-wrapper li {
+    margin-bottom: 8px;
+}
+
+.content-wrapper code {
+    background-color: #f1f5f9;
+    color: #e11d48;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: monospace;
+}
+
+/* Tabuľky v manuáli s vodorovným posuvníkom */
+.table-responsive {
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+.table-responsive table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-responsive th, .table-responsive td {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+}
+
+.table-responsive th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+/* Boxy (Tip a Alert) */
+.tip, .alert {
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin: 20px 0;
+    font-size: 14px;
+}
+
+.tip {
+    background-color: #f0f9ff;
+    border-left: 4px solid #0284c7;
+    color: #0369a1;
+}
+
+.alert {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+    color: #b91c1c;
+}
+
+/* --- SPODNÁ NAVIGÁCIA MEDZI KAPITOLAMI --- */
+.chapter-navigation {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.nav-btn {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    padding: 15px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.nav-btn.next-btn {
+    text-align: right;
+}
+
+.nav-btn:hover {
+    border-color: #0284c7;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
+}
+
+.nav-btn .sub-text {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.nav-btn .title-text {
+    font-size: 15px;
+    font-weight: bold;
+    color: #0f172a;
+    margin-top: 2px;
+}
+
+/* --- MOBILNÉ ROZHRANIE (RESPONZIVITA) --- */
+.mobile-header {
+    display: none;
+}
+
+.sidebar-overlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #0f172a;
+        color: #fff;
+        padding: 12px 15px;
+        position: sticky;
+        top: 0;
+        z-index: 1100;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .mobile-menu-btn {
+        background: #1e293b;
+        color: #fff;
+        border: 1px solid #334155;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .mobile-doc-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #cbd5e1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 160px;
+    }
+
+    .mobile-home-btn {
+        font-size: 18px;
+        text-decoration: none;
+    }
+
+    /* Bočný panel ako vysúvacia zásuvka (Off-Canvas) */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1200;
+        width: 280px;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.4);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 1150;
+        display: none;
+        backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    .content-wrapper {
+        padding: 20px;
+    }
+
+    .chapter-navigation {
+        flex-direction: column;
+    }
+
+    .nav-btn.next-btn {
+        text-align: left;
+    }
+}
